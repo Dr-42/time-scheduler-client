@@ -31,7 +31,6 @@ export default {
       const minutes = time.getMinutes().toString().padStart(2, "0");
       return `${hours}:${minutes}`;
     },
-
     formatDuration(startTimeValue: string, endTimeValue: string) {
       let startTime = new Date(startTimeValue);
       let endTime = new Date(endTimeValue);

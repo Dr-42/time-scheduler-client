@@ -147,7 +147,6 @@ export default {
   align-items: center;
   padding: 5%;
   width: 100%;
-  height: 100vh;
   box-sizing: border-box;
 }
 
