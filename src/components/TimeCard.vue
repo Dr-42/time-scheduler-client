@@ -1,8 +1,8 @@
 <template>
   <div class="time-card">
     <div class="left">
-      <div class="name">{{ name }}</div>
-      <div class="time">{{ startTime }} - {{ endTime }}</div>
+      <div class="name">{{ blockname }}</div>
+      <div class="time">{{ fmtStartTime }} - {{ fmtEndTime }}</div>
     </div>
     <div class="right">
       <div class="duration">{{ duration }}</div>
@@ -12,12 +12,41 @@
 
 <script lang="ts">
 export default {
-  props: {
-    name: String,
-    startTime: String,
-    endTime: String,
-    duration: String,
-    color: String
+  props: ["blockname", "startTime", "endTime", "color"],
+  computed: {
+    fmtStartTime() {
+      return this.formatTime(this.startTime);
+    },
+    fmtEndTime() {
+      return this.formatTime(this.endTime);
+    },
+    duration() {
+      return this.formatDuration(this.startTime, this.endTime);
+    }
+  },
+  methods: {
+    formatTime(timeValue: string) {
+      let time = new Date(timeValue);
+      const hours = time.getHours().toString().padStart(2, "0");
+      const minutes = time.getMinutes().toString().padStart(2, "0");
+      return `${hours}:${minutes}`;
+    },
+
+    formatDuration(startTimeValue: string, endTimeValue: string) {
+      let startTime = new Date(startTimeValue);
+      let endTime = new Date(endTimeValue);
+      const duration = endTime.getTime() - startTime.getTime();
+      const hours = Math.floor(duration / (1000 * 60 * 60));
+      const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((duration % (1000 * 60 * 60)) % (1000 * 60) / 1000);
+      if (hours === 0 && minutes === 0) {
+        return `${seconds}s`;
+      } else if (hours === 0) {
+        return `${minutes}m ${seconds}s`;
+      } else {
+        return `${hours}h ${minutes}m ${seconds}s`;
+      }
+    }
   }
 }
 </script>
