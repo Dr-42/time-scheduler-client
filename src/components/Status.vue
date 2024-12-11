@@ -9,20 +9,21 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
-
 export default {
   props: ["username", "currentStart", "currentName", "currentColor"],
-  setup(props) {
-    const timer = ref("");
-
-    const updateTimer = () => {
-      const now = new Date();
-      const start = new Date(props.currentStart);
-      timer.value = formatDuration(start, now);
+  data() {
+    return {
+      timer: "",
+      intervalId: null as number | null,
     };
-
-    const formatDuration = (startTime: Date, endTime: Date): string => {
+  },
+  methods: {
+    updateTimer() {
+      const now = new Date();
+      const start = new Date(this.currentStart);
+      this.timer = this.formatDuration(start, now);
+    },
+    formatDuration(startTime: Date, endTime: Date): string {
       const duration = endTime.getTime() - startTime.getTime();
       const hours = Math.floor(duration / (1000 * 60 * 60));
       const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
@@ -35,22 +36,14 @@ export default {
       } else {
         return `${hours}h ${minutes}m ${seconds}s`;
       }
-    };
-
-    let intervalId: number | undefined;
-
-    onMounted(() => {
-      updateTimer();
-      intervalId = setInterval(updateTimer, 1000);
-    });
-
-    onUnmounted(() => {
-      if (intervalId) clearInterval(intervalId);
-    });
-
-    return {
-      timer,
-    };
+    },
+  },
+  mounted() {
+    this.updateTimer();
+    this.intervalId = setInterval(this.updateTimer, 1000) as unknown as number;
+  },
+  beforeUnmount() {
+    if (this.intervalId) clearInterval(this.intervalId);
   },
 };
 </script>
@@ -62,11 +55,9 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border-bottom: 1px solid #ccc;
   background: #2e2e2e;
   margin: 0 auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   font-family: Arial, sans-serif;
   color: #e2e2e2;
 }

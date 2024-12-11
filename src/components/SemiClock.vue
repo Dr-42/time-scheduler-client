@@ -140,12 +140,12 @@ export default {
 <style scoped>
 .semi-circle-clock {
   font-family: "Poppins", sans-serif;
-  background-color: #1e1e2e;
+  background-color: #2e2e2e;
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 5%;
+  margin: 4px;
   width: 100%;
   box-sizing: border-box;
 }
