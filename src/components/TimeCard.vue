@@ -55,6 +55,7 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  margin: 2.5px 0 2.5px 0;
   align-items: center;
   background-color: v-bind(color);
   border-radius: 5px;

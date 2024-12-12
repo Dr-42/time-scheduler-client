@@ -2,38 +2,49 @@
 	<div class="container">
 		<status 
 			:username="username" 
-			:currentStart="startTime" 
-			:currentName="blname" 
-			:currentColor="color"
+			:currentStart="cards[cards.length -1].endTime" 
+			:currentName="currentData.name" 
+			:currentColor="currentData.color"
 		/>
 		<semi-clock />
-		<time-card 
-			:blockname="blname" 
-			:startTime="startTime" 
-			:endTime="endTime" 
-			:color="color" 
+		<time-cards 
+			:cardData="cards"
 		/>
 	</div>
 </template>
 
 <script lang="ts">
-import TimeCard from './components/TimeCard.vue';
+import TimeCards from './components/TimeCards.vue';
 import SemiClock from './components/SemiClock.vue';
 import Status from './components/Status.vue';
 
 export default {
 	components: {
-		TimeCard,
+		TimeCards,
 		SemiClock,
 		Status,
 	},
 	data() {
 		return {
 			username: "Spandan",
-			startTime: "2024-12-10T15:48:23.824689862+00:00",
-			endTime: "2024-12-10T16:46:23.824689862+00:00",
-			blname: "Hola",
-			color: "#ee22ff",
+			cards: [
+				{
+					startTime: "2024-12-11T15:48:23.824689862+00:00",
+					endTime: "2024-12-11T16:46:23.824689862+00:00",
+					blockname: "Amigo",
+					color: "#ee22ff",
+				},
+				{
+					startTime: "2024-12-11T16:46:23.824689862+00:00",
+					endTime: "2024-12-11T17:52:13.824689862+00:00",
+					blockname: "Hola",
+					color: "#ee00aa",
+				},
+			],
+			currentData: {
+				name: "Eureka",
+				color: "#aa0011",
+			}
 		};
 	},
 }
