@@ -47,5 +47,6 @@ export default {
   margin: 0 auto;
   font-family: Arial, sans-serif;
   color: #e2e2e2;
+  overflow-y: auto;
 }
 </style>

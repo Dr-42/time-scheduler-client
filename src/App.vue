@@ -7,7 +7,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import Navbar from './components/Navbar.vue';
 import AsideMenu from './components/AsideMenu.vue';
 
@@ -37,6 +37,7 @@ export default {
 #app {
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 .overlay {

@@ -5,7 +5,7 @@
         <!-- Hour Markers -->
         <g>
           <circle
-            v-for="hour in Array.from({ length: 25 }, (x, i) => i )"
+            v-for="hour in Array.from({ length: 25 }, (_, i) => i )"
             :key="hour"
             :cx="hourX(hour, 70)"
             :cy="hourY(hour, 70)"
@@ -46,8 +46,8 @@
   </div>
 </template>
 
-<script>
-function polarToCartesian(cx, cy, radius, angleInDegrees) {
+<script lang="ts">
+function polarToCartesian(cx: number, cy: number, radius: number, angleInDegrees: number) {
   const angleInRadians = ((angleInDegrees - 180) * Math.PI) / 180.0;
   return {
     x: cx + radius * Math.cos(angleInRadians),
@@ -102,6 +102,9 @@ export default {
 
       return this.timeBlocks.map((block, id) => {
         const blockType = this.blockTypes.find((type) => type.id === block.block_type_id);
+        if (!blockType) {
+          return null;
+        }
         const startAngle = (new Date(block.start_time).getHours() / 24) * 180;
         const endAngle = (new Date(block.end_time).getHours() / 24) * 180;
 
@@ -123,12 +126,12 @@ export default {
     },
   },
   methods: {
-    hourX(hour, radius) {
+    hourX(hour: number, radius: number) {
       const angle = (hour / 24) * 180;
       const { x } = polarToCartesian(100, 100, radius, angle);
       return x;
     },
-    hourY(hour, radius) {
+    hourY(hour: number, radius: number) {
       const angle = (hour / 24) * 180;
       const { y } = polarToCartesian(100, 100, radius, angle);
       return y;

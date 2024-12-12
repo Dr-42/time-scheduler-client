@@ -13,7 +13,7 @@
   </nav>
 </template>
 
-<script>
+<script lang="ts">
 import MenuIcon from "vue-material-design-icons/Menu.vue";
 import CogIcon from "vue-material-design-icons/Cog.vue";
 
