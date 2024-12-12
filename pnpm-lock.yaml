@@ -17,6 +17,9 @@ importers:
       vue:
         specifier: ^3.3.4
         version: 3.5.13(typescript@5.7.2)
+      vue-material-design-icons:
+        specifier: ^5.3.1
+        version: 5.3.1
     devDependencies:
       '@tauri-apps/cli':
         specifier: ^2
@@ -533,6 +536,9 @@ packages:
   vscode-uri@3.0.8:
     resolution: {integrity: sha512-AyFQ0EVmsOZOlAnxoFOGOq1SQDWAB7C6aqMGS23svWAllfOaxbuFvcT8D1i8z3Gyn8fraVeZNNmN6e9bxxXkKw==}
 
+  vue-material-design-icons@5.3.1:
+    resolution: {integrity: sha512-6UNEyhlTzlCeT8ZeX5WbpUGFTTPSbOoTQeoASTv7X4Ylh0pe8vltj+36VMK56KM0gG8EQVoMK/Qw/6evalg8lA==}
+
   vue-tsc@2.1.10:
     resolution: {integrity: sha512-RBNSfaaRHcN5uqVqJSZh++Gy/YUzryuv9u1aFWhsammDJXNtUiJMNoJ747lZcQ68wUQFx6E73y4FY3D8E7FGMA==}
     hasBin: true
@@ -939,6 +945,8 @@ snapshots:
       fsevents: 2.3.3
 
   vscode-uri@3.0.8: {}
+
+  vue-material-design-icons@5.3.1: {}
 
   vue-tsc@2.1.10(typescript@5.7.2):
     dependencies:

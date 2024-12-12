@@ -1,5 +1,6 @@
 <template>
 	<div class="container">
+		<navbar />
 		<status 
 			:username="username" 
 			:currentStart="cards[cards.length -1].endTime" 
@@ -17,9 +18,11 @@
 import TimeCards from './components/TimeCards.vue';
 import SemiClock from './components/SemiClock.vue';
 import Status from './components/Status.vue';
+import Navbar from './components/Navbar.vue';
 
 export default {
 	components: {
+		Navbar,
 		TimeCards,
 		SemiClock,
 		Status,
@@ -58,5 +61,6 @@ export default {
 	text-align: center;
 	color: #2c3e50;
 	background-color: #2e2e2e;
+	margin: 0 auto;
 }
 </style>
