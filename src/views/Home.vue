@@ -89,36 +89,36 @@ export default {
 }
 
 .floating-buttons {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 15;
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	z-index: 15;
 }
 
 .fab {
-  background-color: #6e006e;
-  color: white;
-  border: none;
-  border-radius: 25%;
-  width: 56px;
-  height: 56px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  outline: none;
+	background-color: #6e006e;
+	color: white;
+	border: none;
+	border-radius: 25%;
+	width: 56px;
+	height: 56px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+	cursor: pointer;
+	outline: none;
 }
 
 .fab:hover {
-  background-color: #3700b3;
+	background-color: #3700b3;
 }
 
 .fab svg {
-  width: 24px;
-  height: 24px;
+	width: 24px;
+	height: 24px;
 }
 </style>

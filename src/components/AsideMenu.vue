@@ -58,12 +58,13 @@ type ModalContent = {
 export default {
   name: 'AsideMenu',
   components: {
+    InfoModal,
+
     HomeIcon,
     HistoryIcon,
     AnalysisIcon,
     InfoIcon,
     LicenseIcon,
-    InfoModal,
   },
   props: {
     isOpen: {
