@@ -1,13 +1,13 @@
 <template>
   <nav class="navbar">
     <div class="left">
-      <div class="pancake">
-        <menu-icon/>
+      <div class="pancake" @click="toggleAside">
+        <menu-icon />
       </div>
     </div>
     <div class="right">
       <div class="settings">
-        <cog-icon/>
+        <cog-icon />
       </div>
     </div>
   </nav>
@@ -21,8 +21,13 @@ export default {
   name: "Navbar",
   components: {
     MenuIcon,
-    CogIcon
-  }
+    CogIcon,
+  },
+  methods: {
+    toggleAside() {
+      this.$emit("toggleAside");
+    },
+  },
 };
 </script>
 
@@ -38,14 +43,21 @@ export default {
   box-sizing: border-box;
 }
 
-.left {
+.left,
+.right {
   display: flex;
   align-items: center;
-  margin-left: 10px;
+  padding: 5px;
+}
+
+.pancake {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
   padding: 10px;
 }
 
-.right {
+.settings {
   display: flex;
   align-items: center;
   margin-right: 10px;
