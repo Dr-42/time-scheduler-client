@@ -4,7 +4,7 @@
 			:username="username" 
 			:currentStart="cards[cards.length -1].endTime" 
 			:currentName="currentData.name" 
-			:currentColor="currentData.color"
+			:currentColor="blockTypes.find(block => block.id === currentData.id)?.color"
 		/>
 		<semi-clock />
 		<time-cards 
@@ -23,6 +23,25 @@
 				<chevron-right-box-icon />
 			</button>
 		</div>
+		<!-- Modals -->
+		<next-block-modal
+			v-if="currentModal === 'nextBlock'"
+			:blockTypes="blockTypes"
+			@close="currentModal = null"
+			@submit="handleNextBlock"
+		/>
+		<change-block-modal
+			v-if="currentModal === 'changeBlock'"
+			:blockTypes="blockTypes"
+			:currentData="currentData"
+			@close="currentModal = null"
+			@submit="handleChangeBlock"
+		/>
+		<add-blocktype-modal
+			v-if="currentModal === 'addBlockType'"
+			@close="currentModal = null"
+			@submit="handleAddBlockType"
+		/>
 	</div>
 </template>
 
@@ -31,9 +50,30 @@ import TimeCards from '../components/TimeCards.vue';
 import SemiClock from '../components/SemiClock.vue';
 import Status from '../components/Status.vue';
 
+import NextBlockModal from '../components/NextBlockModal.vue';
+import ChangeBlockModal from '../components/ChangeBlockModal.vue';
+import AddBlocktypeModal from '../components/AddBlocktypeModal.vue';
+
 import ChevronRightBoxIcon from "vue-material-design-icons/ChevronRightBox.vue";
 import SwapHorizontalCircleIcon from "vue-material-design-icons/SwapHorizontalCircle.vue";
 import PlusBoxIcon from "vue-material-design-icons/PlusBox.vue";
+
+type Color = {
+	r: number;
+	g: number;
+	b: number;
+}
+
+type BlockType = {
+	id: number;
+	name: string;
+	color: Color;
+}
+
+type NextBlockSubmitData = {
+	name: string;
+	id: number;
+}
 
 
 export default {
@@ -41,6 +81,10 @@ export default {
 		TimeCards,
 		SemiClock,
 		Status,
+
+		NextBlockModal,
+		ChangeBlockModal,
+		AddBlocktypeModal,
 
 		ChevronRightBoxIcon,
 		SwapHorizontalCircleIcon,
@@ -65,15 +109,33 @@ export default {
 			],
 			currentData: {
 				name: "Eureka",
-				color: "#aa0011",
-			}
+				id: 2,
+			},
+			currentModal: null as string | null,
+			blockTypes: [
+				{ id: 1, name: "Work", color: { r: 255, g: 0, b: 0 } },
+				{ id: 2, name: "Exercise", color: { r: 0, g: 255, b: 0 } },
+				{ id: 3, name: "Study", color: { r: 0, g: 0, b: 255 } },
+			] as BlockType[],
 		};
 	},
 	methods: {
 		openModal(type: string) {
-			console.log(type);
-		}
-	}
+			this.currentModal = type;
+		},
+		handleNextBlock(data : NextBlockSubmitData) {
+			console.log("Next Block submitted:", { data });
+			this.currentModal = null;
+		},
+		handleChangeBlock(data : NextBlockSubmitData) {
+			console.log("Change Block submitted:", { data });
+			this.currentModal = null;
+		},
+		handleAddBlockType(name : string, color : string) {
+			console.log("New BlockType created:", { name, color });
+			this.currentModal = null;
+		},
+	},
 }
 </script>
 
