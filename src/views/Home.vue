@@ -13,14 +13,14 @@
 
 		<!-- Floating Action Buttons -->
 		<div class="floating-buttons">
-			<button class="fab" @click="openModal('nextBlock')" title="Next block">
-				<chevron-right-icon />
-			</button>
 			<button class="fab" @click="openModal('changeBlock')" title="Change current block">
-				<swap-horizontal-icon />
+				<swap-horizontal-circle-icon />
 			</button>
 			<button class="fab" @click="openModal('addBlockType')" title="Add blocktype">
 				<plus-box-icon />
+			</button>
+			<button class="fab" @click="openModal('nextBlock')" title="Next block">
+				<chevron-right-box-icon />
 			</button>
 		</div>
 	</div>
@@ -31,8 +31,8 @@ import TimeCards from '../components/TimeCards.vue';
 import SemiClock from '../components/SemiClock.vue';
 import Status from '../components/Status.vue';
 
-import ChevronRightIcon from "vue-material-design-icons/ChevronRight.vue";
-import SwapHorizontalIcon from "vue-material-design-icons/SwapHorizontal.vue";
+import ChevronRightBoxIcon from "vue-material-design-icons/ChevronRightBox.vue";
+import SwapHorizontalCircleIcon from "vue-material-design-icons/SwapHorizontalCircle.vue";
 import PlusBoxIcon from "vue-material-design-icons/PlusBox.vue";
 
 
@@ -42,8 +42,8 @@ export default {
 		SemiClock,
 		Status,
 
-		ChevronRightIcon,
-		SwapHorizontalIcon,
+		ChevronRightBoxIcon,
+		SwapHorizontalCircleIcon,
 		PlusBoxIcon
 	},
 	data() {
