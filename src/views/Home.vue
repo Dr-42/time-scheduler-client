@@ -28,19 +28,19 @@
 			v-if="currentModal === 'nextBlock'"
 			:blockTypes="blockTypes"
 			@close="currentModal = null"
-			@submit="handleNextBlock"
+			@done="handleNextBlock"
 		/>
 		<change-block-modal
 			v-if="currentModal === 'changeBlock'"
 			:blockTypes="blockTypes"
 			:currentData="currentData"
 			@close="currentModal = null"
-			@submit="handleChangeBlock"
+			@done="handleChangeBlock"
 		/>
 		<add-blocktype-modal
 			v-if="currentModal === 'addBlockType'"
 			@close="currentModal = null"
-			@submit="handleAddBlockType"
+			@done="handleAddBlockType"
 		/>
 	</div>
 </template>

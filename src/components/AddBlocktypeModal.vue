@@ -72,7 +72,7 @@ export default defineComponent({
         b: b,
       };
 
-      this.$emit("submit", {
+      this.$emit("done", {
         name: this.blockTypeName,
         color: color,
       });

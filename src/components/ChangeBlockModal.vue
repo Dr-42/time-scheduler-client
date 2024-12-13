@@ -92,7 +92,7 @@ export default defineComponent({
       this.$emit("close");
     },
     submit() {
-      this.$emit("submit", { blockName: this.blockName, blockTypeId: this.blockTypeId });
+      this.$emit("done", { blockName: this.blockName, blockTypeId: this.blockTypeId });
     },
   },
 });

@@ -83,7 +83,7 @@ export default defineComponent({
       this.$emit("close");
     },
     submit() {
-      this.$emit("submit", { name: this.blockName, id: this.blockTypeId });
+      this.$emit("done", { name: this.blockName, id: this.blockTypeId });
     },
   },
 });
