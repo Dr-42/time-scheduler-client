@@ -108,7 +108,11 @@ export default {
       return this.timeBlocks.map((block, id) => {
         const blockType = this.blockTypes.find((type) => type.id === block.block_type_id);
         if (!blockType) {
-          return null;
+          return {
+            id,
+            path: "",
+            color: "rgb(255, 255, 255)",
+          };
         }
         const startAngle = (new Date(block.start_time).getHours() / 24) * 180;
         const endAngle = (new Date(block.end_time).getHours() / 24) * 180;
@@ -188,16 +192,16 @@ path {
   display: flex;
   flex-direction: column;
   width: 25%;
-  gap: 5px; 
+  gap: 1px; 
   overflow-y: auto;
 }
 
 .task-label {
   display: flex;
   align-items: center; 
-  gap: 10px;
+  gap: 8px;
   font-size: 12px; 
-  padding: 4px; 
+  padding: 2px; 
   border-radius: 5px; 
 }
 
