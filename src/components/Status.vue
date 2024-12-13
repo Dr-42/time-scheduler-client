@@ -37,6 +37,16 @@ export default {
         return `${hours}h ${minutes}m ${seconds}s`;
       }
     },
+    colorToString(color: { r: number; g: number; b: number }) {
+      return `rgb(${color.r}, ${color.g}, ${color.b})`;
+    },
+    contrastColor(color: { r: number; g: number; b: number }) {
+      const r = color.r;
+      const g = color.g;
+      const b = color.b;
+      const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+      return yiq >= 128 ? "#000000" : "#ffffff";
+    }
   },
   mounted() {
     this.updateTimer();
@@ -71,8 +81,8 @@ export default {
 .timer {
   font-size: 24px;
   font-weight: bold;
-  color: #e2e2e2;
-  background-color: v-bind(currentColor);
+  color: v-bind(contrastColor(currentColor));
+  background-color: v-bind(colorToString(currentColor));
   padding: 5px 10px;
   border-radius: 5px;
   margin: 10px 0;

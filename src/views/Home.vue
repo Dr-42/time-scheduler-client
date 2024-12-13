@@ -75,6 +75,11 @@ type NextBlockSubmitData = {
 	id: number;
 }
 
+type NewBlockType = {
+	name: string;
+	color: Color;
+}
+
 
 export default {
 	components: {
@@ -131,8 +136,8 @@ export default {
 			console.log("Change Block submitted:", { data });
 			this.currentModal = null;
 		},
-		handleAddBlockType(name : string, color : string) {
-			console.log("New BlockType created:", { name, color });
+		handleAddBlockType(data: NewBlockType) {
+			console.log("Add Block Type submitted:", { data });
 			this.currentModal = null;
 		},
 	},

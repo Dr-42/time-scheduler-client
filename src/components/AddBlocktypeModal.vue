@@ -4,6 +4,16 @@
       <h2>Add New Block Type</h2>
       <form @submit.prevent="submit">
         <div class="form-group">
+          <label for="block-color">Block Color</label>
+          <div id="block-color" class="color-picker">
+            <!-- TypeScript compiler doesn't understand Proxies for the module Ignore error-->
+            <Chrome 
+              v-model="blockColor" 
+              :disable-alpha="true"
+            />
+          </div>
+        </div>
+        <div class="form-group">
           <label for="block-name">Block Type Name</label>
           <input
             type="text"
@@ -13,14 +23,6 @@
             placeholder="Enter block type name"
           />
         </div>
-
-        <div class="form-group">
-          <label for="block-color">Block Color</label>
-          <div id="block-color" class="color-picker">
-            <Chrome v-model="blockColor.hex" :disable-alpha="true" />
-          </div>
-        </div>
-
         <div class="modal-actions">
           <button type="button" class="cancel-btn" @click="closeModal">Cancel</button>
           <button type="submit" class="submit-btn" :disabled="!isFormValid">OK</button>
@@ -31,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { Chrome } from "@ckpack/vue-color";
 
 export default defineComponent({
@@ -40,19 +42,19 @@ export default defineComponent({
   data() {
     return {
       blockTypeName: "",
-      blockColor: {
-        hex: "#ffffff",
-        rgb: { r: 255, g: 255, b: 255 },
-      },
+      blockColor: ref({
+        rgba: {
+          r: 120,
+          g: 120,
+          b: 120,
+          a: 1,
+        }
+      }),
     };
   },
   computed: {
     isFormValid(): boolean {
       return this.blockTypeName.trim().length > 0;
-    },
-    rgbColor(): string {
-      const { r, g, b } = this.blockColor.rgb;
-      return `rgb(${r}, ${g}, ${b})`;
     },
   },
   methods: {
@@ -60,14 +62,33 @@ export default defineComponent({
       this.$emit("close");
     },
     submit() {
+      let r = this.blockColor.rgba.r;
+      let g = this.blockColor.rgba.g;
+      let b = this.blockColor.rgba.b;
+
+      let color = {
+        r: r,
+        g: g,
+        b: b,
+      };
+
       this.$emit("submit", {
         name: this.blockTypeName,
-        color: this.blockColor.rgb,
+        color: color,
       });
     },
   },
 });
 </script>
+
+<style>
+.vc-chrome-body {
+  background-color: #2e2e2e !important;
+  color: white !important;
+  padding: auto !important;
+  margin: auto !important;
+}
+</style>
 
 <style scoped>
 .modal-backdrop {
@@ -159,14 +180,5 @@ input {
 .submit-btn:disabled {
   background-color: #a7a7a7;
   cursor: not-allowed;
-}
-</style>
-
-<style>
-.vc-chrome-body {
-  background-color: #2e2e2e;
-  color: white;
-  padding: auto;
-  margin: auto;
 }
 </style>
