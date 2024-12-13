@@ -11,6 +11,7 @@
 <script>
 export default {
   name: 'InfoModal',
+  emits: ['close'],
   props: {
     title: {
       type: String,

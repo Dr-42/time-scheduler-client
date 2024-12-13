@@ -6,7 +6,7 @@
       </div>
     </div>
     <div class="right">
-      <div class="settings">
+      <div class="settings" @click="openSettings">
         <cog-icon />
       </div>
     </div>
@@ -23,9 +23,13 @@ export default {
     MenuIcon,
     CogIcon,
   },
+  emits: ["toggleAside", "openSettings"],
   methods: {
     toggleAside() {
       this.$emit("toggleAside");
+    },
+    openSettings() {
+      this.$emit("openSettings");
     },
   },
 };

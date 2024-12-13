@@ -66,6 +66,7 @@ type CurrentData = {
 export default defineComponent({
   name: "ChangeBlockModal",
   components: { CustomDropdown },
+  emits: ["close", "done"],
   props: {
     blockTypes: {
       type: Array as PropType<BlockType[]>,

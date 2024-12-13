@@ -1,31 +1,44 @@
 <template>
   <div class="modal-backdrop" @click.self="closeModal">
     <div class="modal">
-      <h2>Add New Block Type</h2>
+      <h2>Settings</h2>
       <form @submit.prevent="submit">
         <div class="form-group">
-          <label for="block-color">Block Color</label>
-          <div id="block-color" class="color-picker">
-            <!-- TypeScript compiler doesn't understand Proxies for the module Ignore error-->
-            <Chrome 
-              v-model="blockColor" 
-              :disable-alpha="true"
-            />
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="block-name">Block Type Name</label>
+          <label for="username">Username</label>
           <input
             type="text"
-            id="block-name"
-            v-model="blockTypeName"
+            id="username"
+            v-model="username"
             required
-            placeholder="Enter block type name"
+            placeholder="Enter username"
           />
         </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            v-model="password"
+            required
+            placeholder="Enter password"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="server-ip">Server IP</label>
+          <input
+            type="text"
+            id="server-ip"
+            v-model="serverIp"
+            required
+            placeholder="Enter server IP"
+          />
+        </div>
+
         <div class="modal-actions">
           <button type="button" class="cancel-btn" @click="closeModal">Cancel</button>
-          <button type="submit" class="submit-btn" :disabled="!isFormValid">OK</button>
+          <button type="submit" class="submit-btn" :disabled="!isFormValid">Save</button>
         </div>
       </form>
     </div>
@@ -33,29 +46,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { Chrome } from "@ckpack/vue-color";
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "AddBlocktypeModal",
-  components: { Chrome },
-  emits: ["close", "done"],
+  name: "SettingsModal",
   data() {
     return {
-      blockTypeName: "",
-      blockColor: ref({
-        rgba: {
-          r: 120,
-          g: 120,
-          b: 120,
-          a: 1,
-        }
-      }),
+      username: "",
+      password: "",
+      serverIp: "",
     };
   },
+  emits: ["close", "savesettings"],
   computed: {
     isFormValid(): boolean {
-      return this.blockTypeName.trim().length > 0;
+      return (
+        this.username.trim().length > 0 &&
+        this.password.trim().length > 0 &&
+        this.serverIp.trim().length > 0
+      );
     },
   },
   methods: {
@@ -63,33 +72,15 @@ export default defineComponent({
       this.$emit("close");
     },
     submit() {
-      let r = this.blockColor.rgba.r;
-      let g = this.blockColor.rgba.g;
-      let b = this.blockColor.rgba.b;
-
-      let color = {
-        r: r,
-        g: g,
-        b: b,
-      };
-
-      this.$emit("done", {
-        name: this.blockTypeName,
-        color: color,
+      this.$emit("savesettings", {
+        username: this.username,
+        password: this.password,
+        serverIp: this.serverIp,
       });
     },
   },
 });
 </script>
-
-<style>
-.vc-chrome-body {
-  background-color: #2e2e2e !important;
-  color: white !important;
-  padding: auto !important;
-  margin: auto !important;
-}
-</style>
 
 <style scoped>
 .modal-backdrop {
@@ -130,28 +121,12 @@ label {
 
 input {
   padding: 10px;
-  margin: 5px 0;
+  margin: 5px;
   border: 1px solid #ddd;
   border-radius: 4px;
   background-color: #2e2e2e;
   color: white;
   font-size: 16px;
-}
-
-.color-picker {
-  display: flex;
-  flex-direction: row;
-  background-color: #2e2e2e;
-  color: white;
-  padding: 10px;
-  border-radius: 4px;
-  align-items: center;
-  justify-content: center;
-}
-
-.color-values {
-  font-size: 14px;
-  color: #ddd;
 }
 
 .modal-actions {

@@ -61,6 +61,7 @@ type BlockType = {
 export default defineComponent({
   name: "NextBlockModal",
   components: { CustomDropdown },
+  emits: ["close", "done"],
   props: {
     blockTypes: {
       type: Array as PropType<BlockType[]>,
