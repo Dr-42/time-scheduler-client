@@ -23,7 +23,6 @@
           stroke-width="8"
           fill="none"
         />
-
         <!-- Sunrise Icon -->
         <image
           href="https://www.svgrepo.com/show/281245/sunrise-forecast.svg"
@@ -42,6 +41,12 @@
           width="20"
         />
       </svg>
+      <div class="task-labels">
+        <div v-for="block in blockTypes" class="task-label">
+          <div class="task-square" :style="{ backgroundColor: colorToString(block.color) }"></div>
+          <div class="task-name">{{ block.name }}</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -81,7 +86,7 @@ export default {
       ],
       blockTypes: [
         { id: 1, name: "Sleep", color: { r: 107, g: 111, b: 246 } },
-        { id: 2, name: "Morning Routine", color: { r: 255, g: 111, b: 97 } },
+        { id: 2, name: "Meditation", color: { r: 255, g: 111, b: 97 } },
         { id: 3, name: "Work", color: { r: 111, g: 255, b: 136 } },
       ],
       sunrise: "2024-12-08T07:00:00",
@@ -136,6 +141,9 @@ export default {
       const { y } = polarToCartesian(100, 100, radius, angle);
       return y;
     },
+    colorToString(color: { r: number; g: number; b: number }) {
+      return `rgb(${color.r}, ${color.g}, ${color.b})`;
+    }
   },
 };
 </script>
@@ -155,13 +163,16 @@ export default {
 }
 
 .clock-container {
-  width: 100%;
-  height: 100%;
+  width: 80%;
   position: relative;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
 }
 
 .clock {
-  width: 100%;
+  width: 75%;
   height: 100%;
 }
 
@@ -171,5 +182,42 @@ circle {
 
 path {
   opacity: 0.9;
+}
+
+.task-labels {
+  display: flex;
+  flex-direction: column;
+  width: 25%;
+  gap: 5px; 
+  overflow-y: auto;
+}
+
+.task-label {
+  display: flex;
+  align-items: center; 
+  gap: 10px;
+  font-size: 12px; 
+  padding: 4px; 
+  border-radius: 5px; 
+}
+
+.task-square {
+  width: 14px; 
+  height: 14px; 
+  border-radius: 3px; 
+  flex-shrink: 0;
+  flex-grow: 0;
+  margin: 0;
+}
+
+.task-name {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  white-space: nowrap; 
+  word-wrap: break-word;
+  hyphens: auto;
+  flex-grow: 1; 
 }
 </style>
