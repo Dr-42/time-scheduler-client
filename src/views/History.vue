@@ -1,13 +1,88 @@
 <template>
-  <div class="history">
-    <h1>Welcome to History</h1>
-    <p>This is the main content of the history page.</p>
+  <div class="date-picker" @click="handleOutsideClick">
+    <button @click="goToTimecards">Show Timecards</button>
+    <label for="date">Select a date:</label>
+    <input 
+      type="date" 
+      id="date" 
+      v-model="selectedDate"
+      ref="dateInput"
+      :max="maxDate"
+    />
   </div>
 </template>
 
+<script lang="ts">
+export default {
+  name: "DatePicker",
+  data() {
+    return {
+      selectedDate: "",
+      isDateInputFocused: false,
+    };
+  },
+  computed: {
+    maxDate() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = (today.getMonth() + 1).toString().padStart(2, '0');
+      const day = today.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
+  },
+  methods: {
+    goToTimecards() {
+      if (this.selectedDate) {
+        this.$router.push({ name: "HistoryTimeCards", params: { date: this.selectedDate } });
+      } else {
+        alert("Please select a date.");
+      }
+    },
+    handleOutsideClick(event: Event) {
+      const target = event.target as HTMLElement;
+      const dateInput = this.$refs.dateInput as HTMLElement;
+      if (dateInput && !dateInput.contains(target)) {
+        this.isDateInputFocused = false;
+        dateInput.blur();
+      }
+    },
+  },
+};
+</script>
+
 <style scoped>
-.history {
+.date-picker {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   padding: 20px;
-  color: white;
+  color: #e2e2e2;
+  font-family: Arial, sans-serif;
+}
+
+label {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+input {
+  font-size: 16px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+button {
+  font-size: 16px;
+  padding: 10px 20px;
+  background-color: #3e3e3e;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #575757;
 }
 </style>
