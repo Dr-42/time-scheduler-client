@@ -13,6 +13,8 @@
     "@ckpack/vue-color": "^1.6.0",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-shell": "^2",
+    "chart.js": "^4.4.7",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "vue": "^3.3.4",
     "vue-material-design-icons": "^5.3.1",
     "vue-router": "^4.5.0"
