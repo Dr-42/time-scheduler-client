@@ -31,20 +31,20 @@ pub struct CurrentBlock {
     pub current_block_name: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Trend {
     pub day: NaiveDate,
     pub time_spent: Duration,
     pub block_type_id: u8,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Analysis {
     pub percentages: Vec<f32>,
     pub trends: Vec<Trend>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct HomeData {
     blocktypes: Vec<BlockType>,
     daydata: Vec<TimeBlock>,

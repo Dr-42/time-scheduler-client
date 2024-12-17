@@ -5,7 +5,7 @@ mod datatypes;
 mod tauface;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() -> Result<(), Box<dyn std::error::Error>> {
+pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
