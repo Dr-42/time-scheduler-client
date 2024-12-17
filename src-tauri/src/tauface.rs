@@ -1,4 +1,7 @@
+use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
+
+use crate::datatypes::HomeData;
 
 #[derive(Serialize, Deserialize)]
 pub struct Meta {
@@ -51,4 +54,19 @@ pub async fn get_meta() -> Meta {
     let meta_json = std::fs::read_to_string(&meta_path).unwrap();
     let meta: Meta = serde_json::from_str(&meta_json).unwrap();
     meta
+}
+
+#[tauri::command]
+pub async fn get_home_data() -> Result<HomeData, String> {
+    todo!()
+}
+
+#[tauri::command]
+pub async fn get_day_history(date: NaiveDate) -> Result<HomeData, String> {
+    todo!()
+}
+
+#[tauri::command]
+pub async fn get_analysis(start_date: NaiveDate, end_date: NaiveDate) -> Result<HomeData, String> {
+    todo!()
 }
