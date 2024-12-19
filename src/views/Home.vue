@@ -6,7 +6,10 @@
 			:currentName="currentData.name" 
 			:currentColor="blockTypes.find(block => block.id === currentData.id)?.color"
 		/>
-		<semi-clock />
+		<semi-clock
+			:timeBlocks="cards"
+			:blockTypes="blockTypes"
+		/>
 		<time-cards 
 			:cardData="cards"
 			:blockTypes="blockTypes"

@@ -52,43 +52,40 @@
 </template>
 
 <script lang="ts">
-function polarToCartesian(cx: number, cy: number, radius: number, angleInDegrees: number) {
-  const angleInRadians = ((angleInDegrees - 180) * Math.PI) / 180.0;
-  return {
-    x: cx + radius * Math.cos(angleInRadians),
-    y: cy + radius * Math.sin(angleInRadians),
-  };
+
+type Color = {
+  r: number;
+  g: number;
+  b: number;
+}
+
+type BlockType = {
+  id: number;
+  name: string;
+  color: Color;
+}
+
+type TimeBlock = {
+  blockname: string;
+  startTime: string;
+  endTime: string;
+  blockId: number;
 }
 
 export default {
   name: "SemiCircleClock",
+  props: {
+    timeBlocks: {
+      type: Array<TimeBlock>,
+      required: true,
+    },
+    blockTypes: {
+      type: Array<BlockType>,
+      required: true,
+    },
+  },
   data() {
     return {
-      timeBlocks: [
-        {
-          start_time: "2024-12-08T00:00:00",
-          end_time: "2024-12-08T06:00:00",
-          block_type_id: 1,
-          title: "Sleeping",
-        },
-        {
-          start_time: "2024-12-08T06:00:00",
-          end_time: "2024-12-08T12:00:00",
-          block_type_id: 2,
-          title: "Morning Routine",
-        },
-        {
-          start_time: "2024-12-08T12:00:00",
-          end_time: "2024-12-08T18:00:00",
-          block_type_id: 3,
-          title: "Work",
-        },
-      ],
-      blockTypes: [
-        { id: 1, name: "Sleep", color: { r: 107, g: 111, b: 246 } },
-        { id: 2, name: "Meditation", color: { r: 255, g: 111, b: 97 } },
-        { id: 3, name: "Work", color: { r: 111, g: 255, b: 136 } },
-      ],
       sunrise: "2024-12-08T07:00:00",
       sunset: "2024-12-08T18:00:00",
     };
@@ -106,7 +103,7 @@ export default {
       const cy = 100; // Center Y
 
       return this.timeBlocks.map((block, id) => {
-        const blockType = this.blockTypes.find((type) => type.id === block.block_type_id);
+        const blockType = this.blockTypes.find((type) => type.id === block.blockId);
         if (!blockType) {
           return {
             id,
@@ -114,17 +111,17 @@ export default {
             color: "rgb(255, 255, 255)",
           };
         }
-        const startAngle = (new Date(block.start_time).getHours() / 24) * 180;
-        const endAngle = (new Date(block.end_time).getHours() / 24) * 180;
+        const startAngle = (new Date(block.startTime).getHours() / 24) * 180;
+        const endAngle = (new Date(block.endTime).getHours() / 24) * 180;
 
-        const startPoint = polarToCartesian(cx, cy, radius, startAngle);
-        const endPoint = polarToCartesian(cx, cy, radius, endAngle);
+        const startPoint = this.polarToCartesian(cx, cy, radius, startAngle);
+        const endPoint = this.polarToCartesian(cx, cy, radius, endAngle);
 
         const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
         const path = `
-          M ${startPoint.x} ${startPoint.y}
-          A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
-        `;
+M ${startPoint.x} ${startPoint.y}
+A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
+`;
 
         return {
           id,
@@ -135,14 +132,21 @@ export default {
     },
   },
   methods: {
+    polarToCartesian(cx: number, cy: number, radius: number, angleInDegrees: number) {
+      const angleInRadians = ((angleInDegrees - 180) * Math.PI) / 180.0;
+      return {
+        x: cx + radius * Math.cos(angleInRadians),
+        y: cy + radius * Math.sin(angleInRadians),
+      };
+    },
     hourX(hour: number, radius: number) {
       const angle = (hour / 24) * 180;
-      const { x } = polarToCartesian(100, 100, radius, angle);
+      const { x } = this.polarToCartesian(100, 100, radius, angle);
       return x;
     },
     hourY(hour: number, radius: number) {
       const angle = (hour / 24) * 180;
-      const { y } = polarToCartesian(100, 100, radius, angle);
+      const { y } = this.polarToCartesian(100, 100, radius, angle);
       return y;
     },
     colorToString(color: { r: number; g: number; b: number }) {
