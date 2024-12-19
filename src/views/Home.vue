@@ -9,6 +9,7 @@
 		<semi-clock />
 		<time-cards 
 			:cardData="cards"
+			:blockTypes="blockTypes"
 		/>
 
 		<!-- Floating Action Buttons -->
@@ -70,6 +71,13 @@ type BlockType = {
 	color: Color;
 }
 
+type TimeBlock = {
+  blockname: string;
+  startTime: string;
+  endTime: string;
+  blockId: number;
+}
+
 type NextBlockSubmitData = {
 	name: string;
 	id: number;
@@ -103,15 +111,15 @@ export default {
 					startTime: "2024-12-11T15:48:23.824689862+00:00",
 					endTime: "2024-12-11T16:46:23.824689862+00:00",
 					blockname: "Amigo",
-					color: "#ee22ff",
+					blockId: 2,
 				},
 				{
 					startTime: "2024-12-11T16:46:23.824689862+00:00",
 					endTime: "2024-12-11T17:52:13.824689862+00:00",
 					blockname: "Hola",
-					color: "#ee00aa",
+					blockId: 1,
 				},
-			],
+			] as TimeBlock[],
 			currentData: {
 				name: "Eureka",
 				id: 2,

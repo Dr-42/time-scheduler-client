@@ -5,7 +5,7 @@
         :blockname="card.blockname" 
         :startTime="card.startTime" 
         :endTime="card.endTime" 
-        :color="card.color" 
+        :color="getCardColor(card.blockId, blockTypes)" 
       />
     </div>
   </div>
@@ -14,11 +14,23 @@
 <script lang="ts">
 import TimeCard from './TimeCard.vue';
 
-type Card = {
+type Color = {
+  r: number;
+  g: number;
+  b: number;
+}
+
+type TimeBlock = {
   blockname: string;
   startTime: string;
   endTime: string;
-  color: string;
+  blockId: number;
+}
+
+type BlockType = {
+  id: number;
+  name: string;
+  color: Color;
 }
 
 export default {
@@ -29,8 +41,18 @@ export default {
   props: 
   {
     cardData: {
-      type: Array<Card>,
+      type: Array<TimeBlock>,
       required: true
+    },
+    blockTypes: {
+      type: Array<BlockType>,
+      required: true
+    }
+  },
+  methods: {
+    getCardColor(blockId: number, blockTypes: Array<BlockType>) {
+      const blockType = blockTypes.find((blockType) => blockType.id === blockId);
+      return blockType ? `rgb(${blockType.color.r}, ${blockType.color.g}, ${blockType.color.b})` : "rgb(0, 0, 0)";
     }
   }
 }

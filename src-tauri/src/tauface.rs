@@ -1,4 +1,4 @@
-use chrono::{DateTime, Local, NaiveDate};
+use chrono::{DateTime, Local};
 use reqwest::{header::AUTHORIZATION, Client};
 use serde::{Deserialize, Serialize};
 
@@ -80,9 +80,6 @@ pub async fn get_home_data() -> Result<HomeData, Error> {
         .send()
         .await
         .map_err(|e| Error::ServerError(e.to_string()))?;
-    // .json::<HomeData>()
-    // .await
-    // .map_err(|e| Error::ClientError(e.to_string()))?;
 
     println!("{:?}", response);
 
