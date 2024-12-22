@@ -52,26 +52,6 @@
 </template>
 
 <script lang="ts">
-
-type Color = {
-  r: number;
-  g: number;
-  b: number;
-}
-
-type BlockType = {
-  id: number;
-  name: string;
-  color: Color;
-}
-
-type TimeBlock = {
-  blockname: string;
-  startTime: string;
-  endTime: string;
-  blockId: number;
-}
-
 export default {
   name: "SemiCircleClock",
   props: {
@@ -103,7 +83,7 @@ export default {
       const cy = 100; // Center Y
 
       return this.timeBlocks.map((block, id) => {
-        const blockType = this.blockTypes.find((type) => type.id === block.blockId);
+        const blockType = this.blockTypes.find((type) => type.id === block.blockTypeId);
         if (!blockType) {
           return {
             id,

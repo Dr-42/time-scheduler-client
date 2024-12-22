@@ -1,5 +1,5 @@
 <template>
-  <div class="filtered-time-cards">
+  <div class="history-time-cards">
     <h2>Timecards for {{ formattedDate }}</h2>
     <TimeCards :cardData="filteredCards" />
   </div>
@@ -16,7 +16,7 @@ type Card = {
 };
 
 export default {
-  name: "FilteredTimeCards",
+  name: "HistoryTimeCards",
   components: { TimeCards },
   data() {
     return {
@@ -49,7 +49,7 @@ export default {
 </script>
 
 <style scoped>
-.filtered-time-cards {
+.history-time-cards {
   padding: 20px;
   color: #e2e2e2;
   font-family: Arial, sans-serif;

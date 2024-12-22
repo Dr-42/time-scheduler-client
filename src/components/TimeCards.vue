@@ -2,10 +2,10 @@
   <div class="time-cards">
     <div v-for="card in cardData">
       <TimeCard 
-        :blockname="card.blockname" 
+        :blockname="card.title" 
         :startTime="card.startTime" 
         :endTime="card.endTime" 
-        :color="getCardColor(card.blockId, blockTypes)" 
+        :color="getCardColor(card.blockTypeId, blockTypes)" 
       />
     </div>
   </div>
@@ -13,25 +13,6 @@
 
 <script lang="ts">
 import TimeCard from './TimeCard.vue';
-
-type Color = {
-  r: number;
-  g: number;
-  b: number;
-}
-
-type TimeBlock = {
-  blockname: string;
-  startTime: string;
-  endTime: string;
-  blockId: number;
-}
-
-type BlockType = {
-  id: number;
-  name: string;
-  color: Color;
-}
 
 export default {
   name: "TimeCards",

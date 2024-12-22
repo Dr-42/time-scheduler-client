@@ -50,3 +50,9 @@ pub struct HomeData {
     daydata: Vec<TimeBlock>,
     currentblock: CurrentBlock,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct NewBlockType {
+    name: String,
+    color: Color,
+}

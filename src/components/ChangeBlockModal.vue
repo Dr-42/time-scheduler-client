@@ -36,33 +36,6 @@
 import { defineComponent, PropType } from "vue";
 import CustomDropdown from "./CustomDropdown.vue";
 
-class Color  {
-  r: number;
-  g: number;
-  b: number;
-
-  constructor(r: number, g: number, b: number) {
-    this.r = r;
-    this.g = g;
-    this.b = b;
-  }
-
-  toString() {
-    return `rgb(${this.r}, ${this.g}, ${this.b})`;
-  }
-}
-
-type BlockType = {
-  id: number;
-  name: string;
-  color: Color;
-};
-
-type CurrentData = {
-  name: string;
-  id: number;
-};
-
 export default defineComponent({
   name: "ChangeBlockModal",
   components: { CustomDropdown },
@@ -79,8 +52,8 @@ export default defineComponent({
   },
   data() {
     return {
-      blockName: this.currentData.name,
-      blockTypeId: this.currentData.id,
+      blockName: this.currentData.currentBlockName,
+      blockTypeId: this.currentData.blockTypeId,
     };
   },
   computed: {
@@ -93,7 +66,7 @@ export default defineComponent({
       this.$emit("close");
     },
     submit() {
-      this.$emit("done", { blockName: this.blockName, blockTypeId: this.blockTypeId });
+      this.$emit("done", { currentBlockName: this.blockName, blockTypeId: this.blockTypeId } as CurrentData);
     },
   },
 });

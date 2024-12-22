@@ -3,8 +3,8 @@
 		<status 
 			:username="username" 
 			:currentStart="cards[cards.length -1].endTime" 
-			:currentName="currentData.name" 
-			:currentColor="blockTypes.find(block => block.id === currentData.id)?.color"
+			:currentName="currentData.currentBlockName" 
+			:currentColor="blockTypes.find(block => block.id === currentData.blockTypeId)?.color"
 		/>
 		<semi-clock
 			:timeBlocks="cards"
@@ -62,36 +62,6 @@ import ChevronRightBoxIcon from "vue-material-design-icons/ChevronRightBox.vue";
 import SwapHorizontalCircleIcon from "vue-material-design-icons/SwapHorizontalCircle.vue";
 import PlusBoxIcon from "vue-material-design-icons/PlusBox.vue";
 
-type Color = {
-	r: number;
-	g: number;
-	b: number;
-}
-
-type BlockType = {
-	id: number;
-	name: string;
-	color: Color;
-}
-
-type TimeBlock = {
-  blockname: string;
-  startTime: string;
-  endTime: string;
-  blockId: number;
-}
-
-type NextBlockSubmitData = {
-	name: string;
-	id: number;
-}
-
-type NewBlockType = {
-	name: string;
-	color: Color;
-}
-
-
 export default {
 	components: {
 		TimeCards,
@@ -113,20 +83,20 @@ export default {
 				{
 					startTime: "2024-12-11T15:48:23.824689862+00:00",
 					endTime: "2024-12-11T16:46:23.824689862+00:00",
-					blockname: "Amigo",
-					blockId: 2,
+					title: "Amigo",
+					blockTypeId: 2,
 				},
 				{
 					startTime: "2024-12-11T16:46:23.824689862+00:00",
 					endTime: "2024-12-11T17:52:13.824689862+00:00",
-					blockname: "Hola",
-					blockId: 1,
+					title: "Hola",
+					blockTypeId: 1,
 				},
 			] as TimeBlock[],
 			currentData: {
-				name: "Eureka",
-				id: 2,
-			},
+				blockTypeId: 2,
+				currentBlockName: "Eureka",
+			} as CurrentData,
 			currentModal: null as string | null,
 			blockTypes: [
 				{ id: 1, name: "Work", color: { r: 255, g: 0, b: 0 } },
@@ -139,11 +109,11 @@ export default {
 		openModal(type: string) {
 			this.currentModal = type;
 		},
-		handleNextBlock(data : NextBlockSubmitData) {
+		handleNextBlock(data : CurrentData) {
 			console.log("Next Block submitted:", { data });
 			this.currentModal = null;
 		},
-		handleChangeBlock(data : NextBlockSubmitData) {
+		handleChangeBlock(data : CurrentData) {
 			console.log("Change Block submitted:", { data });
 			this.currentModal = null;
 		},
