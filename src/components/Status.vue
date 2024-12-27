@@ -9,8 +9,35 @@
 </template>
 
 <script lang="ts">
+import { Color } from '../types';
+
 export default {
-  props: ["username", "currentStart", "currentName", "currentColor"],
+  props: {
+    username: {
+      type: String,
+      required: true,
+    },
+    currentStart: {
+      type: String,
+      required: true,
+    },
+    currentName: {
+      type: String,
+      required: true,
+    },
+    currentColor: {
+      type: Color,
+      required: true,
+    },
+  },
+  computed: {
+    currentCol() : string {
+      return this.currentColor.toString();
+    },
+    contrastCol() : string {
+      return this.currentColor.contrastColor();
+    },
+  },
   data() {
     return {
       timer: "",
@@ -36,16 +63,6 @@ export default {
       } else {
         return `${hours}h ${minutes}m ${seconds}s`;
       }
-    },
-    colorToString(color: { r: number; g: number; b: number }) {
-      return `rgb(${color.r}, ${color.g}, ${color.b})`;
-    },
-    contrastColor(color: { r: number; g: number; b: number }) {
-      const r = color.r;
-      const g = color.g;
-      const b = color.b;
-      const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-      return yiq >= 128 ? "#000000" : "#ffffff";
     }
   },
   mounted() {
@@ -81,8 +98,8 @@ export default {
 .timer {
   font-size: 24px;
   font-weight: bold;
-  color: v-bind(contrastColor(currentColor));
-  background-color: v-bind(colorToString(currentColor));
+  color: v-bind("contrastCol");
+  background-color: v-bind("currentCol");
   padding: 5px 10px;
   border-radius: 5px;
   margin: 10px 0;

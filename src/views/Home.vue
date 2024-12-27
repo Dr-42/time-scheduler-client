@@ -4,7 +4,7 @@
 			:username="username" 
 			:currentStart="cards[cards.length -1].endTime" 
 			:currentName="currentData.currentBlockName" 
-			:currentColor="blockTypes.find(block => block.id === currentData.blockTypeId)?.color"
+			:currentColor="currentColor"
 		/>
 		<semi-clock
 			:timeBlocks="cards"
@@ -62,6 +62,8 @@ import ChevronRightBoxIcon from "vue-material-design-icons/ChevronRightBox.vue";
 import SwapHorizontalCircleIcon from "vue-material-design-icons/SwapHorizontalCircle.vue";
 import PlusBoxIcon from "vue-material-design-icons/PlusBox.vue";
 
+import { TimeBlock, BlockType, CurrentData, NewBlockType, Color } from '../types';
+
 export default {
 	components: {
 		TimeCards,
@@ -75,6 +77,16 @@ export default {
 		ChevronRightBoxIcon,
 		SwapHorizontalCircleIcon,
 		PlusBoxIcon
+	},
+	computed: {
+		currentColor() {
+			let currentBlock = this.blockTypes.find(block => block.id === this.currentData.blockTypeId);
+			if (currentBlock) {
+				return currentBlock.color;
+			} else {
+				return new Color(0, 0, 0);
+			}
+		},
 	},
 	data() {
 		return {
@@ -99,10 +111,10 @@ export default {
 			} as CurrentData,
 			currentModal: null as string | null,
 			blockTypes: [
-				{ id: 1, name: "Work", color: { r: 255, g: 0, b: 0 } },
-				{ id: 2, name: "Exercise", color: { r: 0, g: 255, b: 0 } },
-				{ id: 3, name: "Study", color: { r: 0, g: 0, b: 255 } },
-			] as BlockType[],
+				BlockType.fromJson({ id: 1, name: "Work", color: { r: 255, g: 0, b: 0 } }),
+				BlockType.fromJson({ id: 2, name: "Exercise", color: { r: 0, g: 255, b: 0 } }),
+				BlockType.fromJson({ id: 3, name: "Study", color: { r: 0, g: 0, b: 255 } }),
+			]
 		};
 	},
 	methods: {

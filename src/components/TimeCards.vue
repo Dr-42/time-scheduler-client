@@ -12,6 +12,7 @@
 </template>
 
 <script lang="ts">
+import { BlockType, Color, TimeBlock } from '../types';
 import TimeCard from './TimeCard.vue';
 
 export default {
@@ -31,9 +32,13 @@ export default {
     }
   },
   methods: {
-    getCardColor(blockId: number, blockTypes: Array<BlockType>) {
+    getCardColor(blockId: number, blockTypes: Array<BlockType>) : Color {
       const blockType = blockTypes.find((blockType) => blockType.id === blockId);
-      return blockType ? `rgb(${blockType.color.r}, ${blockType.color.g}, ${blockType.color.b})` : "rgb(0, 0, 0)";
+      if (blockType) {
+        return blockType.color;
+      } else {
+        return new Color(0, 0, 0);
+      }
     }
   }
 }

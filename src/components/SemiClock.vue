@@ -43,7 +43,7 @@
       </svg>
       <div class="task-labels">
         <div v-for="block in blockTypes" class="task-label">
-          <div class="task-square" :style="{ backgroundColor: colorToString(block.color) }"></div>
+          <div class="task-square" :style="{ backgroundColor: block.color.toString() }"></div>
           <div class="task-name">{{ block.name }}</div>
         </div>
       </div>
@@ -128,9 +128,6 @@ A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
       const angle = (hour / 24) * 180;
       const { y } = this.polarToCartesian(100, 100, radius, angle);
       return y;
-    },
-    colorToString(color: { r: number; g: number; b: number }) {
-      return `rgb(${color.r}, ${color.g}, ${color.b})`;
     }
   },
 };

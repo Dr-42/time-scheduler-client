@@ -11,8 +11,27 @@
 </template>
 
 <script lang="ts">
+import { Color } from '../types';
+
 export default {
-  props: ["blockname", "startTime", "endTime", "color"],
+  props: {
+    blockname: {
+      type: String,
+      required: true,
+    },
+    startTime: {
+      type: String,
+      required: true,
+    },
+    endTime: {
+      type: String,
+      required: true,
+    },
+    color: {
+      type: Color,
+      required: true,
+    },
+  },
   computed: {
     fmtStartTime() {
       return this.formatTime(this.startTime);
@@ -22,6 +41,9 @@ export default {
     },
     duration() {
       return this.formatDuration(this.startTime, this.endTime);
+    },
+    col() {
+      return this.color.toString();
     }
   },
   methods: {
@@ -57,7 +79,7 @@ export default {
   justify-content: space-between;
   margin: 2.5px 0 2.5px 0;
   align-items: center;
-  background-color: v-bind(color);
+  background-color: v-bind(col);
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

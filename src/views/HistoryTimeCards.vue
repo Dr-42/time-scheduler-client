@@ -1,7 +1,7 @@
 <template>
   <div class="history-time-cards">
     <h2>Timecards for {{ formattedDate }}</h2>
-    <TimeCards :cardData="filteredCards" />
+    <time-cards :cardData="filteredCards" />
   </div>
 </template>
 
