@@ -41,6 +41,13 @@ export class BlockType {
   static fromJson(json: any): BlockType {
     return new BlockType(json.id, json.name, Color.fromJson(json.color));
   }
+
+  static fromJsonArray(json: any): BlockType[] {
+    if (!json) {
+      return [];
+    }
+    return json.map((blockType: any) => BlockType.fromJson(blockType));
+  }
 }
 
 export class TimeBlock {
@@ -63,11 +70,18 @@ export class TimeBlock {
 
   static fromJson(json: any): TimeBlock {
     return new TimeBlock(
-      json.startTime,
-      json.endTime,
-      json.blockTypeId,
+      json.start_time,
+      json.end_time,
+      json.block_type_id,
       json.title,
     );
+  }
+
+  static fromJsonArray(json: any): TimeBlock[] {
+    if (!json) {
+      return [];
+    }
+    return json.map((block: any) => TimeBlock.fromJson(block));
   }
 }
 
@@ -76,7 +90,22 @@ export type NewBlockType = {
   color: Color;
 };
 
-export type CurrentData = {
+export class CurrentData {
   blockTypeId: number;
   currentBlockName: string;
+
+  constructor(blockTypeId: number, currentBlockName: string) {
+    this.blockTypeId = blockTypeId;
+    this.currentBlockName = currentBlockName;
+  }
+
+  static fromJson(json: any): CurrentData {
+    return new CurrentData(json.block_type_id, json.current_block_name);
+  }
+}
+
+export type HomeData = {
+  blocktypes: BlockType[];
+  daydata: TimeBlock[];
+  currentblock: CurrentData;
 };

@@ -81,8 +81,6 @@ pub async fn get_home_data() -> Result<HomeData, Error> {
         .await
         .map_err(|e| Error::ServerError(e.to_string()))?;
 
-    println!("{:?}", response);
-
     if !response.status().is_success() {
         let e = response
             .text()
@@ -91,10 +89,12 @@ pub async fn get_home_data() -> Result<HomeData, Error> {
         return Err(Error::ServerError(e));
     }
 
-    let response = response
+    let mut response = response
         .json::<HomeData>()
         .await
         .map_err(|e| Error::ClientError(e.to_string()))?;
+
+    response.daydata.reverse();
 
     Ok(response)
 }

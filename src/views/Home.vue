@@ -1,19 +1,25 @@
 <template>
 	<div class="home">
+		<error-display
+			v-if="error"
+			:errorText="errorText"
+		/>
 		<status 
 			:username="username" 
-			:currentStart="cards[cards.length -1].endTime" 
-			:currentName="currentData.currentBlockName" 
+			:currentStart="currentStart" 
+			:currentName="currentName" 
 			:currentColor="currentColor"
 		/>
 		<semi-clock
 			:timeBlocks="cards"
 			:blockTypes="blockTypes"
 		/>
-		<time-cards 
-			:cardData="cards"
-			:blockTypes="blockTypes"
-		/>
+		<div class="time-cards">
+			<time-cards 
+				:cardData="cards"
+				:blockTypes="blockTypes"
+			/>
+		</div>
 
 		<!-- Floating Action Buttons -->
 		<div class="floating-buttons">
@@ -53,6 +59,7 @@
 import TimeCards from '../components/TimeCards.vue';
 import SemiClock from '../components/SemiClock.vue';
 import Status from '../components/Status.vue';
+import ErrorDisplay from '../components/ErrorDisplay.vue';
 
 import NextBlockModal from '../components/NextBlockModal.vue';
 import ChangeBlockModal from '../components/ChangeBlockModal.vue';
@@ -62,13 +69,15 @@ import ChevronRightBoxIcon from "vue-material-design-icons/ChevronRightBox.vue";
 import SwapHorizontalCircleIcon from "vue-material-design-icons/SwapHorizontalCircle.vue";
 import PlusBoxIcon from "vue-material-design-icons/PlusBox.vue";
 
-import { TimeBlock, BlockType, CurrentData, NewBlockType, Color } from '../types';
+import { TimeBlock, BlockType, CurrentData, NewBlockType, Color, HomeData } from '../types';
+import { invoke } from '@tauri-apps/api/core';
 
 export default {
 	components: {
 		TimeCards,
 		SemiClock,
 		Status,
+		ErrorDisplay,
 
 		NextBlockModal,
 		ChangeBlockModal,
@@ -80,41 +89,40 @@ export default {
 	},
 	computed: {
 		currentColor() {
-			let currentBlock = this.blockTypes.find(block => block.id === this.currentData.blockTypeId);
-			if (currentBlock) {
-				return currentBlock.color;
-			} else {
+			if (!this.currentData) {
 				return new Color(0, 0, 0);
+			} else {
+				let currentBlock = this.blockTypes.find(block => block.id === this.currentData?.blockTypeId);
+				if (currentBlock) {
+					return currentBlock.color;
+				} else {
+					return new Color(0, 0, 0);
+				}
+			}
+		},
+		currentName() : string {
+			if (!this.currentData) {
+				return "No current block";
+			}
+			return this.currentData.currentBlockName;
+		},
+		currentStart() {
+			if (this.cards.length === 0) {
+				return new Date().toString();
+			} else {
+				return this.cards[0].endTime;
 			}
 		},
 	},
 	data() {
 		return {
 			username: "Spandan",
-			cards: [
-				{
-					startTime: "2024-12-11T15:48:23.824689862+00:00",
-					endTime: "2024-12-11T16:46:23.824689862+00:00",
-					title: "Amigo",
-					blockTypeId: 2,
-				},
-				{
-					startTime: "2024-12-11T16:46:23.824689862+00:00",
-					endTime: "2024-12-11T17:52:13.824689862+00:00",
-					title: "Hola",
-					blockTypeId: 1,
-				},
-			] as TimeBlock[],
-			currentData: {
-				blockTypeId: 2,
-				currentBlockName: "Eureka",
-			} as CurrentData,
+			cards: [] as TimeBlock[],
+			currentData: null as CurrentData | null,
 			currentModal: null as string | null,
-			blockTypes: [
-				BlockType.fromJson({ id: 1, name: "Work", color: { r: 255, g: 0, b: 0 } }),
-				BlockType.fromJson({ id: 2, name: "Exercise", color: { r: 0, g: 255, b: 0 } }),
-				BlockType.fromJson({ id: 3, name: "Study", color: { r: 0, g: 0, b: 255 } }),
-			]
+			blockTypes: [] as BlockType[],
+			error: false,
+			errorText: "",
 		};
 	},
 	methods: {
@@ -134,6 +142,18 @@ export default {
 			this.currentModal = null;
 		},
 	},
+	async mounted() {
+		try {
+			let home_data: HomeData = await invoke("get_home_data");
+			this.cards = TimeBlock.fromJsonArray(home_data.daydata);
+			this.currentData = CurrentData.fromJson(home_data.currentblock);
+			this.blockTypes = BlockType.fromJsonArray(home_data.blocktypes);
+		} catch (e) {
+			console.error(e);
+			this.error = true;
+			this.errorText = e as string;
+		}
+	}
 }
 </script>
 
@@ -180,5 +200,10 @@ export default {
 .fab svg {
 	width: 24px;
 	height: 24px;
+}
+
+.time-cards {
+	flex-grow: 1;
+	overflow-y: scroll;
 }
 </style>

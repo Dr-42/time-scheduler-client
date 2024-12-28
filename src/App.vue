@@ -59,6 +59,7 @@ export default {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  height: 100vh;
 }
 
 .overlay {

@@ -41,17 +41,19 @@
           width="20"
         />
       </svg>
-      <div class="task-labels">
-        <div v-for="block in blockTypes" class="task-label">
-          <div class="task-square" :style="{ backgroundColor: block.color.toString() }"></div>
-          <div class="task-name">{{ block.name }}</div>
-        </div>
+    </div>
+    <div class="task-labels">
+      <div v-for="block in blockTypes" class="task-label">
+        <div class="task-square" :style="{ backgroundColor: block.color.toString() }"></div>
+        <div class="task-name">{{ block.name }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { BlockType, TimeBlock } from '../types';
+
 export default {
   name: "SemiCircleClock",
   props: {
@@ -157,7 +159,7 @@ A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
 }
 
 .clock {
-  width: 75%;
+  width: 100%;
   height: 100%;
 }
 
@@ -174,7 +176,9 @@ path {
   flex-direction: column;
   width: 25%;
   gap: 1px; 
-  overflow-y: auto;
+  overflow-y: scroll;
+  height: 80%;
+  margin-right: 5%;
 }
 
 .task-label {
@@ -184,6 +188,7 @@ path {
   font-size: 12px; 
   padding: 2px; 
   border-radius: 5px; 
+  height: 100%;
 }
 
 .task-square {

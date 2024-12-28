@@ -46,9 +46,9 @@ pub struct Analysis {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct HomeData {
-    blocktypes: Vec<BlockType>,
-    daydata: Vec<TimeBlock>,
-    currentblock: CurrentBlock,
+    pub blocktypes: Vec<BlockType>,
+    pub daydata: Vec<TimeBlock>,
+    pub currentblock: CurrentBlock,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -18,8 +18,8 @@ export default {
       required: true,
     },
     currentStart: {
-      type: String,
-      required: true,
+        type: String,
+        default: "No start time available",
     },
     currentName: {
       type: String,
