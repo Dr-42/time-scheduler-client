@@ -4,16 +4,18 @@
 			v-if="error"
 			:errorText="errorText"
 		/>
-		<status 
-			:username="username" 
-			:currentStart="currentStart" 
-			:currentName="currentName" 
-			:currentColor="currentColor"
-		/>
-		<semi-clock
-			:timeBlocks="cards"
-			:blockTypes="blockTypes"
-		/>
+		<div class="header">
+			<status 
+				:username="username" 
+				:currentStart="currentStart" 
+				:currentName="currentName" 
+				:currentColor="currentColor"
+			/>
+			<semi-clock
+				:timeBlocks="cards"
+				:blockTypes="blockTypes"
+			/>
+		</div>
 		<div class="time-cards">
 			<time-cards 
 				:cardData="cards"
@@ -166,6 +168,8 @@ export default {
 	color: #2c3e50;
 	background-color: #2e2e2e;
 	margin: 0;
+	height: 90vh;
+	padding: 0;
 }
 
 .floating-buttons {
@@ -203,7 +207,11 @@ export default {
 }
 
 .time-cards {
-	flex-grow: 1;
 	overflow-y: scroll;
+	height: 50vh;
+}
+
+.header {
+	height: 40vh;
 }
 </style>

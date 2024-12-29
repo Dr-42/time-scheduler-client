@@ -1,10 +1,10 @@
 <template>
   <div class="status">
     <div class="top">
-      Hello {{ username }}
+      Welcome {{ username }}
     </div>
     <div class="timer">{{ timer }}</div>
-    <div class="bottom">Currently in {{ currentName }}</div>
+    <div class="bottom">Currently in <u>{{ currentName }}</u></div>
   </div>
 </template>
 
@@ -87,26 +87,26 @@ export default {
   margin: 0 auto;
   font-family: Arial, sans-serif;
   color: #e2e2e2;
+  height: 13vh;
 }
 
 .top {
-  font-size: 18px;
+  font-size: 24px;
   font-weight: bold;
-  margin-bottom: 10px;
+  padding: 5px;
 }
 
 .timer {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: bold;
   color: v-bind("contrastCol");
   background-color: v-bind("currentCol");
-  padding: 5px 10px;
+  padding: 10px 10px;
   border-radius: 5px;
-  margin: 10px 0;
 }
 
 .bottom {
-  font-size: 16px;
+  font-size: 20px;
   color: #e2e2e2;
 }
 </style>

@@ -56,6 +56,6 @@ export default {
   font-family: Arial, sans-serif;
   color: #e2e2e2;
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 </style>

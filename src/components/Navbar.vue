@@ -51,7 +51,8 @@ export default {
 .right {
   display: flex;
   align-items: center;
-  padding: 5px;
+  padding: 10px;
+  margin: 0;
 }
 
 .pancake {
@@ -64,7 +65,6 @@ export default {
 .settings {
   display: flex;
   align-items: center;
-  margin-right: 10px;
   padding: 10px;
 }
 </style>

@@ -145,7 +145,7 @@ A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
   align-items: center;
   margin: 4px;
   width: 100%;
-  height: 25vh;
+  height: 18vh;
   box-sizing: border-box;
 }
 

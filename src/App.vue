@@ -1,12 +1,15 @@
 <template>
   <div id="app">
     <navbar 
+      class="navbar"
       @toggleAside="toggleAside"
       @openSettings="currentModal = 'settings'"
     />
     <div class="overlay" v-if="asideOpen" @click="closeAside"></div>
     <aside-menu :isOpen="asideOpen" @closeAside="closeAside" />
-    <router-view />
+    <div class="content">
+      <router-view />
+    </div>
     <settings-modal
       v-if="currentModal === 'settings'"
       @close="currentModal = null"
@@ -60,6 +63,9 @@ export default {
   flex-direction: column;
   overflow-x: hidden;
   height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
 }
 
 .overlay {
@@ -70,5 +76,9 @@ export default {
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 9;
+}
+
+.navbar {
+  height: 10vh;
 }
 </style>
