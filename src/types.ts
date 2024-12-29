@@ -172,7 +172,7 @@ export class Trend {
 export class Analysis {
   percentages: number[];
   trends: Trend[];
-  blocktypes: BlockType[];
+  blocktypes: Array<BlockType>;
 
   constructor(percentages: number[], trends: Trend[], blocktypes: BlockType[]) {
     this.percentages = percentages;

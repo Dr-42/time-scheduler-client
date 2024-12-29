@@ -30,7 +30,7 @@
     <p v-if="!isDateRangeValid" class="error">Start date must be before end date</p>
 
     <!-- Analysis Charts -->
-    <div v-if="analysisFetched" class="charts">
+    <div v-if="analysisFetched && analysis" class="charts">
       <div class="pie-chart">
         <h2>Percentage Distribution</h2>
         <pie-chart
@@ -120,6 +120,7 @@ export default {
   max-width: 800px;
   margin: 0 auto;
   text-align: center;
+  color: white;
 }
 .date-selection {
   margin-bottom: 20px;
