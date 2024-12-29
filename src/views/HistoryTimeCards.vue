@@ -1,30 +1,26 @@
 <template>
   <div class="history-time-cards">
     <h2>Timecards for {{ formattedDate }}</h2>
-    <time-cards :cardData="filteredCards" />
+    <time-cards 
+      :cardData="cards"
+      :blockTypes="blockTypes"
+    />
   </div>
 </template>
 
 <script lang="ts">
+import { invoke } from "@tauri-apps/api/core";
 import TimeCards from "../components/TimeCards.vue";
-
-type Card = {
-  blockname: string;
-  startTime: string;
-  endTime: string;
-  color: string;
-};
+import { BlockType, HistoryData, TimeBlock } from "../types";
 
 export default {
   name: "HistoryTimeCards",
   components: { TimeCards },
   data() {
     return {
-      allCards: [
-        { blockname: "Block 1", startTime: "2024-12-14T09:00:00", endTime: "2024-12-14T10:00:00", color: "#3e3e3e" },
-        { blockname: "Block 1", startTime: "2024-12-14T19:00:00", endTime: "2024-12-14T20:00:00", color: "#e23e3e" },
-        { blockname: "Block 2", startTime: "2024-12-15T11:00:00", endTime: "2024-12-15T12:30:00", color: "#575757" },
-      ],
+      cards: [] as TimeBlock[],
+      blockTypes: [] as BlockType[],
+      fetched: false,
     };
   },
   computed: {
@@ -37,13 +33,17 @@ export default {
         day: "numeric",
       });
     },
-    filteredCards() {
-      const selectedDate = this.$route.params.date;
-      return this.allCards.filter((card: Card) => {
-        const cardDate = card.startTime.split("T")[0];
-        return cardDate === selectedDate;
-      });
-    },
+  },
+
+  async beforeCreate() {
+    const dateStr = this.$route.params.date as string;
+    let date = new Date(dateStr);
+    let historyData = await invoke("get_day_history", { date: date });
+    let history = HistoryData.fromJson(historyData);
+    console.log(history);
+    this.cards = history.daydata;
+    this.blockTypes = history.blocktypes;
+    this.fetched = true;
   },
 };
 </script>

@@ -2,7 +2,7 @@ use chrono::{DateTime, Local};
 use reqwest::{header::AUTHORIZATION, Client};
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{Analysis, HomeData, TimeBlock};
+use crate::datatypes::{Analysis, BlockType, HomeData, TimeBlock};
 
 #[derive(Serialize, Deserialize)]
 pub struct Meta {
@@ -99,11 +99,17 @@ pub async fn get_home_data() -> Result<HomeData, Error> {
     Ok(response)
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct HistoryData {
+    pub daydata: Vec<TimeBlock>,
+    pub blocktypes: Vec<BlockType>,
+}
+
 #[tauri::command]
-pub async fn get_day_history(date: DateTime<Local>) -> Result<Vec<TimeBlock>, Error> {
+pub async fn get_day_history(date: DateTime<Local>) -> Result<HistoryData, Error> {
     let meta = get_meta().await?;
     let client = Client::new();
-    let response = client
+    let time_blocks_response = client
         .get(format!("http://{}/daydata", meta.server_ip))
         .query(&[("date", date.to_rfc3339())])
         .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
@@ -111,22 +117,49 @@ pub async fn get_day_history(date: DateTime<Local>) -> Result<Vec<TimeBlock>, Er
         .await
         .map_err(|e| Error::ServerError(e.to_string()))?;
 
-    println!("{:?}", response);
+    println!("{:?}", time_blocks_response);
 
-    if !response.status().is_success() {
-        let e = response
+    if !time_blocks_response.status().is_success() {
+        let e = time_blocks_response
             .text()
             .await
             .map_err(|e| Error::ClientError(e.to_string()))?;
         return Err(Error::ServerError(e));
     }
 
-    let response = response
+    let mut time_blocks = time_blocks_response
         .json::<Vec<TimeBlock>>()
         .await
         .map_err(|e| Error::ClientError(e.to_string()))?;
 
-    Ok(response)
+    time_blocks.reverse();
+
+    let blocktypes_response = client
+        .get(format!("http://{}/blocktypes", meta.server_ip))
+        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
+        .send()
+        .await
+        .map_err(|e| Error::ServerError(e.to_string()))?;
+
+    if !blocktypes_response.status().is_success() {
+        let e = blocktypes_response
+            .text()
+            .await
+            .map_err(|e| Error::ClientError(e.to_string()))?;
+        return Err(Error::ServerError(e));
+    }
+
+    let blocktypes = blocktypes_response
+        .json::<Vec<BlockType>>()
+        .await
+        .map_err(|e| Error::ClientError(e.to_string()))?;
+
+    let res = HistoryData {
+        daydata: time_blocks,
+        blocktypes,
+    };
+
+    Ok(res)
 }
 
 #[tauri::command]

@@ -85,6 +85,29 @@ export class TimeBlock {
   }
 }
 
+export class HistoryData {
+  blocktypes: BlockType[];
+  daydata: TimeBlock[];
+
+  constructor(blocktypes: BlockType[], daydata: TimeBlock[]) {
+    this.blocktypes = blocktypes;
+    this.daydata = daydata;
+  }
+
+  static fromJson(json: any): HistoryData {
+    console.log(json);
+    console.log(json.blocktypes);
+    console.log(json.daydata);
+
+    let blocktypes = BlockType.fromJsonArray(json.blocktypes);
+    let daydata = TimeBlock.fromJsonArray(json.daydata);
+
+    console.log(blocktypes);
+    console.log(daydata);
+    return new HistoryData(blocktypes, daydata);
+  }
+}
+
 export type NewBlockType = {
   name: string;
   color: Color;

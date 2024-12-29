@@ -7,6 +7,7 @@
       id="date" 
       v-model="selectedDate"
       ref="dateInput"
+      placeholder="DD-MM-YYYY"
       :max="maxDate"
     />
   </div>
