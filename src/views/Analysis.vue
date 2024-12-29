@@ -33,7 +33,10 @@
     <div v-if="analysisFetched" class="charts">
       <div class="pie-chart">
         <h2>Percentage Distribution</h2>
-        <pie-chart :percentages="analysis.percentages" />
+        <pie-chart
+          v-model:percentages="analysis.percentages"
+          v-model:blocktypes="analysis.blocktypes"
+        />
       </div>
       <div class="histogram">
         <h2>Trends</h2>

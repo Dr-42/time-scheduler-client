@@ -25,7 +25,7 @@ type TrendMap = { [key: number]: Dataset };
 export default {
   props: {
     trends: { type: Array<Trend>, required: true },
-    blocktypes: { type: Array<BlockType>, required: true },
+    blocktypes: { type: Array<BlockType>, default: [] },
   },
   data() {
     return {
@@ -60,6 +60,10 @@ export default {
     },
     initializeChart() {
       const canvas = this.$refs.canvas as HTMLCanvasElement;
+      if (!canvas) {
+        console.error("Canvas element not found");
+        return;
+      }
       const ctx = canvas.getContext("2d");
 
       const blockColors = this.blocktypes.reduce((map: ColorMap, type) => {
@@ -85,6 +89,21 @@ export default {
         return acc;
       }, {});
 
+      let chartXMin = this.trends.length > 0 ? this.getYesterday(new Date(this.trends[0].day)) : null;
+      let chartXMax = this.trends.length > 0 ? this.getTomorrow(new Date(this.trends[this.trends.length - 1].day)) : null;
+
+      if (chartXMin && chartXMax) {
+        chartXMin.setHours(0, 0, 0, 0);
+        chartXMax.setHours(0, 0, 0, 0);
+        if (chartXMin.getDate() === chartXMax.getDate()) {
+          chartXMin = this.getYesterday(chartXMin);
+          chartXMax = this.getTomorrow(chartXMax);
+        }
+      } else {
+        chartXMin = this.getYesterday(new Date());
+        chartXMax = this.getTomorrow(new Date());
+      }
+
       // Create the chart
       this.chart = new Chart(ctx, {
         type: "line", // Line chart
@@ -94,6 +113,7 @@ export default {
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          animation: false,
           scales: {
             x: {
               type: "time", // Use time scale
@@ -101,8 +121,8 @@ export default {
                 unit: "day", // Group by day
                 tooltipFormat: "ll", // More readable tooltip format
               },
-              min: this.trends.length > 0 ? this.getYesterday(new Date(this.trends[0].day)) : null,
-              max: this.trends.length > 0 ? this.getTomorrow(new Date(this.trends[this.trends.length - 1].day)) : null,
+              min: chartXMin,
+              max: chartXMax,
               title: {
                 display: true,
                 text: "Date",
@@ -124,10 +144,15 @@ export default {
     updateChart() {
       // Destroy the existing chart instance if it exists
       if (this.chart) {
+        this.chart.stop();
         this.chart.destroy();
       }
       // Reinitialize the chart with the updated data
-      this.initializeChart();
+      try {
+        this.initializeChart();
+      } catch (error) {
+        console.error("Error updating chart:", error);
+      }
     },
   },
   mounted() {
@@ -135,6 +160,7 @@ export default {
   },
   beforeDestroy() {
     if (this.chart) {
+      this.chart.stop();
       this.chart.destroy(); // Clean up the chart instance when the component is destroyed
     }
   },

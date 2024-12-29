@@ -16,8 +16,8 @@ import { BlockType } from '../types';
 
 export default {
   props: {
-    blocktypes: { type: Array<BlockType>, required: true },
-    selectedBlockTypes: { type: Array<BlockType>, required: true },
+    blocktypes: { type: Array<BlockType>, default: [] },
+    selectedBlockTypes: { type: Array<number>, required: true },
   },
   computed: {
     localSelected: {
