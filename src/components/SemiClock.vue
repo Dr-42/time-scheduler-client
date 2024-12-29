@@ -156,6 +156,7 @@ A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
   justify-content: space-around;
   align-items: center;
   flex-direction: row;
+  margin-bottom: 10px;
 }
 
 .clock {

@@ -110,7 +110,9 @@ export default {
 		},
 		currentStart() {
 			if (this.cards.length === 0) {
-				return new Date().toString();
+				let today = new Date();
+				today.setHours(0, 0, 0, 0);
+				return today.toString();
 			} else {
 				return this.cards[0].endTime;
 			}
