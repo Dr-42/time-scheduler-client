@@ -95,15 +95,9 @@ export class HistoryData {
   }
 
   static fromJson(json: any): HistoryData {
-    console.log(json);
-    console.log(json.blocktypes);
-    console.log(json.daydata);
-
     let blocktypes = BlockType.fromJsonArray(json.blocktypes);
     let daydata = TimeBlock.fromJsonArray(json.daydata);
 
-    console.log(blocktypes);
-    console.log(daydata);
     return new HistoryData(blocktypes, daydata);
   }
 }
@@ -132,3 +126,65 @@ export type HomeData = {
   daydata: TimeBlock[];
   currentblock: CurrentData;
 };
+
+export class Duration {
+  secs: number;
+  nanos: number;
+
+  constructor(secs: number, nanos: number) {
+    this.secs = secs;
+    this.nanos = nanos;
+  }
+
+  static fromJson(json: any): Duration {
+    return new Duration(json.secs, json.nanos);
+  }
+
+  toHours(): number {
+    return this.secs / 3600;
+  }
+}
+
+export class Trend {
+  day: string;
+  timeSpent: Duration;
+  blockTypeId: number;
+
+  constructor(day: string, timeSpent: Duration, blockTypeId: number) {
+    this.day = day;
+    this.timeSpent = timeSpent;
+    this.blockTypeId = blockTypeId;
+  }
+
+  static fromJson(json: any): Trend {
+    let timeSpent = Duration.fromJson(json.time_spent);
+    return new Trend(json.day, timeSpent, json.block_type_id);
+  }
+
+  static fromJsonArray(json: any): Trend[] {
+    if (!json) {
+      return [];
+    }
+    return json.map((trend: any) => Trend.fromJson(trend));
+  }
+}
+
+export class Analysis {
+  percentages: number[];
+  trends: Trend[];
+  blocktypes: BlockType[];
+
+  constructor(percentages: number[], trends: Trend[], blocktypes: BlockType[]) {
+    this.percentages = percentages;
+    this.trends = trends;
+    this.blocktypes = blocktypes;
+  }
+
+  static fromJson(json: any): Analysis {
+    const percentages = json.percentages || [];
+    const trends = Trend.fromJsonArray(json.trends);
+    const blocktypes = BlockType.fromJsonArray(json.blocktypes);
+
+    return new Analysis(percentages, trends, blocktypes);
+  }
+}

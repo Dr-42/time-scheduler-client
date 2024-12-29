@@ -6,13 +6,24 @@
     <div class="date-selection">
       <label>
         Start Date:
-        <input type="date" v-model="startDate" />
+        <input
+          type="date"
+          v-model="startDate"
+          placeholder="DD-MM-YYYY"
+        />
       </label>
       <label>
         End Date:
-        <input type="date" v-model="endDate" />
+        <input
+          type="date"
+          v-model="endDate"
+          placeholder="DD-MM-YYYY"
+        />
       </label>
       <button :disabled="!canViewAnalysis" @click="fetchAnalysis">View Analysis</button>
+    </div>
+    <div v-if="error" class="error">
+      <error-display :errorText="errorText" />
     </div>
 
     <!-- Validation Message -->
@@ -22,57 +33,48 @@
     <div v-if="analysisFetched" class="charts">
       <div class="pie-chart">
         <h2>Percentage Distribution</h2>
-        <pie-chart :percentages="dummyAnalysis.percentages" />
+        <pie-chart :percentages="analysis.percentages" />
       </div>
       <div class="histogram">
         <h2>Trends</h2>
         <block-type-selector
-          :blocktypes="dummyBlockTypes"
+          v-model:blocktypes="analysis.blocktypes"
           v-model:selectedBlockTypes="selectedBlockTypes"
         />
-        <trend-chart :trends="filteredTrends" :blocktypes="dummyBlockTypes" />
+        <trend-chart
+          v-model:trends="filteredTrends"
+          v-model:blocktypes="analysis.blocktypes"
+        />
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script lang='ts'>
 import PieChart from "../components/PieChart.vue";
 import TrendChart from "../components/TrendChart.vue";
 import BlockTypeSelector from "../components/BlockTypeSelector.vue";
+import ErrorDisplay from "../components/ErrorDisplay.vue";
+
+import { Analysis } from "../types";
+import { invoke } from "@tauri-apps/api/core";
 
 export default {
   components: {
     PieChart,
     TrendChart,
     BlockTypeSelector,
+    ErrorDisplay
   },
   data() {
     return {
-      startDate: null,
-      endDate: null,
-      selectedBlockTypes: [],
-      dummyAnalysis: {
-        percentages: [0.4, 0.3, 0.2, 0.1], // Example: 40%, 30%, etc.
-        trends: [
-          { day: "2024-12-11", block_type_id: 1, time_spent: 5 },
-          { day: "2024-12-11", block_type_id: 2, time_spent: 2 },
-          { day: "2024-12-11", block_type_id: 3, time_spent: 8 },
-          { day: "2024-12-12", block_type_id: 1, time_spent: 2 },
-          { day: "2024-12-12", block_type_id: 2, time_spent: 4 },
-          { day: "2024-12-12", block_type_id: 3, time_spent: 4 },
-          { day: "2024-12-13", block_type_id: 1, time_spent: 3 },
-          { day: "2024-12-13", block_type_id: 2, time_spent: 6 },
-          { day: "2024-12-13", block_type_id: 3, time_spent: 9 },
-        ],
-      },
-      dummyBlockTypes: [
-        { id: 1, name: "Work", color: "#FF6384" },
-        { id: 2, name: "Exercise", color: "#36A2EB" },
-        { id: 3, name: "Leisure", color: "#FFCE56" },
-        { id: 4, name: "Sleep", color: "#4BC0C0" },
-      ],
+      startDate: null as null | string,
+      endDate: null as null | string,
+      selectedBlockTypes: [] as number[],
+      analysis: null as null | Analysis,
       analysisFetched: false,
+      error: false,
+      errorText: "",
     };
   },
   computed: {
@@ -83,15 +85,28 @@ export default {
       return this.startDate && this.endDate && new Date(this.startDate) <= new Date(this.endDate);
     },
     filteredTrends() {
-      return this.dummyAnalysis.trends.filter((trend) =>
-        this.selectedBlockTypes.includes(trend.block_type_id)
+      if (!this.analysis) return [];
+      return this.analysis.trends.filter((trend) =>
+        this.selectedBlockTypes.includes(trend.blockTypeId)
       );
     },
   },
   methods: {
-    fetchAnalysis() {
-      // Simulate fetching data (real server hookup later)
-      this.analysisFetched = true;
+    async fetchAnalysis() {
+      try {
+        if (!this.startDate || !this.endDate) return;
+        let start = new Date(this.startDate);
+        let end = new Date(this.endDate);
+        let data = await invoke("get_analysis", {
+          startDate: start,
+          endDate: end,
+        });
+        this.analysis = Analysis.fromJson(data);
+        this.analysisFetched = true;
+      } catch (error) {
+        this.error = true;
+        this.errorText = error as string;
+      }
     },
   },
 };

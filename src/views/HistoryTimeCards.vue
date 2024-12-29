@@ -40,7 +40,6 @@ export default {
     let date = new Date(dateStr);
     let historyData = await invoke("get_day_history", { date: date });
     let history = HistoryData.fromJson(historyData);
-    console.log(history);
     this.cards = history.daydata;
     this.blockTypes = history.blocktypes;
     this.fetched = true;

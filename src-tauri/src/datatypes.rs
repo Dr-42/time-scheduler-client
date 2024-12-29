@@ -42,6 +42,7 @@ pub struct Trend {
 pub struct Analysis {
     pub percentages: Vec<f32>,
     pub trends: Vec<Trend>,
+    pub blocktypes: Vec<BlockType>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

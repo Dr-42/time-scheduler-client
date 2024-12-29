@@ -4,77 +4,139 @@
   </div>
 </template>
 
-<script>
+<script lang='ts'>
 import { Chart, registerables } from "chart.js";
 import "chartjs-adapter-date-fns"; // Import the date adapter
+import { BlockType, Color, Trend } from "../types";
 
 Chart.register(...registerables);
 
+type ColorMap = { [key: number]: Color };
+type Dataset = {
+  label: string | undefined;
+  backgroundColor: Color;
+  borderColor: Color;
+  data: { x: Date; y: number }[];
+  fill: boolean;
+};
+
+type TrendMap = { [key: number]: Dataset };
+
 export default {
   props: {
-    trends: { type: Array, required: true },
-    blocktypes: { type: Array, required: true },
+    trends: { type: Array<Trend>, required: true },
+    blocktypes: { type: Array<BlockType>, required: true },
   },
-  mounted() {
-    const ctx = this.$refs.canvas.getContext("2d");
-    const blockColors = this.blocktypes.reduce((map, type) => {
-      map[type.id] = type.color;
-      return map;
-    }, {});
-
-    // Group trends by block type
-    const datasets = this.trends.reduce((acc, trend) => {
-      if (!acc[trend.block_type_id]) {
-        acc[trend.block_type_id] = {
-          label: this.blocktypes.find((bt) => bt.id === trend.block_type_id).name,
-          backgroundColor: blockColors[trend.block_type_id],
-          borderColor: blockColors[trend.block_type_id], // Use the same color for the line
-          data: [],
-          fill: false, // Ensures it’s just a line, no fill
-        };
-      }
-      acc[trend.block_type_id].data.push({
-        x: new Date(trend.day), // Ensure it's a Date object for time scale
-        y: trend.time_spent,
-      });
-      return acc;
-    }, {});
-
-    // Create the chart
-    new Chart(ctx, {
-      type: "line",  // Line chart, perfect for frequency polygons
-      data: {
-        datasets: Object.values(datasets),
+  data() {
+    return {
+      chart: null as Chart | null, // Store the Chart instance
+    };
+  },
+  watch: {
+    // Watch for changes in trends or blocktypes
+    trends: {
+      deep: true,
+      handler() {
+        this.updateChart();
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            type: "time", // Use time scale
-            time: {
-              unit: "day", // Group by day
-              tooltipFormat: 'll', // More readable tooltip format
+    },
+    blocktypes: {
+      deep: true,
+      handler() {
+        this.updateChart();
+      },
+    },
+  },
+  methods: {
+    getYesterday(date: Date) {
+      const yesterday = new Date(date);
+      yesterday.setDate(yesterday.getDate() - 1);
+      return yesterday;
+    },
+    getTomorrow(date: Date) {
+      const tomorrow = new Date(date);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return tomorrow;
+    },
+    initializeChart() {
+      const canvas = this.$refs.canvas as HTMLCanvasElement;
+      const ctx = canvas.getContext("2d");
+
+      const blockColors = this.blocktypes.reduce((map: ColorMap, type) => {
+        map[type.id] = type.color;
+        return map;
+      }, {});
+
+      // Group trends by block type
+      const datasets = this.trends.reduce((acc: TrendMap, trend: Trend) => {
+        if (!acc[trend.blockTypeId]) {
+          acc[trend.blockTypeId] = {
+            label: this.blocktypes.find((bt) => bt.id === trend.blockTypeId)?.name,
+            backgroundColor: blockColors[trend.blockTypeId],
+            borderColor: blockColors[trend.blockTypeId],
+            data: [],
+            fill: false,
+          };
+        }
+        acc[trend.blockTypeId].data.push({
+          x: new Date(trend.day), // Ensure it's a Date object for time scale
+          y: trend.timeSpent.toHours(),
+        });
+        return acc;
+      }, {});
+
+      // Create the chart
+      this.chart = new Chart(ctx, {
+        type: "line", // Line chart
+        data: {
+          datasets: Object.values(datasets),
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              type: "time", // Use time scale
+              time: {
+                unit: "day", // Group by day
+                tooltipFormat: "ll", // More readable tooltip format
+              },
+              min: this.trends.length > 0 ? this.getYesterday(new Date(this.trends[0].day)) : null,
+              max: this.trends.length > 0 ? this.getTomorrow(new Date(this.trends[this.trends.length - 1].day)) : null,
+              title: {
+                display: true,
+                text: "Date",
+              },
             },
-            min: this.trends.length > 0 ? new Date(this.trends[0].day - 1) : null,
-            max: this.trends.length > 0 ? new Date(this.trends[this.trends.length - 1].day + 1) : null,
-            title: {
-              display: true,
-              text: "Date",
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Time Spent (hours)",
+              },
+              min: 0,
+              max: 24, // Adjust this based on your data range
             },
-          },
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: "Time Spent (hours)",
-            },
-            min: 0,
-            max: 24, // Adjust this based on your data range
           },
         },
-      },
-    });
+      });
+    },
+    updateChart() {
+      // Destroy the existing chart instance if it exists
+      if (this.chart) {
+        this.chart.destroy();
+      }
+      // Reinitialize the chart with the updated data
+      this.initializeChart();
+    },
+  },
+  mounted() {
+    this.initializeChart(); // Create the chart when the component is mounted
+  },
+  beforeDestroy() {
+    if (this.chart) {
+      this.chart.destroy(); // Clean up the chart instance when the component is destroyed
+    }
   },
 };
 </script>

@@ -11,18 +11,20 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { BlockType } from '../types';
+
 export default {
   props: {
-    blocktypes: { type: Array, required: true },
-    selectedBlockTypes: { type: Array, required: true },
+    blocktypes: { type: Array<BlockType>, required: true },
+    selectedBlockTypes: { type: Array<BlockType>, required: true },
   },
   computed: {
     localSelected: {
       get() {
         return this.selectedBlockTypes;
       },
-      set(val) {
+      set(val: number) {
         this.$emit("update:selectedBlockTypes", val);
       },
     },
