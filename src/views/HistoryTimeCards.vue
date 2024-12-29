@@ -1,6 +1,6 @@
 <template>
   <div class="history-time-cards">
-    <h2>Timecards for {{ formattedDate }}</h2>
+    <h2>{{ formattedDate }}</h2>
     <time-cards 
       :cardData="cards"
       :blockTypes="blockTypes"
@@ -57,6 +57,12 @@ export default {
 
 h2 {
   text-align: center;
-  margin-bottom: 20px;
+  margin: 0;
+  padding: 0;
+  z-index: 8;
+  position: sticky;
+  background-color: #2e2e2e;
+  border-bottom: 1px solid #e2e2e2;
+  top: 0;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
-  <div class="date-picker" @click="handleOutsideClick">
-    <button @click="goToTimecards">Show Timecards</button>
+  <div class="history">
+    <h1>History</h1>
     <label for="date">Select a date:</label>
     <input 
       type="date" 
@@ -10,12 +10,20 @@
       placeholder="DD-MM-YYYY"
       :max="maxDate"
     />
+    <div class="btn">
+      <button 
+        @click="goToTimecards" 
+        :disabled="!isDateValid"
+      >
+        Get History
+      </button>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 export default {
-  name: "DatePicker",
+  name: "History",
   data() {
     return {
       selectedDate: "",
@@ -30,21 +38,14 @@ export default {
       const day = today.getDate().toString().padStart(2, '0');
       return `${year}-${month}-${day}`;
     },
+    isDateValid() {
+      return this.selectedDate !== "";
+    },
   },
   methods: {
     goToTimecards() {
       if (this.selectedDate) {
         this.$router.push({ name: "HistoryTimeCards", params: { date: this.selectedDate } });
-      } else {
-        alert("Please select a date.");
-      }
-    },
-    handleOutsideClick(event: Event) {
-      const target = event.target as HTMLElement;
-      const dateInput = this.$refs.dateInput as HTMLElement;
-      if (dateInput && !dateInput.contains(target)) {
-        this.isDateInputFocused = false;
-        dateInput.blur();
       }
     },
   },
@@ -52,7 +53,7 @@ export default {
 </script>
 
 <style scoped>
-.date-picker {
+.history {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -60,6 +61,11 @@ export default {
   padding: 20px;
   color: #e2e2e2;
   font-family: Arial, sans-serif;
+}
+
+.btn {
+  padding: 2%;
+  margin-top: 10px;
 }
 
 label {
@@ -83,7 +89,12 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+button:disabled {
+  background-color: #a9a9a9;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
   background-color: #575757;
 }
 </style>
