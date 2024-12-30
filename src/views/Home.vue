@@ -160,6 +160,7 @@ export default {
 			window.location.reload();
 		},
 		async handleAddBlockType(data: NewBlockType) {
+			console.log(data);
 			try {
 				await invoke("post_new_block_type", { data : data.toJson() });
 			} catch (e) {

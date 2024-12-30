@@ -35,6 +35,8 @@ type Option = {
   hexColor?: string;
 };
 
+type DropdownValue = number | null | undefined;
+
 export default defineComponent({
   name: "CustomDropdown",
   props: {
@@ -43,7 +45,9 @@ export default defineComponent({
       required: true,
     },
     modelValue: {
-      type: Number,
+      //type: Number,
+      // Accept number, null and undefined
+      type: Number as PropType<DropdownValue>,
       default: null,
     },
     placeholder: {

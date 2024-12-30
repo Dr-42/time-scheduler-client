@@ -18,7 +18,7 @@
           <label for="block-type">Block Type</label>
           <CustomDropdown
             :options="blockTypes"
-            v-model="blockTypeId"
+            v-model:modelValue="blockTypeId"
             placeholder="Select Block Type"
           />
         </div>
@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent } from "vue";
 import CustomDropdown from "./CustomDropdown.vue";
 import { BlockType, CurrentData } from "../types";
 
@@ -43,19 +43,26 @@ export default defineComponent({
   emits: ["close", "done"],
   props: {
     blockTypes: {
-      type: Array as PropType<BlockType[]>,
+      type: Array<BlockType>,
       required: true,
     },
     currentData: {
-      type: Object as PropType<CurrentData>,
+      type: Object as () => CurrentData | null,
       required: true,
     },
   },
   data() {
-    return {
-      blockName: this.currentData.currentBlockName,
-      blockTypeId: this.currentData.blockTypeId,
-    };
+      if (this.currentData === null) {
+        return {
+          blockName: "",
+          blockTypeId: null,
+        };
+      } else {
+        return {
+          blockName: this.currentData.currentBlockName,
+          blockTypeId: this.currentData.blockTypeId,
+        };
+      }
   },
   computed: {
     isFormValid(): boolean {
@@ -67,7 +74,9 @@ export default defineComponent({
       this.$emit("close");
     },
     submit() {
-      //this.$emit("done", { currentBlockName: this.blockName, blockTypeId: this.blockTypeId } as CurrentData);
+      if (this.blockTypeId === null) {
+        return;
+      }
       this.$emit("done", new CurrentData(this.blockTypeId, this.blockName));
     },
   },

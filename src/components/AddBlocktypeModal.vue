@@ -9,6 +9,7 @@
             <!-- TypeScript compiler doesn't understand Proxies for the module Ignore error-->
             <Chrome 
               v-model="blockColor" 
+              format="hex"
               :disable-alpha="true"
             />
           </div>
@@ -33,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 import { Chrome } from "@ckpack/vue-color";
 import { Color, NewBlockType } from "../types";
 
@@ -44,14 +45,15 @@ export default defineComponent({
   data() {
     return {
       blockTypeName: "",
-      blockColor: ref({
-        rgba: {
-          r: 120,
-          g: 120,
-          b: 120,
-          a: 1,
-        }
-      }),
+      // blockColor: ref({
+      //   rgba: {
+      //     r: 120,
+      //     g: 120,
+      //     b: 120,
+      //     a: 1,
+      //   }
+      // }),
+      blockColor: {} as any,
     };
   },
   computed: {
@@ -64,17 +66,13 @@ export default defineComponent({
       this.$emit("close");
     },
     submit() {
-      let r = this.blockColor.rgba.r;
-      let g = this.blockColor.rgba.g;
-      let b = this.blockColor.rgba.b;
-
-      let color = new Color(r, g, b);
-
-      // this.$emit("done", {
-      //   name: this.blockTypeName,
-      //   color: color,
-      // });
-      this.$emit("done", new NewBlockType(this.blockTypeName, color));
+      if (this.blockColor) {
+        let r = this.blockColor.rgba.r;
+        let g = this.blockColor.rgba.g;
+        let b = this.blockColor.rgba.b;
+        let col = new Color(r, g, b);
+        this.$emit("done", new NewBlockType(this.blockTypeName, col));
+      }
     },
   },
 });
