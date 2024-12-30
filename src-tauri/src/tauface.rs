@@ -2,6 +2,7 @@ use chrono::{DateTime, Local};
 use reqwest::{header::AUTHORIZATION, Client};
 use serde::{Deserialize, Serialize};
 use sha256::digest;
+use tauri::Manager;
 
 use crate::datatypes::{Analysis, BlockType, CurrentBlock, HomeData, NewBlockType, TimeBlock};
 
@@ -23,10 +24,12 @@ pub async fn save_meta(
     username: Option<&str>,
     password: Option<&str>,
     server_ip: Option<&str>,
+    app_handle: tauri::AppHandle,
 ) -> Result<(), Error> {
-    let dirs = directories::ProjectDirs::from("org", "dr42", "timescheduler")
-        .ok_or(Error::ClientError("Directories doesn't work".to_string()))?;
-    let cache_dir = dirs.cache_dir().to_owned();
+    let cache_dir = app_handle
+        .path()
+        .app_cache_dir()
+        .map_err(|e| Error::ClientError(e.to_string()))?;
     if !cache_dir.exists() {
         std::fs::create_dir_all(&cache_dir).map_err(|e| Error::ClientError(e.to_string()))?;
     }
@@ -63,10 +66,11 @@ pub async fn save_meta(
 }
 
 #[tauri::command]
-pub async fn get_meta() -> Result<Meta, Error> {
-    let dirs = directories::ProjectDirs::from("org", "dr42", "timescheduler")
-        .ok_or(Error::ClientError("Directories doesn't work".to_string()))?;
-    let cache_dir = dirs.cache_dir().to_owned();
+pub async fn get_meta(app_handle: tauri::AppHandle) -> Result<Meta, Error> {
+    let cache_dir = app_handle
+        .path()
+        .app_cache_dir()
+        .map_err(|e| Error::ClientError(e.to_string()))?;
     let meta_path = cache_dir.join("meta.json");
     let meta_json =
         std::fs::read_to_string(&meta_path).map_err(|e| Error::ClientError(e.to_string()))?;
@@ -76,8 +80,8 @@ pub async fn get_meta() -> Result<Meta, Error> {
 }
 
 #[tauri::command]
-pub async fn get_home_data() -> Result<HomeData, Error> {
-    let meta = get_meta().await?;
+pub async fn get_home_data(app_handle: tauri::AppHandle) -> Result<HomeData, Error> {
+    let meta = get_meta(app_handle).await?;
 
     let client = Client::new();
     // Recieve a json from the server
@@ -113,8 +117,11 @@ pub struct HistoryData {
 }
 
 #[tauri::command]
-pub async fn get_day_history(date: DateTime<Local>) -> Result<HistoryData, Error> {
-    let meta = get_meta().await?;
+pub async fn get_day_history(
+    date: DateTime<Local>,
+    app_handle: tauri::AppHandle,
+) -> Result<HistoryData, Error> {
+    let meta = get_meta(app_handle).await?;
     let client = Client::new();
     let time_blocks_response = client
         .get(format!("http://{}/daydata", meta.server_ip))
@@ -171,8 +178,9 @@ pub async fn get_day_history(date: DateTime<Local>) -> Result<HistoryData, Error
 pub async fn get_analysis(
     start_date: DateTime<Local>,
     end_date: DateTime<Local>,
+    app_handle: tauri::AppHandle,
 ) -> Result<Analysis, Error> {
-    let meta = get_meta().await?;
+    let meta = get_meta(app_handle).await?;
     let client = Client::new();
     let response = client
         .get(format!("http://{}/analysis", meta.server_ip))
@@ -192,8 +200,11 @@ pub async fn get_analysis(
 }
 
 #[tauri::command]
-pub async fn post_next_block(data: CurrentBlock) -> Result<(), Error> {
-    let meta = get_meta().await?;
+pub async fn post_next_block(
+    data: CurrentBlock,
+    app_handle: tauri::AppHandle,
+) -> Result<(), Error> {
+    let meta = get_meta(app_handle).await?;
     let client = Client::new();
     let response = client
         .post(format!("http://{}/nexttimeblock", meta.server_ip))
@@ -215,8 +226,11 @@ pub async fn post_next_block(data: CurrentBlock) -> Result<(), Error> {
 }
 
 #[tauri::command]
-pub async fn post_change_current(data: CurrentBlock) -> Result<(), Error> {
-    let meta = get_meta().await?;
+pub async fn post_change_current(
+    data: CurrentBlock,
+    app_handle: tauri::AppHandle,
+) -> Result<(), Error> {
+    let meta = get_meta(app_handle).await?;
     let client = Client::new();
     let response = client
         .post(format!("http://{}/changecurrentblock", meta.server_ip))
@@ -238,8 +252,11 @@ pub async fn post_change_current(data: CurrentBlock) -> Result<(), Error> {
 }
 
 #[tauri::command]
-pub async fn post_new_block_type(data: NewBlockType) -> Result<(), Error> {
-    let meta = get_meta().await?;
+pub async fn post_new_block_type(
+    data: NewBlockType,
+    app_handle: tauri::AppHandle,
+) -> Result<(), Error> {
+    let meta = get_meta(app_handle).await?;
     let client = Client::new();
     let response = client
         .post(format!("http://{}/newblocktype", meta.server_ip))
