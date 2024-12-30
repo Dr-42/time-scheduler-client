@@ -14,7 +14,7 @@ export default {
   },
   data() {
     return {
-      chart: null as Chart | null,
+      chart: null as Chart<'pie', number[], string> | null,
     };
   },
   watch: {
@@ -31,7 +31,11 @@ export default {
       const ctx = canvas.getContext("2d");
 
       let labels = this.blocktypes.map((blocktype) => blocktype.name);
-      let colors = this.blocktypes.map((blocktype) => blocktype.color);
+      let colors = this.blocktypes.map((blocktype) => blocktype.color.toString());
+
+      if (!ctx) {
+        return;
+      }
 
       // Create the pie chart
       this.chart = new Chart(ctx, {

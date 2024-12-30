@@ -14,8 +14,8 @@ Chart.register(...registerables);
 type ColorMap = { [key: number]: Color };
 type Dataset = {
   label: string | undefined;
-  backgroundColor: Color;
-  borderColor: Color;
+  backgroundColor: string;
+  borderColor: string;
   data: { x: Date; y: number }[];
   fill: boolean;
 };
@@ -29,7 +29,7 @@ export default {
   },
   data() {
     return {
-      chart: null as Chart | null, // Store the Chart instance
+      chart: null as Chart<"line", { x: Date; y: number }[], unknown> | null,
     };
   },
   watch: {
@@ -66,6 +66,11 @@ export default {
       }
       const ctx = canvas.getContext("2d");
 
+      if (!ctx) {
+        console.error("Canvas context not found");
+        return;
+      }
+
       const blockColors = this.blocktypes.reduce((map: ColorMap, type) => {
         map[type.id] = type.color;
         return map;
@@ -76,8 +81,8 @@ export default {
         if (!acc[trend.blockTypeId]) {
           acc[trend.blockTypeId] = {
             label: this.blocktypes.find((bt) => bt.id === trend.blockTypeId)?.name,
-            backgroundColor: blockColors[trend.blockTypeId],
-            borderColor: blockColors[trend.blockTypeId],
+            backgroundColor: blockColors[trend.blockTypeId].toString(),
+            borderColor: blockColors[trend.blockTypeId].toString(),
             data: [],
             fill: false,
           };
@@ -92,16 +97,22 @@ export default {
       let chartXMin = this.trends.length > 0 ? this.getYesterday(new Date(this.trends[0].day)) : null;
       let chartXMax = this.trends.length > 0 ? this.getTomorrow(new Date(this.trends[this.trends.length - 1].day)) : null;
 
+      let chartXmin: string;
+      let chartXmax: string;
+
       if (chartXMin && chartXMax) {
         chartXMin.setHours(0, 0, 0, 0);
         chartXMax.setHours(0, 0, 0, 0);
         if (chartXMin.getDate() === chartXMax.getDate()) {
-          chartXMin = this.getYesterday(chartXMin);
-          chartXMax = this.getTomorrow(chartXMax);
+          chartXmin = this.getYesterday(chartXMin).toString();
+          chartXmax = this.getTomorrow(chartXMax).toString();
+        } else {
+          chartXmin = chartXMin.toString();
+          chartXmax = chartXMax.toString();
         }
       } else {
-        chartXMin = this.getYesterday(new Date());
-        chartXMax = this.getTomorrow(new Date());
+        chartXmin = this.getYesterday(new Date()).toString();
+        chartXmax = this.getTomorrow(new Date()).toString();
       }
 
       // Create the chart
@@ -121,8 +132,8 @@ export default {
                 unit: "day", // Group by day
                 tooltipFormat: "ll", // More readable tooltip format
               },
-              min: chartXMin,
-              max: chartXMax,
+              min: chartXmin,
+              max: chartXmax,
               title: {
                 display: true,
                 text: "Date",
