@@ -4,22 +4,24 @@
 
     <!-- Date Range Selection -->
     <div class="date-selection">
-      <label>
-        Start Date:
-        <input
-          type="date"
-          v-model="startDate"
-          placeholder="DD-MM-YYYY"
+      <div class="date-input">
+        <div class="date-quali">Start Date</div>
+        <date-picker
+          :maxDate="new Date()"
+          :minDate="new Date('2021-01-01')"
+          :format="'DD-MM-YYYY'"
+          @date-selected="startDate = $event"
         />
-      </label>
-      <label>
-        End Date:
-        <input
-          type="date"
-          v-model="endDate"
-          placeholder="DD-MM-YYYY"
+      </div>
+      <div class="date-input">
+        <div class="date-quali">End Date</div>
+        <date-picker
+          :maxDate="new Date()"
+          :minDate="new Date('2021-01-01')"
+          :format="'DD-MM-YYYY'"
+          @date-selected="endDate = $event"
         />
-      </label>
+      </div>
       <button :disabled="!canViewAnalysis" @click="fetchAnalysis">View Analysis</button>
     </div>
     <div v-if="error" class="error">
@@ -61,13 +63,15 @@ import ErrorDisplay from "../components/ErrorDisplay.vue";
 
 import { Analysis } from "../types";
 import { invoke } from "@tauri-apps/api/core";
+import DatePicker from "../components/DatePicker.vue";
 
 export default {
   components: {
     PieChart,
     TrendChart,
     BlockTypeSelector,
-    ErrorDisplay
+    ErrorDisplay,
+    DatePicker
   },
   data() {
     return {
@@ -136,5 +140,17 @@ export default {
 .pie-chart,
 .histogram {
   margin: 20px 0;
+}
+
+.date-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.date-quali {
+  font-size: 14px;
+  margin-bottom: 5px;
 }
 </style>
