@@ -137,17 +137,38 @@ export default {
 		openModal(type: string) {
 			this.currentModal = type;
 		},
-		handleNextBlock(data : CurrentData) {
-			console.log("Next Block submitted:", { data });
+		async handleNextBlock(data : CurrentData) {
+			try {
+				await invoke("post_next_block", { data : data.toJson() });
+			} catch (e) {
+				console.error(e);
+				this.error = true;
+				this.errorText = e as string;
+			}
 			this.currentModal = null;
+			window.location.reload();
 		},
-		handleChangeBlock(data : CurrentData) {
-			console.log("Change Block submitted:", { data });
+		async handleChangeBlock(data : CurrentData) {
+			try {
+				await invoke("post_change_current", { data : data.toJson() });
+			} catch (e) {
+				console.error(e);
+				this.error = true;
+				this.errorText = e as string;
+			}
 			this.currentModal = null;
+			window.location.reload();
 		},
-		handleAddBlockType(data: NewBlockType) {
-			console.log("Add Block Type submitted:", { data });
+		async handleAddBlockType(data: NewBlockType) {
+			try {
+				await invoke("post_new_block_type", { data : data.toJson() });
+			} catch (e) {
+				console.error(e);
+				this.error = true;
+				this.errorText = e as string;
+			}
 			this.currentModal = null;
+			window.location.reload();
 		},
 	},
 	async mounted() {

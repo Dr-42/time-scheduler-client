@@ -35,6 +35,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import CustomDropdown from "./CustomDropdown.vue";
+import { BlockType, CurrentData } from "../types";
 
 export default defineComponent({
   name: "ChangeBlockModal",
@@ -66,7 +67,8 @@ export default defineComponent({
       this.$emit("close");
     },
     submit() {
-      this.$emit("done", { currentBlockName: this.blockName, blockTypeId: this.blockTypeId } as CurrentData);
+      //this.$emit("done", { currentBlockName: this.blockName, blockTypeId: this.blockTypeId } as CurrentData);
+      this.$emit("done", new CurrentData(this.blockTypeId, this.blockName));
     },
   },
 });

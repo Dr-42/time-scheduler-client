@@ -3,7 +3,7 @@ use reqwest::{header::AUTHORIZATION, Client};
 use serde::{Deserialize, Serialize};
 use sha256::digest;
 
-use crate::datatypes::{Analysis, BlockType, HomeData, TimeBlock};
+use crate::datatypes::{Analysis, BlockType, CurrentBlock, HomeData, NewBlockType, TimeBlock};
 
 #[derive(Serialize, Deserialize)]
 pub struct Meta {
@@ -124,8 +124,6 @@ pub async fn get_day_history(date: DateTime<Local>) -> Result<HistoryData, Error
         .await
         .map_err(|e| Error::ServerError(e.to_string()))?;
 
-    println!("{:?}", time_blocks_response);
-
     if !time_blocks_response.status().is_success() {
         let e = time_blocks_response
             .text()
@@ -191,4 +189,73 @@ pub async fn get_analysis(
         .map_err(|e| Error::ClientError(e.to_string()))?;
 
     Ok(response)
+}
+
+#[tauri::command]
+pub async fn post_next_block(data: CurrentBlock) -> Result<(), Error> {
+    let meta = get_meta().await?;
+    let client = Client::new();
+    let response = client
+        .post(format!("http://{}/nexttimeblock", meta.server_ip))
+        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
+        .json(&data)
+        .send()
+        .await
+        .map_err(|e| Error::ServerError(e.to_string()))?;
+
+    if !response.status().is_success() {
+        let e = response
+            .text()
+            .await
+            .map_err(|e| Error::ClientError(e.to_string()))?;
+        return Err(Error::ServerError(e));
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn post_change_current(data: CurrentBlock) -> Result<(), Error> {
+    let meta = get_meta().await?;
+    let client = Client::new();
+    let response = client
+        .post(format!("http://{}/changecurrentblock", meta.server_ip))
+        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
+        .json(&data)
+        .send()
+        .await
+        .map_err(|e| Error::ServerError(e.to_string()))?;
+
+    if !response.status().is_success() {
+        let e = response
+            .text()
+            .await
+            .map_err(|e| Error::ClientError(e.to_string()))?;
+        return Err(Error::ServerError(e));
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn post_new_block_type(data: NewBlockType) -> Result<(), Error> {
+    let meta = get_meta().await?;
+    let client = Client::new();
+    let response = client
+        .post(format!("http://{}/newblocktype", meta.server_ip))
+        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
+        .json(&data)
+        .send()
+        .await
+        .map_err(|e| Error::ServerError(e.to_string()))?;
+
+    if !response.status().is_success() {
+        let e = response
+            .text()
+            .await
+            .map_err(|e| Error::ClientError(e.to_string()))?;
+        return Err(Error::ServerError(e));
+    }
+
+    Ok(())
 }

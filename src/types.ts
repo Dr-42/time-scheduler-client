@@ -13,6 +13,14 @@ export class Color {
     return new Color(json.r, json.g, json.b);
   }
 
+  toJson(): any {
+    return {
+      r: this.r,
+      g: this.g,
+      b: this.b,
+    };
+  }
+
   toString(): string {
     return `rgb(${this.r}, ${this.g}, ${this.b})`;
   }
@@ -102,10 +110,26 @@ export class HistoryData {
   }
 }
 
-export type NewBlockType = {
+export class NewBlockType {
   name: string;
   color: Color;
-};
+
+  constructor(name: string, color: Color) {
+    this.name = name;
+    this.color = color;
+  }
+
+  static fromJson(json: any): NewBlockType {
+    return new NewBlockType(json.name, Color.fromJson(json.color));
+  }
+
+  toJson(): any {
+    return {
+      name: this.name,
+      color: this.color.toJson(),
+    };
+  }
+}
 
 export class CurrentData {
   blockTypeId: number;
@@ -118,6 +142,13 @@ export class CurrentData {
 
   static fromJson(json: any): CurrentData {
     return new CurrentData(json.block_type_id, json.current_block_name);
+  }
+
+  public toJson(): any {
+    return {
+      block_type_id: this.blockTypeId,
+      current_block_name: this.currentBlockName,
+    };
   }
 }
 

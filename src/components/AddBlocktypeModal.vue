@@ -35,6 +35,7 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { Chrome } from "@ckpack/vue-color";
+import { Color, NewBlockType } from "../types";
 
 export default defineComponent({
   name: "AddBlocktypeModal",
@@ -67,16 +68,13 @@ export default defineComponent({
       let g = this.blockColor.rgba.g;
       let b = this.blockColor.rgba.b;
 
-      let color = {
-        r: r,
-        g: g,
-        b: b,
-      };
+      let color = new Color(r, g, b);
 
-      this.$emit("done", {
-        name: this.blockTypeName,
-        color: color,
-      });
+      // this.$emit("done", {
+      //   name: this.blockTypeName,
+      //   color: color,
+      // });
+      this.$emit("done", new NewBlockType(this.blockTypeName, color));
     },
   },
 });

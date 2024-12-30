@@ -14,6 +14,9 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
             tauface::get_home_data,
             tauface::get_day_history,
             tauface::get_analysis,
+            tauface::post_next_block,
+            tauface::post_change_current,
+            tauface::post_new_block_type,
         ])
         .run(tauri::generate_context!())?;
     Ok(())
