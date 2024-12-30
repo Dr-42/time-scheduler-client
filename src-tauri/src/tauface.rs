@@ -1,6 +1,7 @@
 use chrono::{DateTime, Local};
 use reqwest::{header::AUTHORIZATION, Client};
 use serde::{Deserialize, Serialize};
+use sha256::digest;
 
 use crate::datatypes::{Analysis, BlockType, HomeData, TimeBlock};
 
@@ -20,7 +21,7 @@ pub enum Error {
 #[tauri::command]
 pub async fn save_meta(
     username: Option<&str>,
-    pass_hash: Option<&str>,
+    password: Option<&str>,
     server_ip: Option<&str>,
 ) -> Result<(), Error> {
     let dirs = directories::ProjectDirs::from("org", "dr42", "timescheduler")
@@ -44,9 +45,15 @@ pub async fn save_meta(
         },
     };
 
+    let hashed_pass = if let Some(password) = password {
+        digest(password)
+    } else {
+        loaded_meta.pass_hash.clone()
+    };
+
     let meta = Meta {
         username: username.unwrap_or(&loaded_meta.username).to_string(),
-        pass_hash: pass_hash.unwrap_or(&loaded_meta.pass_hash).to_string(),
+        pass_hash: hashed_pass,
         server_ip: server_ip.unwrap_or(&loaded_meta.server_ip).to_string(),
     };
 

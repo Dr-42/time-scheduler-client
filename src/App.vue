@@ -22,6 +22,7 @@
 import Navbar from './components/Navbar.vue';
 import AsideMenu from './components/AsideMenu.vue';
 import SettingsModal from './components/SettingsModal.vue';
+import { invoke } from '@tauri-apps/api/core';
 
 type SettingsData = {
   username: string;
@@ -49,9 +50,16 @@ export default {
     closeAside() {
       this.asideOpen = false;
     },
-    handleSaveSetting(data: SettingsData) {
-      console.log("Settings saved:", data);
+    async handleSaveSetting(data: SettingsData) {
+      await invoke('save_meta', {
+        "username": data.username,
+        "password": data.password,
+        "serverIp": data.serverIp,
+      });
       this.currentModal = null;
+
+      // Reload the page to apply the new settings
+      location.reload();
     },
   },
 };

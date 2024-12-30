@@ -74,6 +74,10 @@ import PlusBoxIcon from "vue-material-design-icons/PlusBox.vue";
 import { TimeBlock, BlockType, CurrentData, NewBlockType, Color, HomeData } from '../types';
 import { invoke } from '@tauri-apps/api/core';
 
+type MetaData = {
+	username: string;
+}
+
 export default {
 	components: {
 		TimeCards,
@@ -152,6 +156,10 @@ export default {
 			this.cards = TimeBlock.fromJsonArray(home_data.daydata);
 			this.currentData = CurrentData.fromJson(home_data.currentblock);
 			this.blockTypes = BlockType.fromJsonArray(home_data.blocktypes);
+
+			let meta = await invoke("get_meta");
+			let meta_data = meta as MetaData;
+			this.username = meta_data.username;
 		} catch (e) {
 			console.error(e);
 			this.error = true;
