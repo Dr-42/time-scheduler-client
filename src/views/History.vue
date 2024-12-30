@@ -2,13 +2,11 @@
   <div class="history">
     <h1>History</h1>
     <label for="date">Select a date:</label>
-    <input 
-      type="date" 
-      id="date" 
-      v-model="selectedDate"
-      ref="dateInput"
-      placeholder="DD-MM-YYYY"
-      :max="maxDate"
+    <date-picker
+      :maxDate="new Date(maxDate)"
+      :minDate="new Date('2021-01-01')"
+      :format="'DD-MM-YYYY'"
+      @dateSelected="selectedDate = $event"
     />
     <div class="btn">
       <button 
@@ -22,11 +20,16 @@
 </template>
 
 <script lang="ts">
+import DatePicker from '../components/DatePicker.vue';
+
 export default {
   name: "History",
+  components: {
+    DatePicker
+  },
   data() {
     return {
-      selectedDate: "",
+      selectedDate: null,
       isDateInputFocused: false,
     };
   },
@@ -39,7 +42,7 @@ export default {
       return `${year}-${month}-${day}`;
     },
     isDateValid() {
-      return this.selectedDate !== "";
+      return this.selectedDate !== null;
     },
   },
   methods: {
