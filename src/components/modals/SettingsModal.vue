@@ -98,7 +98,7 @@ export default defineComponent({
 
 .modal {
   color: #e2e2e2;
-  background-color: #2e2e2e;
+  background-color: var(--bg);
   padding: 20px;
   border-radius: 8px;
   width: 90%;
@@ -124,7 +124,7 @@ input {
   margin: 5px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: #2e2e2e;
+  background-color: var(--bg);
   color: white;
   font-size: 16px;
 }
@@ -136,8 +136,8 @@ input {
 }
 
 .cancel-btn {
-  background-color: #e0e0e0;
-  color: #333;
+  background-color: var(--accent2);
+  color: white;
   border: none;
   padding: 10px 15px;
   border-radius: 4px;
@@ -145,7 +145,7 @@ input {
 }
 
 .submit-btn {
-  background-color: #6200ea;
+  background-color: var(--accent);
   color: white;
   border: none;
   padding: 10px 15px;
@@ -154,7 +154,7 @@ input {
 }
 
 .submit-btn:disabled {
-  background-color: #a7a7a7;
+  background-color: var(--disabled-color);
   cursor: not-allowed;
 }
 </style>

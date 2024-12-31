@@ -49,7 +49,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin: 0;
-  background-color: #0e0e0e;
+  background-color: var(--bg-dark);
   color: #e2e2e2;
   width: 100%;
   box-sizing: border-box;

@@ -101,8 +101,8 @@ export default {
 
 <style scoped>
 .aside {
-  background-color: #1e1e1e;
-  color: #e2e2e2;
+  background-color: var(--bg);
+  color: white;
   width: 200px;
   position: fixed;
   top: 0;
@@ -120,7 +120,7 @@ export default {
   font-weight: bold;
   margin-bottom: 20px;
   text-align: center;
-  background-color: #3e0e3e;
+  background-color: var(--accent);
   color: #e2e2e2;
   padding: 20px 0;
 }

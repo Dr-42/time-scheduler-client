@@ -125,6 +125,7 @@ export default {
   margin: 0 auto;
   text-align: center;
   color: white;
+  background-color: var(--bg);
 }
 .date-selection {
   margin-bottom: 20px;
@@ -152,5 +153,24 @@ export default {
 .date-quali {
   font-size: 14px;
   margin-bottom: 5px;
+}
+
+button {
+  font-size: 16px;
+  padding: 10px 20px;
+  background-color: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: var(--disabled-color);
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--accent2);
 }
 </style>

@@ -219,7 +219,7 @@ A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
 <style scoped>
 .semi-circle-clock {
   font-family: "Poppins", sans-serif;
-  background-color: #2e2e2e;
+  background-color: var(--bg);
   color: white;
   display: flex;
   justify-content: center;

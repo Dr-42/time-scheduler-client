@@ -186,9 +186,9 @@ export default {
 .date-input {
   padding: 5px;
   font-size: 14px;
-  background-color: #2b2b2b;
+  background-color: var(--bg);
   color: #e0e0e0;
-  border: 1px solid #555;
+  border: 1px solid var(--accent);
   border-radius: 4px;
 }
 
@@ -204,8 +204,8 @@ export default {
   position: absolute;
   top: 100%;
   left: 0;
-  background: #2b2b2b;
-  border: 1px solid #555;
+  background: var(--bg);
+  border: 1px solid var(--accent);
   border-radius: 4px;
   z-index: 10;
   padding: 10px;
@@ -243,21 +243,21 @@ export default {
   padding: 5px;
   cursor: pointer;
   border-radius: 3px;
-  background-color: #3c3c3c;
+  background-color: var(--bg);
   color: #e0e0e0;
 }
 
 .day:hover {
-  background-color: #555;
+  background-color: var(--accent2);
 }
 
 .day.disabled {
-  color: #777;
+  color: var(--disabled-color);
   pointer-events: none;
 }
 
 .day.selected {
-  background: #007bff;
+  background: var(--accent);
   color: white;
 }
 </style>

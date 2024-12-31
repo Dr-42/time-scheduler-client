@@ -180,6 +180,7 @@ export default {
 
 <style scoped>
 .chart-container {
+  background-color: var(--bg-dark);
   position: relative;
   width: 100%;
   max-width: 800px;

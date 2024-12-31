@@ -51,7 +51,7 @@ export default {
   justify-content: start;
   padding: 2px;
   border-top: 1px solid #ccc;
-  background: #2e2e2e;
+  background: var(--bg);
   margin: 0 auto;
   font-family: Arial, sans-serif;
   color: #e2e2e2;

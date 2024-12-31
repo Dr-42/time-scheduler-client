@@ -57,6 +57,7 @@ export default {
 
 <style scoped>
 .history {
+  background-color: var(--bg);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -85,7 +86,7 @@ input {
 button {
   font-size: 16px;
   padding: 10px 20px;
-  background-color: #3e3e3e;
+  background-color: var(--accent);
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -93,11 +94,11 @@ button {
 }
 
 button:disabled {
-  background-color: #a9a9a9;
+  background-color: var(--disabled-color);
   cursor: not-allowed;
 }
 
 button:hover:not(:disabled) {
-  background-color: #575757;
+  background-color: var(--accent2);
 }
 </style>

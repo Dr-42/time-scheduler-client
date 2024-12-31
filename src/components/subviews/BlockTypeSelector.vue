@@ -61,7 +61,7 @@ export default {
   display: inline-block;
   padding: 5px 5px;
   border-radius: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--accent);
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: center;

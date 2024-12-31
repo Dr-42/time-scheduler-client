@@ -83,7 +83,7 @@ export default {
   justify-content: center;
   padding: 20px;
   border-bottom: 1px solid #ccc;
-  background: #2e2e2e;
+  background: var(--bg);
   margin: 0 auto;
   font-family: Arial, sans-serif;
   color: #e2e2e2;

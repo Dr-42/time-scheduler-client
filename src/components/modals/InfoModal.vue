@@ -45,7 +45,7 @@ export default {
 }
 
 .modal {
-  background: #1e1e1e;
+  background: var(--bg);
   color: #e2e2e2;
   border-radius: 10px;
   padding: 20px;
@@ -67,7 +67,7 @@ export default {
 }
 
 .close-btn {
-  background: #3e0e3e;
+  background: var(--accent);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -76,6 +76,6 @@ export default {
 }
 
 .close-btn:hover {
-  background: #5e2e5e;
+  background: var(--accent);
 }
 </style>

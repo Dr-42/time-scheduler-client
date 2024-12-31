@@ -127,10 +127,10 @@ export default defineComponent({
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--accent);
   border-radius: 4px;
   cursor: pointer;
-  background-color: #2e2e2e;
+  background-color: var(--bg);
   color: white;
 }
 
@@ -153,10 +153,10 @@ export default defineComponent({
 
 .dropdown-menu {
   position: absolute;
-  background-color: #1e1e1e;
+  background-color: var(--bg);
   color: #e2e2e2;
   width: 100%;
-  border: 1px solid #ddd;
+  border: 1px solid var(--accent);
   border-radius: 4px;
   margin-top: 5px;
   z-index: 10;
@@ -170,7 +170,7 @@ export default defineComponent({
 }
 
 .dropdown-item:hover {
-  background-color: #2e2e2e;
+  background-color: var(--accent2);
   color: white;
 }
 
