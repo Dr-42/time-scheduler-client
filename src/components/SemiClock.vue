@@ -23,6 +23,16 @@
           stroke-width="8"
           fill="none"
         />
+
+        <!-- Current Block -->
+        <path
+          v-if="currentRenderedBlock"
+          :d="currentRenderedBlock.path"
+          :stroke="currentRenderedBlock.color"
+          stroke-width="8"
+          fill="none"
+        />
+
         <!-- Sunrise Icon -->
         <image
           href="https://www.svgrepo.com/show/281245/sunrise-forecast.svg"
@@ -52,7 +62,7 @@
 </template>
 
 <script lang="ts">
-import { BlockType, TimeBlock } from '../types';
+import { BlockType, CurrentData, TimeBlock } from '../types';
 
 export default {
   name: "SemiCircleClock",
@@ -65,11 +75,15 @@ export default {
       type: Array<BlockType>,
       required: true,
     },
+    currentBlock: {
+      type: [CurrentData, null],
+    },
   },
   data() {
     return {
       sunrise: "2024-12-08T07:00:00",
       sunset: "2024-12-08T18:00:00",
+      timer: null as null | number, // Timer for updating the current block
     };
   },
   computed: {
@@ -82,10 +96,12 @@ export default {
     renderedBlocks() {
       const radius = 60; // Radius of the semi-circle
       const cx = 100; // Center X
-      const cy = 100; // Center Y
+      const cy = 100;
 
       return this.timeBlocks.map((block, id) => {
-        const blockType = this.blockTypes.find((type) => type.id === block.blockTypeId);
+        const blockType = this.blockTypes.find(
+          (type) => type.id === block.blockTypeId
+        );
         if (!blockType) {
           return {
             id,
@@ -112,6 +128,44 @@ A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
         };
       });
     },
+    currentRenderedBlock() {
+      if (!this.currentBlock) return null;
+
+      const lastBlockEndTime =
+        this.timeBlocks.length > 0
+          ? new Date(
+              this.timeBlocks[0].endTime
+            ).getHours()
+          : 0;
+
+      const currentHour = new Date().getHours();
+      const radius = 60;
+      const cx = 100;
+      const cy = 100;
+
+      const startAngle = (lastBlockEndTime / 24) * 180;
+      const endAngle = (currentHour / 24) * 180;
+
+      const startPoint = this.polarToCartesian(cx, cy, radius, startAngle);
+      const endPoint = this.polarToCartesian(cx, cy, radius, endAngle);
+
+      const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+      const path = `
+M ${startPoint.x} ${startPoint.y}
+A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
+`;
+
+      const blockType = this.blockTypes.find(
+        (type) => type.id === this.currentBlock!.blockTypeId
+      );
+
+      return {
+        path,
+        color: blockType
+          ? `rgb(${blockType.color.r}, ${blockType.color.g}, ${blockType.color.b})`
+          : "rgb(255, 255, 255)",
+      };
+    },
   },
   methods: {
     polarToCartesian(cx: number, cy: number, radius: number, angleInDegrees: number) {
@@ -130,6 +184,20 @@ A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
       const angle = (hour / 24) * 180;
       const { y } = this.polarToCartesian(100, 100, radius, angle);
       return y;
+    },
+    updateCurrentBlock() {
+      // Forces recomputation of computed properties
+      this.$forceUpdate();
+    },
+  },
+  mounted() {
+    // Start updating the current block every 5 minutes
+    this.timer = window.setInterval(this.updateCurrentBlock, 5 * 60 * 1000);
+  },
+  beforeDestroy() {
+    // Clear the interval timer to avoid memory leaks
+    if (this.timer) {
+      clearInterval(this.timer);
     }
   },
 };

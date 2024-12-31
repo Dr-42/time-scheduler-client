@@ -4,7 +4,7 @@
       Welcome {{ username }}
     </div>
     <div class="timer">{{ timer }}</div>
-    <div class="bottom">Currently in <u>{{ currentName }}</u></div>
+    <div class="bottom">Currently in <b>{{ currentName }}</b></div>
   </div>
 </template>
 

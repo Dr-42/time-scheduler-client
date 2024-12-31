@@ -14,6 +14,7 @@
 			<semi-clock
 				:timeBlocks="cards"
 				:blockTypes="blockTypes"
+				:currentBlock="currentData"
 			/>
 		</div>
 		<div class="time-cards">
