@@ -27,5 +27,4 @@ chrono = { version = "0.4.39", features = ["serde", "alloc"] }
 tokio = { version = "1.42.0", features = ["full"] }
 sha256 = "1.5.0"
 public-ip = "0.2.2"
-geolocation = "0.2.1"
 

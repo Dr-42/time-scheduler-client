@@ -1,6 +1,7 @@
 use chrono::{DateTime, Datelike, Local, NaiveDate, NaiveDateTime};
 use reqwest::{header::AUTHORIZATION, Client};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use sha256::digest;
 use tauri::Manager;
 
@@ -279,7 +280,52 @@ pub async fn post_new_block_type(
     Ok(())
 }
 
-//r{"results":{"date":"2024-12-31","sunrise":"7:27:56 AM","sunset":"4:57:04 PM","first_light":"5:52:17 AM","last_light":"6:32:43 PM","dawn":"6:58:04 AM","dusk":"5:26:56 PM","solar_noon":"12:12:30 PM","golden_hour":"4:15:16 PM","day_length":"9:29:08","timezone":"America/New_York","utc_offset":-300},"status":"OK"}
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Locator {
+    pub ip: String,
+    pub latitude: String,
+    pub longitude: String,
+    pub city: String,
+    pub region: String,
+    pub country: String,
+    pub timezone: String,
+    pub location: String,
+}
+
+pub async fn find(ip: &str) -> Result<Locator, Error> {
+    let uri = format!("http://ip-api.com/json/{}", &ip);
+
+    let client = Client::new();
+    let local_data_response = client
+        .get(&uri)
+        .send()
+        .await
+        .map_err(|e| Error::ClientError(e.to_string()))?;
+
+    let local_data = local_data_response
+        .text()
+        .await
+        .map_err(|e| Error::ClientError(e.to_string()))?;
+    let local_body: Value =
+        serde_json::from_str(&local_data).map_err(|e| Error::ClientError(e.to_string()))?;
+    let result = Locator {
+        ip: local_body["query"].to_string(),
+        latitude: local_body["lat"].to_string(),
+        longitude: local_body["lon"].to_string(),
+        city: local_body["city"].to_string(),
+        region: local_body["regionName"].to_string(),
+        country: local_body["country"].to_string(),
+        timezone: local_body["timezone"].to_string(),
+        location: format!(
+            "{:?}, {:?}, {:?}",
+            local_body["city"].to_string(),
+            local_body["regionName"].to_string(),
+            local_body["country"].to_string()
+        ),
+    };
+
+    Ok(result)
+}
 
 #[derive(Deserialize, Debug)]
 struct SunApiResponse {
@@ -298,8 +344,7 @@ pub async fn get_sun_hours() -> Result<SunHours, Error> {
     let public_ip = public_ip::addr()
         .await
         .ok_or(Error::ClientError("No public ip".to_string()))?;
-    let locinfo =
-        geolocation::find(&public_ip.to_string()).map_err(|e| Error::ClientError(e.to_string()))?;
+    let locinfo = find(&public_ip.to_string()).await?;
 
     let lat = locinfo
         .latitude
