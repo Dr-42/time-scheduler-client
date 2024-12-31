@@ -204,7 +204,7 @@ export default {
   position: absolute;
   top: 100%;
   left: 0;
-  background: var(--bg);
+  background: var(--bg-dark);
   border: 1px solid var(--accent);
   border-radius: 4px;
   z-index: 10;
@@ -252,8 +252,9 @@ export default {
 }
 
 .day.disabled {
-  color: var(--disabled-color);
-  pointer-events: none;
+  color: var(--accent);
+  background-color: var(--accent2);
+  cursor: not-allowed;
 }
 
 .day.selected {

@@ -48,7 +48,7 @@ export default defineComponent({
           accentHover: "#efceff",
           accent2: "#de9cff",
           bg: "#200a2b",
-          bgDark: "#1e1e1e",
+          bgDark: "#000000",
           disabledColor: "#e4e5ff",
           selected: false,
         },
@@ -57,8 +57,8 @@ export default defineComponent({
           accent: "#6200ea",
           accentHover: "#2b08a4",
           accent2: "#a186ff",
-          bg: "#2b08a4",
-          bgDark: "#1e1e1e",
+          bg: "#0b0834",
+          bgDark: "#000000",
           disabledColor: "#d0c2ff",
           selected: false,
         },
@@ -68,7 +68,7 @@ export default defineComponent({
           accentHover: "#9cffff",
           accent2: "#0a2b2b",
           bg: "#2e2e2e",
-          bgDark: "#1e1e1e",
+          bgDark: "#000000",
           disabledColor: "#ceffff",
           selected: false,
         },
@@ -78,7 +78,7 @@ export default defineComponent({
           accentHover: "#ff9c9c",
           accent2: "#5f5305",
           bg: "#2b0a0a",
-          bgDark: "#1e1e1e",
+          bgDark: "#010101",
           disabledColor: "#fff7c3",
           selected: false,
         },
@@ -171,8 +171,8 @@ export default defineComponent({
 }
 
 .cancel-btn {
-  background-color: var(--disabled-color);
-  color: #333;
+  background-color: var(--accent2);
+  color: white;
   border: none;
   padding: 10px 15px;
   border-radius: 4px;
