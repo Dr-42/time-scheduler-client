@@ -48,7 +48,7 @@ export default {
 .time-cards {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   padding: 2px;
   border-top: 1px solid #ccc;
   background: #2e2e2e;

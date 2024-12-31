@@ -4,7 +4,7 @@
       class="navbar"
       @toggleAside="toggleAside"
       @openSettings="currentModal = 'settings'"
-      @openPalleteSelector="handleOpenPalleteSelector"
+      @openPalleteSelector="currentModal = 'paletteSelector'"
     />
     <div class="overlay" v-if="asideOpen" @click="closeAside"></div>
     <aside-menu :isOpen="asideOpen" @closeAside="closeAside" />
@@ -16,6 +16,11 @@
       @close="currentModal = null"
       @savesettings="handleSaveSetting"
     />
+    <palette-selector-modal
+      v-if="currentModal === 'paletteSelector'"
+      @close="currentModal = null"
+      @paletteApplied="applyPalette"
+    />
   </div>
 </template>
 
@@ -23,13 +28,7 @@
 import Navbar from './components/subviews/Navbar.vue';
 import AsideMenu from './components/subviews/AsideMenu.vue';
 import SettingsModal from './components/modals/SettingsModal.vue';
-import { invoke } from '@tauri-apps/api/core';
-
-type SettingsData = {
-  username: string;
-  password: string;
-  serverIp: string;
-}
+import PaletteSelectorModal from './components/modals/PaletteSelectorModal.vue';
 
 export default {
   name: 'App',
@@ -37,6 +36,7 @@ export default {
     Navbar,
     AsideMenu,
     SettingsModal,
+    PaletteSelectorModal,
   },
   data() {
     return {
@@ -51,19 +51,13 @@ export default {
     closeAside() {
       this.asideOpen = false;
     },
-    async handleSaveSetting(data: SettingsData) {
-      await invoke('save_meta', {
-        "username": data.username,
-        "password": data.password,
-        "serverIp": data.serverIp,
-      });
+    async handleSaveSetting(data: any) {
+      console.log("Settings saved:", data);
       this.currentModal = null;
-
-      // Reload the page to apply the new settings
-      location.reload();
     },
-    handleOpenPalleteSelector() {
-      console.log("Opening pallete selector");
+    applyPalette(palette: any) {
+      console.log("Applied palette:", palette);
+      this.currentModal = null;
     },
   },
 };
