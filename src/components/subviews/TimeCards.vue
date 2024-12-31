@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { BlockType, Color, TimeBlock } from '../types';
+import { BlockType, Color, TimeBlock } from '../../types';
 import TimeCard from './TimeCard.vue';
 
 export default {

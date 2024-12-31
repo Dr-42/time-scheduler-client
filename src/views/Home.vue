@@ -59,14 +59,14 @@
 </template>
 
 <script lang="ts">
-import TimeCards from '../components/TimeCards.vue';
-import SemiClock from '../components/SemiClock.vue';
-import Status from '../components/Status.vue';
-import ErrorDisplay from '../components/ErrorDisplay.vue';
+import TimeCards from '../components/subviews/TimeCards.vue';
+import SemiClock from '../components/subviews/SemiClock.vue';
+import Status from '../components/subviews/Status.vue';
+import ErrorDisplay from '../components/subviews/ErrorDisplay.vue';
 
-import NextBlockModal from '../components/NextBlockModal.vue';
-import ChangeBlockModal from '../components/ChangeBlockModal.vue';
-import AddBlocktypeModal from '../components/AddBlocktypeModal.vue';
+import NextBlockModal from '../components/modals/NextBlockModal.vue';
+import ChangeBlockModal from '../components/modals/ChangeBlockModal.vue';
+import AddBlocktypeModal from '../components/modals/AddBlocktypeModal.vue';
 
 import ChevronRightBoxIcon from "vue-material-design-icons/ChevronRightBox.vue";
 import SwapHorizontalCircleIcon from "vue-material-design-icons/SwapHorizontalCircle.vue";

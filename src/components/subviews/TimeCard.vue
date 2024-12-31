@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { Color } from '../types';
+import { Color } from '../../types';
 
 export default {
   props: {

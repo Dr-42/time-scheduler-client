@@ -36,7 +36,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Chrome } from "@ckpack/vue-color";
-import { Color, NewBlockType } from "../types";
+import { Color, NewBlockType } from "../../types";
 
 export default defineComponent({
   name: "AddBlocktypeModal",

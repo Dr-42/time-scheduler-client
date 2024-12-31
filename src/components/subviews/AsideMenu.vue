@@ -48,7 +48,8 @@ import HistoryIcon from 'vue-material-design-icons/History.vue';
 import AnalysisIcon from 'vue-material-design-icons/ChartLine.vue';
 import InfoIcon from 'vue-material-design-icons/Information.vue';
 import LicenseIcon from 'vue-material-design-icons/Certificate.vue';
-import InfoModal from './InfoModal.vue';
+
+import InfoModal from '../modals/InfoModal.vue';
 
 type ModalContent = {
   title: string;

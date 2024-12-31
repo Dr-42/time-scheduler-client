@@ -1,7 +1,7 @@
 <template>
   <div class="modal-backdrop" @click.self="closeModal">
     <div class="modal">
-      <h2>Change Current Block</h2>
+      <h2>Next Block</h2>
       <form @submit.prevent="submit">
         <div class="form-group">
           <label for="block-name">Block Name</label>
@@ -18,7 +18,7 @@
           <label for="block-type">Block Type</label>
           <CustomDropdown
             :options="blockTypes"
-            v-model:modelValue="blockTypeId"
+            v-model="blockTypeId"
             placeholder="Select Block Type"
           />
         </div>
@@ -33,36 +33,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import CustomDropdown from "./CustomDropdown.vue";
-import { BlockType, CurrentData } from "../types";
+import { defineComponent, PropType } from "vue";
+import CustomDropdown from "../inputs/CustomDropdown.vue";
+import { BlockType, CurrentData } from "../../types";
 
 export default defineComponent({
-  name: "ChangeBlockModal",
+  name: "NextBlockModal",
   components: { CustomDropdown },
   emits: ["close", "done"],
   props: {
     blockTypes: {
-      type: Array<BlockType>,
-      required: true,
-    },
-    currentData: {
-      type: Object as () => CurrentData | null,
+      type: Array as PropType<BlockType[]>,
       required: true,
     },
   },
   data() {
-      if (this.currentData === null) {
-        return {
-          blockName: "",
-          blockTypeId: null,
-        };
-      } else {
-        return {
-          blockName: this.currentData.currentBlockName,
-          blockTypeId: this.currentData.blockTypeId,
-        };
-      }
+    return {
+      blockName: "",
+      blockTypeId: undefined as number | undefined,
+    };
   },
   computed: {
     isFormValid(): boolean {
@@ -74,10 +63,9 @@ export default defineComponent({
       this.$emit("close");
     },
     submit() {
-      if (this.blockTypeId === null) {
-        return;
+      if (this.blockTypeId) {
+        this.$emit("done", new CurrentData(this.blockTypeId, this.blockName));
       }
-      this.$emit("done", new CurrentData(this.blockTypeId, this.blockName));
     },
   },
 });

@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import DatePicker from '../components/DatePicker.vue';
+import DatePicker from '../components/inputs/DatePicker.vue';
 
 export default {
   name: "History",

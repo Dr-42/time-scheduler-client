@@ -7,7 +7,7 @@
 <script lang='ts'>
 import { Chart, registerables } from "chart.js";
 import "chartjs-adapter-date-fns"; // Import the date adapter
-import { BlockType, Color, Trend } from "../types";
+import { BlockType, Color, Trend } from "../../types";
 
 Chart.register(...registerables);
 

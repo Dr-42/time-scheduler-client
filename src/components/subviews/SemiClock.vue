@@ -35,7 +35,7 @@
 
         <!-- Sunrise Icon -->
         <image
-          href="./../assets/sunrise.svg"
+          href="../../assets/sunrise.svg"
           :x="hourX(sunriseHour , 80) - 7"
           :y="hourY(sunriseHour , 80) - 7"
           height="14"
@@ -44,7 +44,7 @@
 
         <!-- Sunset Icon -->
         <image
-          href="./../assets/sunset.svg"
+          href="../../assets/sunset.svg"
           :x="hourX(sunsetHour , 80) - 7"
           :y="hourY(sunsetHour , 80) - 7"
           height="14"
@@ -63,7 +63,7 @@
 
 <script lang="ts">
 import { invoke } from '@tauri-apps/api/core';
-import { BlockType, CurrentData, TimeBlock } from '../types';
+import { BlockType, CurrentData, TimeBlock } from '../../types';
 
 export default {
   name: "SemiCircleClock",

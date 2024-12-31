@@ -56,14 +56,14 @@
 </template>
 
 <script lang='ts'>
-import PieChart from "../components/PieChart.vue";
-import TrendChart from "../components/TrendChart.vue";
-import BlockTypeSelector from "../components/BlockTypeSelector.vue";
-import ErrorDisplay from "../components/ErrorDisplay.vue";
+import PieChart from "../components/charts/PieChart.vue";
+import TrendChart from "../components/charts/TrendChart.vue";
+import BlockTypeSelector from "../components/subviews/BlockTypeSelector.vue";
+import ErrorDisplay from "../components/subviews/ErrorDisplay.vue";
 
 import { Analysis } from "../types";
 import { invoke } from "@tauri-apps/api/core";
-import DatePicker from "../components/DatePicker.vue";
+import DatePicker from "../components/inputs/DatePicker.vue";
 
 export default {
   components: {

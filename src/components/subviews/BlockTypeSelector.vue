@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { BlockType } from '../types';
+import { BlockType } from '../../types';
 
 export default {
   props: {

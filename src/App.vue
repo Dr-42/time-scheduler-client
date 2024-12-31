@@ -19,9 +19,9 @@
 </template>
 
 <script lang="ts">
-import Navbar from './components/Navbar.vue';
-import AsideMenu from './components/AsideMenu.vue';
-import SettingsModal from './components/SettingsModal.vue';
+import Navbar from './components/subviews/Navbar.vue';
+import AsideMenu from './components/subviews/AsideMenu.vue';
+import SettingsModal from './components/modals/SettingsModal.vue';
 import { invoke } from '@tauri-apps/api/core';
 
 type SettingsData = {

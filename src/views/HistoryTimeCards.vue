@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { invoke } from "@tauri-apps/api/core";
-import TimeCards from "../components/TimeCards.vue";
+import TimeCards from "../components/subviews/TimeCards.vue";
 import { BlockType, HistoryData, TimeBlock } from "../types";
 
 export default {

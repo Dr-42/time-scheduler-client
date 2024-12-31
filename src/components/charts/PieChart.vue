@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { Chart, registerables } from "chart.js";
-import { BlockType } from "../types";
+import { BlockType } from "../../types";
 Chart.register(...registerables);
 
 export default {
