@@ -57,3 +57,9 @@ pub struct NewBlockType {
     name: String,
     color: Color,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SunHours {
+    pub sunrise: DateTime<Local>,
+    pub sunset: DateTime<Local>,
+}

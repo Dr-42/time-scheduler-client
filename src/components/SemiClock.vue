@@ -35,20 +35,20 @@
 
         <!-- Sunrise Icon -->
         <image
-          href="https://www.svgrepo.com/show/281245/sunrise-forecast.svg"
-          :x="hourX(sunriseHour , 90) - 10"
-          :y="hourY(sunriseHour , 90) - 10"
-          height="20"
-          width="20"
+          href="./../assets/sunrise.svg"
+          :x="hourX(sunriseHour , 80) - 7"
+          :y="hourY(sunriseHour , 80) - 7"
+          height="14"
+          width="14"
         />
 
         <!-- Sunset Icon -->
         <image
-          href="https://www.svgrepo.com/show/281239/sunset.svg"
-          :x="hourX(sunsetHour , 90) - 10"
-          :y="hourY(sunsetHour , 90) - 10"
-          height="20"
-          width="20"
+          href="./../assets/sunset.svg"
+          :x="hourX(sunsetHour , 80) - 7"
+          :y="hourY(sunsetHour , 80) - 7"
+          height="14"
+          width="14"
         />
       </svg>
     </div>
@@ -62,6 +62,7 @@
 </template>
 
 <script lang="ts">
+import { invoke } from '@tauri-apps/api/core';
 import { BlockType, CurrentData, TimeBlock } from '../types';
 
 export default {
@@ -81,16 +82,18 @@ export default {
   },
   data() {
     return {
-      sunrise: "2024-12-08T07:00:00",
-      sunset: "2024-12-08T18:00:00",
+      sunrise: null as Date | null,
+      sunset: null as Date | null,
       timer: null as null | number, // Timer for updating the current block
     };
   },
   computed: {
     sunriseHour() {
+      if (!this.sunrise) return 0;
       return new Date(this.sunrise).getHours();
     },
     sunsetHour() {
+      if (!this.sunset) return 0;
       return new Date(this.sunset).getHours();
     },
     renderedBlocks() {
@@ -189,10 +192,20 @@ A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
       // Forces recomputation of computed properties
       this.$forceUpdate();
     },
+    async getSunHours() {
+      try {
+        let sunhours = await invoke("get_sun_hours") as any;
+        this.sunrise = new Date(sunhours.sunrise);
+        this.sunset = new Date(sunhours.sunset);
+      } catch (e) {
+        console.error(e);
+      }
+    }
   },
-  mounted() {
+  async mounted() {
     // Start updating the current block every 5 minutes
     this.timer = window.setInterval(this.updateCurrentBlock, 5 * 60 * 1000);
+    await this.getSunHours();
   },
   beforeDestroy() {
     // Clear the interval timer to avoid memory leaks

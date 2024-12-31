@@ -1,10 +1,12 @@
-use chrono::{DateTime, Local};
+use chrono::{DateTime, Datelike, Local, NaiveDate, NaiveDateTime};
 use reqwest::{header::AUTHORIZATION, Client};
 use serde::{Deserialize, Serialize};
 use sha256::digest;
 use tauri::Manager;
 
-use crate::datatypes::{Analysis, BlockType, CurrentBlock, HomeData, NewBlockType, TimeBlock};
+use crate::datatypes::{
+    Analysis, BlockType, CurrentBlock, HomeData, NewBlockType, SunHours, TimeBlock,
+};
 
 #[derive(Serialize, Deserialize)]
 pub struct Meta {
@@ -275,4 +277,83 @@ pub async fn post_new_block_type(
     }
 
     Ok(())
+}
+
+//r{"results":{"date":"2024-12-31","sunrise":"7:27:56 AM","sunset":"4:57:04 PM","first_light":"5:52:17 AM","last_light":"6:32:43 PM","dawn":"6:58:04 AM","dusk":"5:26:56 PM","solar_noon":"12:12:30 PM","golden_hour":"4:15:16 PM","day_length":"9:29:08","timezone":"America/New_York","utc_offset":-300},"status":"OK"}
+
+#[derive(Deserialize, Debug)]
+struct SunApiResponse {
+    results: SunApiResults,
+    status: String,
+}
+
+#[derive(Deserialize, Debug)]
+struct SunApiResults {
+    sunrise: String,
+    sunset: String,
+}
+
+#[tauri::command]
+pub async fn get_sun_hours() -> Result<SunHours, Error> {
+    let public_ip = public_ip::addr()
+        .await
+        .ok_or(Error::ClientError("No public ip".to_string()))?;
+    let locinfo =
+        geolocation::find(&public_ip.to_string()).map_err(|e| Error::ClientError(e.to_string()))?;
+
+    let lat = locinfo
+        .latitude
+        .parse::<f64>()
+        .map_err(|_| Error::ClientError("Invalid latitude".to_string()))?;
+    let long = locinfo
+        .longitude
+        .parse::<f64>()
+        .map_err(|_| Error::ClientError("Invalid longitude".to_string()))?;
+
+    let url = format!(
+        "https://api.sunrisesunset.io/json?lat={}&lng={}&formatted=0&timezone=Asia/Kolkata",
+        lat, long
+    );
+
+    // Make the HTTP request
+    let response = reqwest::get(&url)
+        .await
+        .map_err(|e| Error::ClientError(e.to_string()))?
+        .json::<SunApiResponse>()
+        .await
+        .map_err(|e| Error::ClientError(e.to_string()))?;
+
+    // Check API response status
+    if response.status != "OK" {
+        return Err(Error::ClientError(
+            "Failed to retrieve sun hours".to_string(),
+        ));
+    }
+
+    let today = Local::now().date_naive();
+    let date = NaiveDate::from_ymd_opt(today.year(), today.month(), today.day())
+        .ok_or(Error::ClientError("Invalid date".to_string()))?;
+
+    let final_sunrise_str = format!("{} {}", date, response.results.sunrise);
+    let final_sunset_str = format!("{} {}", date, response.results.sunset);
+
+    let sunrise_local = NaiveDateTime::parse_from_str(&final_sunrise_str, "%Y-%m-%d %I:%M:%S %p")
+        .map_err(|e| Error::ClientError(e.to_string()))?
+        .and_local_timezone(Local)
+        .single()
+        .ok_or(Error::ClientError(
+            "Failed to parse sunrise time".to_string(),
+        ))?;
+    let sunset_local = NaiveDateTime::parse_from_str(&final_sunset_str, "%Y-%m-%d %I:%M:%S %p")
+        .map_err(|e| Error::ClientError(e.to_string()))?
+        .and_local_timezone(Local)
+        .single()
+        .ok_or(Error::ClientError(
+            "Failed to parse sunset time".to_string(),
+        ))?;
+
+    Ok(SunHours {
+        sunrise: sunrise_local,
+        sunset: sunset_local,
+    })
 }
