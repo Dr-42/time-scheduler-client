@@ -4,6 +4,7 @@
       class="navbar"
       @toggleAside="toggleAside"
       @openSettings="currentModal = 'settings'"
+      @openPalleteSelector="handleOpenPalleteSelector"
     />
     <div class="overlay" v-if="asideOpen" @click="closeAside"></div>
     <aside-menu :isOpen="asideOpen" @closeAside="closeAside" />
@@ -60,6 +61,9 @@ export default {
 
       // Reload the page to apply the new settings
       location.reload();
+    },
+    handleOpenPalleteSelector() {
+      console.log("Opening pallete selector");
     },
   },
 };

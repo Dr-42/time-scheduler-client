@@ -6,6 +6,9 @@
       </div>
     </div>
     <div class="right">
+      <div class="pallete" @click="openPalleteSelector">
+        <palette-icon />
+      </div>
       <div class="settings" @click="openSettings">
         <cog-icon />
       </div>
@@ -16,20 +19,25 @@
 <script lang="ts">
 import MenuIcon from "vue-material-design-icons/Menu.vue";
 import CogIcon from "vue-material-design-icons/Cog.vue";
+import PaletteIcon from "vue-material-design-icons/Palette.vue";
 
 export default {
   name: "Navbar",
   components: {
     MenuIcon,
     CogIcon,
+    PaletteIcon,
   },
-  emits: ["toggleAside", "openSettings"],
+  emits: ["toggleAside", "openSettings", "openPalleteSelector"],
   methods: {
     toggleAside() {
       this.$emit("toggleAside");
     },
     openSettings() {
       this.$emit("openSettings");
+    },
+    openPalleteSelector() {
+      this.$emit("openPalleteSelector");
     },
   },
 };
@@ -63,6 +71,14 @@ export default {
 }
 
 .settings {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.pallete {
+  cursor: pointer;
   display: flex;
   align-items: center;
   padding: 10px;
