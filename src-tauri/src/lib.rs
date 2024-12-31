@@ -18,6 +18,8 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
             tauface::post_change_current,
             tauface::post_new_block_type,
             tauface::get_sun_hours,
+            tauface::get_palette,
+            tauface::save_palette
         ])
         .run(tauri::generate_context!())?;
     Ok(())

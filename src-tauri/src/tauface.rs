@@ -6,7 +6,7 @@ use sha256::digest;
 use tauri::Manager;
 
 use crate::datatypes::{
-    Analysis, BlockType, CurrentBlock, HomeData, NewBlockType, SunHours, TimeBlock,
+    Analysis, BlockType, CurrentBlock, HomeData, NewBlockType, Palette, SunHours, TimeBlock,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -401,4 +401,43 @@ pub async fn get_sun_hours() -> Result<SunHours, Error> {
         sunrise: sunrise_local,
         sunset: sunset_local,
     })
+}
+
+#[tauri::command]
+pub async fn save_palette(palette: Palette, app_handle: tauri::AppHandle) -> Result<(), Error> {
+    let cache_dir = app_handle
+        .path()
+        .app_cache_dir()
+        .map_err(|e| Error::ClientError(e.to_string()))?;
+    let palette_path = cache_dir.join("palette.json");
+    let palette_json =
+        serde_json::to_string(&palette).map_err(|e| Error::ClientError(e.to_string()))?;
+    std::fs::write(&palette_path, palette_json).map_err(|e| Error::ClientError(e.to_string()))?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn get_palette(app_handle: tauri::AppHandle) -> Result<Palette, Error> {
+    let cache_dir = app_handle
+        .path()
+        .app_cache_dir()
+        .map_err(|e| Error::ClientError(e.to_string()))?;
+    let palette_path = cache_dir.join("palette.json");
+    if !palette_path.exists() {
+        let palette = Palette {
+            name: "Violet".to_string(),
+            accent: "#3e0e3e".to_string(),
+            accent_hover: "#efceff".to_string(),
+            accent2: "#de9cff".to_string(),
+            bg: "#200a2b".to_string(),
+            bg_dark: "#1e1e1e".to_string(),
+            disabled_color: "#fff7c3".to_string(),
+        };
+        save_palette(palette, app_handle).await?;
+    }
+    let palette_json =
+        std::fs::read_to_string(&palette_path).map_err(|e| Error::ClientError(e.to_string()))?;
+    let palette: Palette =
+        serde_json::from_str(&palette_json).map_err(|e| Error::ClientError(e.to_string()))?;
+    Ok(palette)
 }

@@ -219,3 +219,67 @@ export class Analysis {
     return new Analysis(percentages, trends, blocktypes);
   }
 }
+
+export class Palette {
+  name: string;
+  accent: string;
+  accentHover: string;
+  accent2: string;
+  bg: string;
+  bgDark: string;
+  disabledColor: string;
+
+  constructor(
+    name: string,
+    accent: string,
+    accentHover: string,
+    accent2: string,
+    bg: string,
+    bgDark: string,
+    disabledColor: string,
+  ) {
+    this.name = name;
+    this.accent = accent;
+    this.accentHover = accentHover;
+    this.accent2 = accent2;
+    this.bg = bg;
+    this.bgDark = bgDark;
+    this.disabledColor = disabledColor;
+  }
+
+  static fromObject(obj: any): Palette {
+    return new Palette(
+      obj.name,
+      obj.accent,
+      obj.accentHover,
+      obj.accent2,
+      obj.bg,
+      obj.bgDark,
+      obj.disabledColor,
+    );
+  }
+
+  static fromJson(json: any): Palette {
+    return new Palette(
+      json.name,
+      json.accent,
+      json.accent_hover,
+      json.accent2,
+      json.bg,
+      json.bg_dark,
+      json.disabled_color,
+    );
+  }
+
+  public toJson(): any {
+    return {
+      name: this.name,
+      accent: this.accent,
+      accent_hover: this.accentHover,
+      accent2: this.accent2,
+      bg: this.bg,
+      bg_dark: this.bgDark,
+      disabled_color: this.disabledColor,
+    };
+  }
+}

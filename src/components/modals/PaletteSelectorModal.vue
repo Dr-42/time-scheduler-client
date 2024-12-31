@@ -8,15 +8,15 @@
           :key="index"
           class="palette-option"
           :style="{
-            background: `linear-gradient(to right, ${palette.accent}, ${palette.bg})`,
-            border: palette.selected ? '2px solid var(--accent2-color)' : 'none'
+            background: `linear-gradient(to right, ${palette.bg}, ${palette.bgDark})`,
+            border: palette.selected ? '2px solid var(--accent2)' : 'none'
           }"
           @click="selectPalette(index)"
         >
           <div
             class="palette-circle"
             :style="{
-              background: `linear-gradient(to right, ${palette.accent}, ${palette.bg})`
+              background: `linear-gradient(to right, ${palette.accent}, ${palette.accentHover})`
             }"
           ></div>
           <span>{{ palette.name }}</span>
@@ -35,6 +35,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { Palette } from "../../types";
 
 export default defineComponent({
   name: "PaletteSelectorModal",
@@ -42,21 +43,43 @@ export default defineComponent({
     return {
       palettes: [
         {
-          name: "Accent 1",
+          name: "Violet",
           accent: "#3e0e3e",
-          bg: "#2e2e2e",
+          accentHover: "#efceff",
+          accent2: "#de9cff",
+          bg: "#200a2b",
+          bgDark: "#1e1e1e",
+          disabledColor: "#e4e5ff",
           selected: false,
         },
         {
-          name: "Accent 2",
+          name: "Blue",
           accent: "#6200ea",
-          bg: "#121212",
+          accentHover: "#2b08a4",
+          accent2: "#a186ff",
+          bg: "#2b08a4",
+          bgDark: "#1e1e1e",
+          disabledColor: "#d0c2ff",
           selected: false,
         },
         {
-          name: "Accent 3",
+          name: "Green",
           accent: "#0e3e3e",
-          bg: "#0e0e0e",
+          accentHover: "#9cffff",
+          accent2: "#0a2b2b",
+          bg: "#2e2e2e",
+          bgDark: "#1e1e1e",
+          disabledColor: "#ceffff",
+          selected: false,
+        },
+        {
+          name: "Orange",
+          accent: "#886707",
+          accentHover: "#ff9c9c",
+          accent2: "#5f5305",
+          bg: "#2b0a0a",
+          bgDark: "#1e1e1e",
+          disabledColor: "#fff7c3",
           selected: false,
         },
       ],
@@ -75,11 +98,8 @@ export default defineComponent({
     },
     applyPalette() {
       if (this.selectedPalette) {
-        const root = document.documentElement.style;
-        root.setProperty("--accent-color", this.selectedPalette.accent);
-        root.setProperty("--base-bg", this.selectedPalette.bg);
-
-        this.$emit("paletteApplied", this.selectedPalette);
+        let res = Palette.fromObject(this.selectedPalette);
+        this.$emit("paletteApplied", res);
         this.closeModal();
       }
     },
@@ -106,7 +126,7 @@ export default defineComponent({
 
 .modal {
   color: #e2e2e2;
-  background-color: var(--base-bg);
+  background-color: var(--bg-dark);
   padding: 20px;
   border-radius: 8px;
   width: 90%;
@@ -141,7 +161,7 @@ export default defineComponent({
   height: 50px;
   border-radius: 50%;
   margin-bottom: 10px;
-  border: 1px solid var(--accent2-color);
+  border: 1px solid var(--accent2);
 }
 
 .modal-actions {
@@ -160,7 +180,7 @@ export default defineComponent({
 }
 
 .submit-btn {
-  background-color: var(--accent-color);
+  background-color: var(--accent);
   color: white;
   border: none;
   padding: 10px 15px;

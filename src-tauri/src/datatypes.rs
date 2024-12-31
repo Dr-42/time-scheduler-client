@@ -63,3 +63,14 @@ pub struct SunHours {
     pub sunrise: DateTime<Local>,
     pub sunset: DateTime<Local>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Palette {
+    pub name: String,
+    pub accent: String,
+    pub accent_hover: String,
+    pub accent2: String,
+    pub bg: String,
+    pub bg_dark: String,
+    pub disabled_color: String,
+}
