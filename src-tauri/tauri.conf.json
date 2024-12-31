@@ -23,7 +23,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": "rpm",
     "icon": [
       "icons/icon.png"
     ]
