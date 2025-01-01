@@ -45,14 +45,6 @@ export default defineComponent({
   data() {
     return {
       blockTypeName: "",
-      // blockColor: ref({
-      //   rgba: {
-      //     r: 120,
-      //     g: 120,
-      //     b: 120,
-      //     a: 1,
-      //   }
-      // }),
       blockColor: {} as any,
     };
   },
@@ -74,6 +66,22 @@ export default defineComponent({
         this.$emit("done", new NewBlockType(this.blockTypeName, col));
       }
     },
+    adjustModalForKeyboard(event: FocusEvent) {
+      const target = event.target as HTMLElement;
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+    },
+  },
+  mounted() {
+    const inputs = this.$el.querySelectorAll("input");
+    inputs.forEach((input: HTMLInputElement) => {
+      input.addEventListener("focus", this.adjustModalForKeyboard);
+    });
+  },
+  beforeUnmount() {
+    const inputs = this.$el.querySelectorAll("input");
+    inputs.forEach((input: HTMLInputElement) => {
+      input.removeEventListener("focus", this.adjustModalForKeyboard);
+    });
   },
 });
 </script>
@@ -110,6 +118,8 @@ export default defineComponent({
   margin: 2.5%;
   max-width: 400px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .form-group {
