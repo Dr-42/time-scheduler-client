@@ -67,7 +67,7 @@ export default defineComponent({
           accent: "#0e3e3e",
           accentHover: "#9cffff",
           accent2: "#0a2b2b",
-          bg: "#2e2e2e",
+          bg: "#021e02",
           bgDark: "#000000",
           disabledColor: "#ceffff",
           selected: false,
