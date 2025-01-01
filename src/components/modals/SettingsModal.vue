@@ -16,13 +16,32 @@
 
         <div class="form-group">
           <label for="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            v-model="password"
-            required
-            placeholder="Enter password"
-          />
+          <div class="password-container">
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              id="password"
+              v-model="password"
+              required
+              placeholder="Enter password"
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              @click="togglePasswordVisibility"
+              aria-label="Toggle password visibility"
+            >
+              <span v-if="showPassword">
+                <eye-off-icon
+                  class="eye-icon"
+                />
+              </span>
+              <span v-else>
+                <eye-icon
+                  class="eye-icon"
+                />
+              </span>
+            </button>
+          </div>
         </div>
 
         <div class="form-group">
@@ -47,14 +66,22 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import EyeIcon from "vue-material-design-icons/Eye.vue";
+import EyeOffIcon from "vue-material-design-icons/EyeOff.vue";
+
 
 export default defineComponent({
   name: "SettingsModal",
+  components: {
+    EyeIcon,
+    EyeOffIcon,
+  },
   data() {
     return {
       username: "",
       password: "",
       serverIp: "",
+      showPassword: false,
     };
   },
   emits: ["close", "savesettings"],
@@ -62,8 +89,8 @@ export default defineComponent({
     isFormValid(): boolean {
       return (
         this.username.trim().length > 0 &&
-        this.password.trim().length > 0 &&
-        this.serverIp.trim().length > 0
+          this.password.trim().length > 0 &&
+          this.serverIp.trim().length > 0
       );
     },
   },
@@ -81,6 +108,9 @@ export default defineComponent({
     adjustModalForKeyboard(event: FocusEvent) {
       const target = event.target as HTMLElement;
       target.scrollIntoView({ behavior: "smooth", block: "center" });
+    },
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
     },
   },
   mounted() {
@@ -121,8 +151,8 @@ export default defineComponent({
   margin: 2.5%;
   max-width: 400px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-  max-height: 80vh; /* Limit the height to viewport height */
-  overflow-y: auto; /* Allow vertical scrolling if content overflows */
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .form-group {
@@ -174,5 +204,36 @@ input {
 .submit-btn:disabled {
   background-color: var(--disabled-color);
   cursor: not-allowed;
+}
+
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+input[type="password"],
+input[type="text"] {
+  flex: 1;
+  padding-right: 40px; /* Space for the eye icon */
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: white;
+  padding: 0;
+}
+
+.toggle-password:focus {
+  outline: none;
+}
+
+.eye-icon {
+  margin-right: 5px;
 }
 </style>
