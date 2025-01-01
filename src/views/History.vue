@@ -81,6 +81,7 @@ input {
   font-size: 16px;
   padding: 5px;
   margin-bottom: 10px;
+  background-color: var(--bg-dark);
 }
 
 button {

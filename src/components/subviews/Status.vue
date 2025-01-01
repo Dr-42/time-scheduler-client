@@ -34,9 +34,6 @@ export default {
     currentCol() : string {
       return this.currentColor.toString();
     },
-    contrastCol() : string {
-      return this.currentColor.contrastColor();
-    },
   },
   data() {
     return {
@@ -99,7 +96,7 @@ export default {
 .timer {
   font-size: 32px;
   font-weight: bold;
-  color: v-bind("contrastCol");
+  color: #e2e2e2;
   background-color: v-bind("currentCol");
   padding: 10px 10px;
   border-radius: 5px;

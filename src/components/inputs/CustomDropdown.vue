@@ -130,7 +130,7 @@ export default defineComponent({
   border: 1px solid var(--accent);
   border-radius: 4px;
   cursor: pointer;
-  background-color: var(--bg);
+  background-color: var(--bg-dark);
   color: white;
 }
 

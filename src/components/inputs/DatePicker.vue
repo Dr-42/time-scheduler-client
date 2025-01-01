@@ -186,7 +186,7 @@ export default {
 .date-input {
   padding: 5px;
   font-size: 14px;
-  background-color: var(--bg);
+  background-color: var(--bg-dark);
   color: #e0e0e0;
   border: 1px solid var(--accent);
   border-radius: 4px;

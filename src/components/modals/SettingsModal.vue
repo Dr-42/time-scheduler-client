@@ -124,7 +124,7 @@ input {
   margin: 5px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: var(--bg);
+  background-color: var(--bg-dark);
   color: white;
   font-size: 16px;
 }

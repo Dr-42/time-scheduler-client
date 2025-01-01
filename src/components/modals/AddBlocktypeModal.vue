@@ -103,7 +103,7 @@ export default defineComponent({
 
 .modal {
   color: #e2e2e2;
-  background-color: --var(--bg);
+  background-color: var(--bg);
   padding: 20px;
   border-radius: 8px;
   width: 90%;
@@ -129,7 +129,7 @@ input {
   margin: 5px 0;
   border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: var(--bg);
+  background-color: var(--bg-dark);
   color: white;
   font-size: 16px;
 }
