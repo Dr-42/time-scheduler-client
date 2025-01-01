@@ -118,8 +118,6 @@ export default defineComponent({
   margin: 2.5%;
   max-width: 400px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-  max-height: 80vh;
-  overflow-y: auto;
 }
 
 .form-group {
