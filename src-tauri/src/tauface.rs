@@ -31,7 +31,7 @@ pub async fn save_meta(
 ) -> Result<(), Error> {
     let cache_dir = app_handle
         .path()
-        .app_cache_dir()
+        .app_local_data_dir()
         .map_err(|e| Error::ClientError(e.to_string()))?;
     if !cache_dir.exists() {
         std::fs::create_dir_all(&cache_dir).map_err(|e| Error::ClientError(e.to_string()))?;
@@ -72,7 +72,7 @@ pub async fn save_meta(
 pub async fn get_meta(app_handle: tauri::AppHandle) -> Result<Meta, Error> {
     let cache_dir = app_handle
         .path()
-        .app_cache_dir()
+        .app_local_data_dir()
         .map_err(|e| Error::ClientError(e.to_string()))?;
     let meta_path = cache_dir.join("meta.json");
     let meta_json =
