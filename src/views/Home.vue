@@ -240,10 +240,10 @@ export default {
 
 .time-cards {
 	overflow-y: scroll;
-	height: 50vh;
+	height: calc(55vh - 25px);
 }
 
 .header {
-	height: 40vh;
+	height: calc(45vh - 25px);
 }
 </style>
