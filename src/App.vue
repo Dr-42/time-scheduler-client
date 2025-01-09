@@ -35,7 +35,7 @@ import AsideMenu from './components/subviews/AsideMenu.vue';
 import SettingsModal from './components/modals/SettingsModal.vue';
 import PaletteSelectorModal from './components/modals/PaletteSelectorModal.vue';
 import ErrorDisplay from './components/subviews/ErrorDisplay.vue';
-import { Palette, PaletteData } from './types';
+import { PaletteData } from './types';
 import { invoke } from '@tauri-apps/api/core';
 
 type SettingsData = {
