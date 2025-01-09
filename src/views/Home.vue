@@ -200,7 +200,7 @@ export default {
 	text-align: center;
 	background-color: var(--bg);
 	margin: 0;
-	height: 90vh;
+	height: calc(100vh - 50px);
 	padding: 0;
 }
 
