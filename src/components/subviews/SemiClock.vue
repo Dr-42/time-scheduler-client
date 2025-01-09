@@ -140,20 +140,21 @@ A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
     currentRenderedBlock() {
       if (!this.currentBlock) return null;
 
-      const lastBlockEndTime =
-        this.timeBlocks.length > 0
-          ? new Date(
-              this.timeBlocks[0].endTime
-            ).getHours()
-          : 0;
-
-      const currentHour = new Date().getHours();
       const radius = 60;
       const cx = 100;
       const cy = 100;
 
-      const startAngle = (lastBlockEndTime / 24) * 180;
-      const endAngle = (currentHour / 24) * 180;
+      let midnight = new Date();
+      midnight.setHours(0, 0, 0, 0);
+      const startTime =
+        this.timeBlocks.length > 0 ? new Date(this.timeBlocks[0].endTime): midnight;
+      const endTime = new Date();
+
+      const startHours = startTime.getHours() + startTime.getMinutes() / 60;
+      const endHours = endTime.getHours() + endTime.getMinutes() / 60;
+
+      const startAngle = (startHours / 24.0) * 180;
+      const endAngle = (endHours / 24.0) * 180;
 
       const startPoint = this.polarToCartesian(cx, cy, radius, startAngle);
       const endPoint = this.polarToCartesian(cx, cy, radius, endAngle);
