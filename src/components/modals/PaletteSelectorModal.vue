@@ -9,7 +9,7 @@
           class="palette-option"
           :style="{
             background: `linear-gradient(to right, ${palette.bg}, ${palette.bgDark})`,
-            border: palette.selected ? '2px solid var(--accent2)' : 'none'
+            border: palette.selected ? `2px solid ${palette.accent2}` : 'none'
           }"
           @click="selectPalette(index)"
         >
