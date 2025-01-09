@@ -154,8 +154,8 @@ select {
 }
 
 .cancel-btn {
-  background-color: #e0e0e0;
-  color: var(--accent2);
+  color: #e0e0e0;
+  background-color: var(--accent2);
   border: none;
   padding: 10px 15px;
   border-radius: 4px;
