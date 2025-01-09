@@ -243,17 +243,18 @@ export default {
   padding: 5px;
   cursor: pointer;
   border-radius: 3px;
-  background-color: var(--bg);
+  border: 1px solid var(--accent2);
+  background-color: var(--accent);
   color: #e0e0e0;
 }
 
 .day:hover {
-  background-color: var(--accent2);
+  background-color: var(--accent-hover);
 }
 
 .day.disabled {
-  color: var(--accent);
-  background-color: var(--accent2);
+  color: #e2e2e2;
+  background-color: var(--disabled-color);
   cursor: not-allowed;
 }
 

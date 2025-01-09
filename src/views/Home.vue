@@ -217,20 +217,20 @@ export default {
 .fab {
 	background-color: var(--accent);
 	color: white;
-	border: none;
+	border: 2px solid var(--accent2);
 	border-radius: 25%;
 	width: 56px;
 	height: 56px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+	box-shadow: 0px 4px 10px var(--bg-dark);
 	cursor: pointer;
 	outline: none;
 }
 
 .fab:hover {
-	background-color: var(--accent2);
+	background-color: var(--accent-hover);
 }
 
 .fab svg {

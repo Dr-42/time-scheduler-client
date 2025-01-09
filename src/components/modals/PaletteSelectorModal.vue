@@ -49,43 +49,43 @@ export default defineComponent({
     return {
       palettes: [
         {
-          name: "Violet",
-          accent: "#3e0e3e",
-          accentHover: "#efceff",
-          accent2: "#de9cff",
-          bg: "#200a2b",
+          name: "Lavender",
+          accent: "#3f0f3f",
+          accentHover: "#7d1d4d",
+          accent2: "#1d7d7d",
+          bg: "#1f071f",
           bgDark: "#000000",
-          disabledColor: "#e4e5ff",
+          disabledColor: "#4d1d7d",
           selected: false,
         },
         {
-          name: "Blue",
-          accent: "#6200ea",
-          accentHover: "#2b08a4",
-          accent2: "#a186ff",
-          bg: "#0b0834",
-          bgDark: "#000000",
-          disabledColor: "#d0c2ff",
+          name: "Oceans",
+          accent: "#050555",
+          accentHover: "#460885",
+          accent2: "#088508",
+          bg: "#020727",
+          bgDark: "#00000d",
+          disabledColor: "#b4b4da",
           selected: false,
         },
         {
-          name: "Green",
+          name: "Forest",
           accent: "#0e3e3e",
-          accentHover: "#9cffff",
-          accent2: "#0a2b2b",
-          bg: "#021e02",
-          bgDark: "#000000",
-          disabledColor: "#ceffff",
+          accentHover: "#174068",
+          accent2: "#686817",
+          bg: "#061f1f",
+          bgDark: "#041414",
+          disabledColor: "#d0e0e0",
           selected: false,
         },
         {
-          name: "Orange",
-          accent: "#886707",
-          accentHover: "#ff9c9c",
-          accent2: "#5f5305",
-          bg: "#2b0a0a",
-          bgDark: "#010101",
-          disabledColor: "#fff7c3",
+          name: "Sunset",
+          accent: "#724e0c",
+          accentHover: "#a02711",
+          accent2: "#11a06e",
+          bg: "#201603",
+          bgDark: "#010b01",
+          disabledColor: "#e2d3b7",
           selected: false,
         },
       ],
@@ -203,6 +203,14 @@ export default defineComponent({
   padding: 10px 15px;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background-color: v-bind("selectedPalette.accentHover");
+}
+
+.submit-btn:hover {
+  background-color: v-bind("selectedPalette.accentHover");
 }
 
 .submit-btn:disabled {
