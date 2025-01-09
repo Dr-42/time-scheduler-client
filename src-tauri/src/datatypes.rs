@@ -74,3 +74,9 @@ pub struct Palette {
     pub bg_dark: String,
     pub disabled_color: String,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PaletteData {
+    pub idx: u8,
+    pub palette: Palette,
+}

@@ -35,10 +35,16 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { Palette } from "../../types";
+import { Palette, PaletteData } from "../../types";
 
 export default defineComponent({
   name: "PaletteSelectorModal",
+  props: {
+    activePaletteIdx: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
       palettes: [
@@ -87,7 +93,12 @@ export default defineComponent({
   },
   computed: {
     selectedPalette() {
-      return this.palettes.find((palette) => palette.selected);
+      const selectedPalette = this.palettes.find((palette) => palette.selected);
+      if (!selectedPalette) {
+        return this.palettes[0];
+      } else {
+        return selectedPalette;
+      }
     },
   },
   methods: {
@@ -98,7 +109,10 @@ export default defineComponent({
     },
     applyPalette() {
       if (this.selectedPalette) {
-        let res = Palette.fromObject(this.selectedPalette);
+        const data = Palette.fromObject(this.selectedPalette);
+        const idx = this.palettes.findIndex(palette => palette.name === this.selectedPalette.name);
+        const res = new PaletteData(idx, data);
+        console.log(res);
         this.$emit("paletteApplied", res);
         this.closeModal();
       }
@@ -107,6 +121,9 @@ export default defineComponent({
       this.$emit("close");
     },
   },
+  mounted() {
+    this.selectPalette(this.activePaletteIdx);
+  }
 });
 </script>
 
@@ -126,7 +143,7 @@ export default defineComponent({
 
 .modal {
   color: #e2e2e2;
-  background-color: var(--bg-dark);
+  background-color: v-bind("selectedPalette.bg");
   padding: 20px;
   border-radius: 8px;
   width: 90%;
@@ -137,7 +154,7 @@ export default defineComponent({
 
 .palette-options {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 15px;
   margin-bottom: 15px;
 }
@@ -161,7 +178,7 @@ export default defineComponent({
   height: 50px;
   border-radius: 50%;
   margin-bottom: 10px;
-  border: 1px solid var(--accent2);
+  border: 1px solid v-bind("selectedPalette.accent2");
 }
 
 .modal-actions {
@@ -171,7 +188,7 @@ export default defineComponent({
 }
 
 .cancel-btn {
-  background-color: var(--accent2);
+  background-color: v-bind("selectedPalette.accent2");
   color: white;
   border: none;
   padding: 10px 15px;
@@ -180,7 +197,7 @@ export default defineComponent({
 }
 
 .submit-btn {
-  background-color: var(--accent);
+  background-color: v-bind("selectedPalette.accent");
   color: white;
   border: none;
   padding: 10px 15px;

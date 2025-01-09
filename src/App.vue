@@ -22,6 +22,7 @@
     />
     <palette-selector-modal
       v-if="currentModal === 'paletteSelector'"
+      :activePaletteIdx="activePaletteIdx"
       @close="currentModal = null"
       @paletteApplied="applyPalette"
     />
@@ -34,7 +35,7 @@ import AsideMenu from './components/subviews/AsideMenu.vue';
 import SettingsModal from './components/modals/SettingsModal.vue';
 import PaletteSelectorModal from './components/modals/PaletteSelectorModal.vue';
 import ErrorDisplay from './components/subviews/ErrorDisplay.vue';
-import { Palette } from './types';
+import { Palette, PaletteData } from './types';
 import { invoke } from '@tauri-apps/api/core';
 
 type SettingsData = {
@@ -58,19 +59,21 @@ export default {
       currentModal: null as string | null,
       error: false,
       errorText: "",
+      activePaletteIdx: 0,
     };
   },
   async mounted() {
     try {
       const paletteJson = await invoke("get_palette");
-      const palette = Palette.fromJson(paletteJson);
+      const palette = PaletteData.fromJson(paletteJson);
+      this.activePaletteIdx = palette.idx;
       const root = document.documentElement.style;
-      root.setProperty("--accent", palette.accent);
-      root.setProperty("--accent2", palette.accent2);
-      root.setProperty("--bg", palette.bg);
-      root.setProperty("--bg-dark", palette.bgDark);
-      root.setProperty("--accent-hover", palette.accentHover);
-      root.setProperty("--disabled-color", palette.disabledColor);
+      root.setProperty("--accent", palette.palette.accent);
+      root.setProperty("--accent2", palette.palette.accent2);
+      root.setProperty("--bg", palette.palette.bg);
+      root.setProperty("--bg-dark", palette.palette.bgDark);
+      root.setProperty("--accent-hover", palette.palette.accentHover);
+      root.setProperty("--disabled-color", palette.palette.disabledColor);
     } catch (e) {
       console.error(e);
       this.error = true;
@@ -93,14 +96,17 @@ export default {
       this.currentModal = null;
       location.reload();
     },
-    async applyPalette(palette: Palette) {
-      await invoke('save_palette', { palette: palette.toJson() });
+    async applyPalette(paletteData: PaletteData) {
+      console.log('Saving palette');
+      console.log(paletteData);
+      await invoke('save_palette', { palette: paletteData.toJson() });
       const root = document.documentElement.style;
-      root.setProperty("--accent", palette.accent);
-      root.setProperty("--accent2", palette.accent2);
-      root.setProperty("--bg", palette.bg);
-      root.setProperty("--bg-dark", palette.bgDark);
-      root.setProperty("--accent-hover", palette.accentHover);
+      root.setProperty("--accent", paletteData.palette.accent);
+      root.setProperty("--accent2", paletteData.palette.accent2);
+      root.setProperty("--bg", paletteData.palette.bg);
+      root.setProperty("--bg-dark", paletteData.palette.bgDark);
+      root.setProperty("--accent-hover", paletteData.palette.accentHover);
+      this.activePaletteIdx = paletteData.idx;
       this.currentModal = null;
     },
   },

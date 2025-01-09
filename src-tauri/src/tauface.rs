@@ -6,7 +6,8 @@ use sha256::digest;
 use tauri::Manager;
 
 use crate::datatypes::{
-    Analysis, BlockType, CurrentBlock, HomeData, NewBlockType, Palette, SunHours, TimeBlock,
+    Analysis, BlockType, CurrentBlock, HomeData, NewBlockType, Palette, PaletteData, SunHours,
+    TimeBlock,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -404,7 +405,7 @@ pub async fn get_sun_hours() -> Result<SunHours, Error> {
 }
 
 #[tauri::command]
-pub async fn save_palette(palette: Palette, app_handle: tauri::AppHandle) -> Result<(), Error> {
+pub async fn save_palette(palette: PaletteData, app_handle: tauri::AppHandle) -> Result<(), Error> {
     let cache_dir = app_handle
         .path()
         .app_cache_dir()
@@ -417,7 +418,7 @@ pub async fn save_palette(palette: Palette, app_handle: tauri::AppHandle) -> Res
 }
 
 #[tauri::command]
-pub async fn get_palette(app_handle: tauri::AppHandle) -> Result<Palette, Error> {
+pub async fn get_palette(app_handle: tauri::AppHandle) -> Result<PaletteData, Error> {
     let cache_dir = app_handle
         .path()
         .app_cache_dir()
@@ -433,11 +434,13 @@ pub async fn get_palette(app_handle: tauri::AppHandle) -> Result<Palette, Error>
             bg_dark: "#1e1e1e".to_string(),
             disabled_color: "#fff7c3".to_string(),
         };
-        save_palette(palette, app_handle).await?;
+        let idx = 1;
+        let palette_data = PaletteData { idx, palette };
+        save_palette(palette_data, app_handle).await?;
     }
     let palette_json =
         std::fs::read_to_string(&palette_path).map_err(|e| Error::ClientError(e.to_string()))?;
-    let palette: Palette =
+    let palette_data: PaletteData =
         serde_json::from_str(&palette_json).map_err(|e| Error::ClientError(e.to_string()))?;
-    Ok(palette)
+    Ok(palette_data)
 }

@@ -283,3 +283,24 @@ export class Palette {
     };
   }
 }
+
+export class PaletteData {
+  idx: number;
+  palette: Palette;
+
+  constructor(idx: number, palette: Palette) {
+    this.idx = idx;
+    this.palette = palette;
+  }
+
+  static fromJson(json: any): PaletteData {
+    return new PaletteData(json.idx, Palette.fromJson(json.palette));
+  }
+
+  public toJson(): any {
+    return {
+      idx: this.idx,
+      palette: this.palette.toJson(),
+    };
+  }
+}
