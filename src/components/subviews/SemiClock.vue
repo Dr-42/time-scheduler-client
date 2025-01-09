@@ -112,8 +112,14 @@ export default {
             color: "rgb(255, 255, 255)",
           };
         }
-        const startAngle = (new Date(block.startTime).getHours() / 24) * 180;
-        const endAngle = (new Date(block.endTime).getHours() / 24) * 180;
+        const startTime = new Date(block.startTime);
+        const endTime = new Date(block.endTime);
+
+        const startHours = startTime.getHours() + startTime.getMinutes() / 60;
+        const endHours = endTime.getHours() + endTime.getMinutes() / 60;
+
+        const startAngle = (startHours / 24.0) * 180;
+        const endAngle = (endHours / 24.0) * 180;
 
         const startPoint = this.polarToCartesian(cx, cy, radius, startAngle);
         const endPoint = this.polarToCartesian(cx, cy, radius, endAngle);

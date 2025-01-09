@@ -23,7 +23,10 @@
   },
   "bundle": {
     "active": true,
-    "targets": "rpm",
+    "targets": [
+      "rpm",
+      "deb"
+    ],
     "icon": [
       "icons/icon.png"
     ]
