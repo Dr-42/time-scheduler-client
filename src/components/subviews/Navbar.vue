@@ -53,6 +53,7 @@ export default {
   color: #e2e2e2;
   width: 100%;
   box-sizing: border-box;
+  z-index: 10;
 }
 
 .left,

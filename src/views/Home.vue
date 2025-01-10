@@ -4,24 +4,29 @@
 			v-if="error"
 			:errorText="errorText"
 		/>
-		<div class="header">
-			<status 
-				:username="username" 
-				:currentStart="currentStart" 
-				:currentName="currentName" 
-				:currentColor="currentColor"
-			/>
-			<semi-clock
-				:timeBlocks="cards"
-				:blockTypes="blockTypes"
-				:currentBlock="currentData"
-			/>
+		<div id="loading" v-if="loading">
+			<loading-spinner />
 		</div>
-		<div class="time-cards">
-			<time-cards 
-				:cardData="cards"
-				:blockTypes="blockTypes"
-			/>
+		<div id="content" v-else>
+			<div class="header">
+				<status 
+					:username="username" 
+					:currentStart="currentStart" 
+					:currentName="currentName" 
+					:currentColor="currentColor"
+				/>
+				<semi-clock
+					:timeBlocks="cards"
+					:blockTypes="blockTypes"
+					:currentBlock="currentData"
+				/>
+			</div>
+			<div class="time-cards">
+				<time-cards 
+					:cardData="cards"
+					:blockTypes="blockTypes"
+				/>
+			</div>
 		</div>
 
 		<!-- Floating Action Buttons -->
@@ -67,6 +72,7 @@ import ErrorDisplay from '../components/subviews/ErrorDisplay.vue';
 import NextBlockModal from '../components/modals/NextBlockModal.vue';
 import ChangeBlockModal from '../components/modals/ChangeBlockModal.vue';
 import AddBlocktypeModal from '../components/modals/AddBlocktypeModal.vue';
+import LoadingSpinner from '../components/subviews/LoadingSpinner.vue';
 
 import ChevronRightBoxIcon from "vue-material-design-icons/ChevronRightBox.vue";
 import SwapHorizontalCircleIcon from "vue-material-design-icons/SwapHorizontalCircle.vue";
@@ -85,6 +91,7 @@ export default {
 		SemiClock,
 		Status,
 		ErrorDisplay,
+		LoadingSpinner,
 
 		NextBlockModal,
 		ChangeBlockModal,
@@ -132,6 +139,7 @@ export default {
 			blockTypes: [] as BlockType[],
 			error: false,
 			errorText: "",
+			loading: true,
 		};
 	},
 	methods: {
@@ -175,6 +183,7 @@ export default {
 	},
 	async mounted() {
 		try {
+			this.loading = true;
 			let home_data: HomeData = await invoke("get_home_data");
 			this.cards = TimeBlock.fromJsonArray(home_data.daydata);
 			this.currentData = CurrentData.fromJson(home_data.currentblock);
@@ -183,6 +192,7 @@ export default {
 			let meta = await invoke("get_meta");
 			let meta_data = meta as MetaData;
 			this.username = meta_data.username;
+			this.loading = false;
 		} catch (e) {
 			console.error(e);
 			this.error = true;
@@ -245,5 +255,17 @@ export default {
 
 .header {
 	height: calc(45vh - 25px);
+}
+
+#loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 50px);
+  background-color: var(--bg);
 }
 </style>

@@ -51,7 +51,7 @@
             id="server-ip"
             v-model="serverIp"
             required
-            placeholder="Enter server IP"
+            placeholder="<Server IP>:<Port>"
           />
         </div>
 
