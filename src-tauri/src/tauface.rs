@@ -408,8 +408,11 @@ pub async fn get_sun_hours() -> Result<SunHours, Error> {
 pub async fn save_palette(palette: PaletteData, app_handle: tauri::AppHandle) -> Result<(), Error> {
     let cache_dir = app_handle
         .path()
-        .app_cache_dir()
+        .app_local_data_dir()
         .map_err(|e| Error::ClientError(e.to_string()))?;
+    if !cache_dir.exists() {
+        std::fs::create_dir_all(&cache_dir).map_err(|e| Error::ClientError(e.to_string()))?;
+    }
     let palette_path = cache_dir.join("palette.json");
     let palette_json =
         serde_json::to_string(&palette).map_err(|e| Error::ClientError(e.to_string()))?;
@@ -421,7 +424,7 @@ pub async fn save_palette(palette: PaletteData, app_handle: tauri::AppHandle) ->
 pub async fn get_palette(app_handle: tauri::AppHandle) -> Result<PaletteData, Error> {
     let cache_dir = app_handle
         .path()
-        .app_cache_dir()
+        .app_local_data_dir()
         .map_err(|e| Error::ClientError(e.to_string()))?;
     let palette_path = cache_dir.join("palette.json");
     if !palette_path.exists() {
