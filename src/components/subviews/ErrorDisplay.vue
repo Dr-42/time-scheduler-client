@@ -1,7 +1,7 @@
 <template>
   <div class="error">
     <div class="error-content">
-      {{ errorText }}
+      {{ errorString }}
     </div>
   </div>
 </template>
@@ -13,10 +13,22 @@ export default defineComponent({
   name: 'ErrorDisplay',
   props: {
     errorText: {
-      type: String,
+      type: Object,
       required: true,
     },
   },
+  computed: {
+    errorString() : string {
+      //Check if ServerError key is present
+      if (this.errorText.ServerError) {
+        return `Server Error: ${this.errorText.ServerError}`;
+      } else if (this.errorText.ClientError) {
+        return `Client Error: ${this.errorText.ClientError}`;
+      } else {
+        return JSON.stringify(this.errorText);
+      }
+    },
+  }
 });
 
 </script>
