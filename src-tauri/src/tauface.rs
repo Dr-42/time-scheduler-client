@@ -128,7 +128,7 @@ pub async fn get_day_history(
     let meta = get_meta(app_handle).await?;
     let client = Client::new();
     let time_blocks_response = client
-        .get(format!("http://{}/daydata", meta.server_ip))
+        .get(format!("http://{}/timeblock/get", meta.server_ip))
         .query(&[("date", date.to_rfc3339())])
         .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
         .send()
@@ -151,7 +151,7 @@ pub async fn get_day_history(
     time_blocks.reverse();
 
     let blocktypes_response = client
-        .get(format!("http://{}/blocktypes", meta.server_ip))
+        .get(format!("http://{}/blocktype/get", meta.server_ip))
         .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
         .send()
         .await
@@ -211,7 +211,7 @@ pub async fn post_next_block(
     let meta = get_meta(app_handle).await?;
     let client = Client::new();
     let response = client
-        .post(format!("http://{}/nexttimeblock", meta.server_ip))
+        .post(format!("http://{}/timeblock/next", meta.server_ip))
         .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
         .json(&data)
         .send()
@@ -237,7 +237,7 @@ pub async fn post_change_current(
     let meta = get_meta(app_handle).await?;
     let client = Client::new();
     let response = client
-        .post(format!("http://{}/changecurrentblock", meta.server_ip))
+        .post(format!("http://{}/currentblock/change", meta.server_ip))
         .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
         .json(&data)
         .send()
@@ -263,7 +263,7 @@ pub async fn post_new_block_type(
     let meta = get_meta(app_handle).await?;
     let client = Client::new();
     let response = client
-        .post(format!("http://{}/newblocktype", meta.server_ip))
+        .post(format!("http://{}/blocktype/new", meta.server_ip))
         .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
         .json(&data)
         .send()

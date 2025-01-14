@@ -29,6 +29,7 @@ export default defineComponent({
   justify-content: center;
   width: 100%;
   background-color: rgba(30, 0, 0, 0.5);
+  z-index: 1000;
 }
 
 .error-content {

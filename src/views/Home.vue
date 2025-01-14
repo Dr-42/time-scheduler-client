@@ -262,10 +262,11 @@ export default {
   justify-content: center;
   align-items: center;
   position: fixed;
-  top: 0;
+  bottom: 0;
   left: 0;
   width: 100%;
-  height: calc(100vh - 50px);
+  height: calc(100vh - (50px + 10vh));
   background-color: var(--bg);
+  z-index: 3;
 }
 </style>
