@@ -149,36 +149,36 @@ export default {
 		async handleNextBlock(data : CurrentData) {
 			try {
 				await invoke("post_next_block", { data : data.toJson() });
+				this.currentModal = null;
+				window.location.reload();
 			} catch (e) {
 				console.error(e);
 				this.error = true;
 				this.errorText = e as string;
 			}
-			this.currentModal = null;
-			window.location.reload();
 		},
 		async handleChangeBlock(data : CurrentData) {
 			try {
 				await invoke("post_change_current", { data : data.toJson() });
+				this.currentModal = null;
+				window.location.reload();
 			} catch (e) {
 				console.error(e);
 				this.error = true;
 				this.errorText = e as string;
 			}
-			this.currentModal = null;
-			window.location.reload();
 		},
 		async handleAddBlockType(data: NewBlockType) {
 			console.log(data);
 			try {
 				await invoke("post_new_block_type", { data : data.toJson() });
+				this.currentModal = null;
+				window.location.reload();
 			} catch (e) {
 				console.error(e);
 				this.error = true;
 				this.errorText = e as string;
 			}
-			this.currentModal = null;
-			window.location.reload();
 		},
 	},
 	async mounted() {

@@ -88,13 +88,19 @@ export default {
       this.asideOpen = false;
     },
     async handleSaveSetting(data: SettingsData) {
-      await invoke('save_meta', {
-        "username": data.username,
-        "password": data.password,
-        "serverIp": data.serverIp,
-      });
-      this.currentModal = null;
-      location.reload();
+      try {
+        await invoke('save_meta', {
+          "username": data.username,
+          "password": data.password,
+          "serverIp": data.serverIp,
+        });
+        this.currentModal = null;
+        location.reload();
+      } catch (e) {
+        console.error(e);
+        this.error = true;
+        this.errorText = e as string;
+      }
     },
     async applyPalette(paletteData: PaletteData) {
       console.log('Saving palette');
