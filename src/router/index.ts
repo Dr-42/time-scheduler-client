@@ -15,7 +15,6 @@ const routes = [
     props: true,
   },
   { path: "/analysis", name: "Analysis", component: Analysis },
-  { path: "/test", name: "Test", component: TestBed },
 ];
 
 const router: Router = createRouter({

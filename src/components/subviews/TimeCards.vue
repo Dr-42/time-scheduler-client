@@ -73,7 +73,6 @@ export default {
       this.selectedCard = null;
     },
     splitBlock(card: any) {
-      console.log("Splitting block:", card);
       this.$emit("splitBlock", card);
       this.closeContextMenu();
     },

@@ -1,16 +1,16 @@
 <template>
   <div class="time-picker" ref="timePicker">
     <div class="time-input-wrapper">
-      <input
-        type="text"
-        :value="formattedTime"
-        @focus="openTimePicker"
-        placeholder="Select a time"
-        class="time-input"
-      />
-      <button type="button" @click="toggleClock" class="clock-button">
-        <clock-edit-icon />
-      </button>
+      <div class="time-input">
+        <input
+          type="text"
+          :value="formattedTime"
+          @focus="openTimePicker"
+        />
+        <button type="button" @click="toggleClock" class="clock-button">
+          <clock-edit-icon />
+        </button>
+      </div>
     </div>
 
     <div v-if="showClock" class="clock-popup">
@@ -31,6 +31,7 @@
           ></div>
           <div class="clock-hand hour" :style="hourHandStyle"></div>
           <div class="clock-hand minute" :style="minuteHandStyle"></div>
+          <div class="clock-hand second" :style="secondHandStyle"></div>
         </div>
       </div>
 
@@ -67,6 +68,20 @@
                 <button type="button" @click="decrementMinute">▼</button>
               </div>
             </div>
+            <div class="second-field">
+              <input
+                type="number"
+                class="time-input-second"
+                v-model="secondInput"
+                @blur="syncAnalogClock"
+                @input="clampTime"
+                :placeholder="minTime.split(':')[1]"
+              />
+              <div class="arrows">
+                <button type="button" @click="incrementSecond">▲</button>
+                <button type="button" @click="decrementSecond">▼</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -83,21 +98,22 @@ export default {
   props: {
     minTime: {
       type: String,
-      default: "00:00", // Format HH:mm
+      default: "00:00:00",
     },
     maxTime: {
       type: String,
-      default: "23:59", // Format HH:mm
+      default: "23:59:00",
     },
     selectedTime: {
       type: String,
-      default: "00:00", // Format HH:mm
+      default: "00:00:00",
     },
   },
   data() {
     return {
       selectedHour: 0,
       selectedMinute: 0,
+      selectedSecond: 0,
       showClock: false,
     };
   },
@@ -105,7 +121,8 @@ export default {
     formattedTime(): string {
       const hour = this.selectedHour.toString().padStart(2, "0") || this.minTime.split(":")[0];
       const minute = this.selectedMinute.toString().padStart(2, "0") || this.minTime.split(":")[1];
-      return `${hour}:${minute}`;
+      const second = this.selectedSecond.toString().padStart(2, "0") || this.minTime.split(":")[2];
+      return `${hour}:${minute}:${second}`;
     },
     hourInput: {
       get(): string {
@@ -121,9 +138,7 @@ export default {
     },
     minuteInput: {
       get(): string {
-        if (this.selectedMinute === null) {
-          return "";
-        } else if (this.selectedMinute < 10) {
+        if (this.selectedMinute < 10) {
           return `0${this.selectedMinute}`;
         } else {
           return this.selectedMinute.toString();
@@ -133,6 +148,18 @@ export default {
         this.selectedMinute = parseInt(value) || 0;
       },
     },
+    secondInput: {
+      get(): string {
+        if (this.selectedSecond < 10) {
+          return `0${this.selectedSecond}`;
+        } else {
+          return this.selectedSecond.toString();
+        }
+      },
+      set(value: string) {
+        this.selectedSecond = parseInt(value) || 0;
+      },
+    },
     hourHandStyle(): string {
       const degrees = (this.selectedHour || 0) * 30 - 180;
       return `transform: rotate(${degrees}deg)`;
@@ -140,6 +167,10 @@ export default {
     minuteHandStyle(): string {
       const degrees = (this.selectedMinute || 0) * 6 - 180;
       return  `transform: rotate(${degrees}deg)`;
+    },
+    secondHandStyle(): string {
+      const degrees = (this.selectedSecond || 0) * 6 - 180;
+      return `transform: rotate(${degrees}deg)`;
     },
   },
   methods: {
@@ -160,7 +191,19 @@ export default {
       this.selectedMinute = minute;
       this.syncDigitalClock();
     },
+    selectSecond(second: number) {
+      this.selectedSecond = second;
+      this.syncDigitalClock();
+    },
     clampTime() {
+      if (this.selectedSecond < 0) {
+        this.selectedSecond = 59;
+        this.selectedMinute = (this.selectedMinute || 0) - 1;
+      } else if (this.selectedSecond > 59) {
+        this.selectedSecond = 0;
+        this.selectedMinute = (this.selectedMinute || 0) + 1;
+      }
+
       if (this.selectedMinute < 0) {
         this.selectedMinute = 59;
         this.selectedHour = (this.selectedHour || 0) - 1;
@@ -170,18 +213,22 @@ export default {
       }
       let minTimeHours = parseInt(this.minTime.split(":")[0]);
       let minTimeMinutes = parseInt(this.minTime.split(":")[1]);
+      let minTimeSeconds = parseInt(this.minTime.split(":")[2]);
       let maxTimeHours = parseInt(this.maxTime.split(":")[0]);
       let maxTimeMinutes = parseInt(this.maxTime.split(":")[1]);
-      const minTime = new Date(0, 0, 0, minTimeHours, minTimeMinutes, 0);
-      const maxTime = new Date(0, 0, 0, maxTimeHours, maxTimeMinutes, 0);
-      const selectedTime = new Date(0, 0, 0, this.selectedHour, this.selectedMinute, 0);
+      let maxTimeSeconds = parseInt(this.maxTime.split(":")[2]);
+      const minTime = new Date(0, 0, 0, minTimeHours, minTimeMinutes, minTimeSeconds);
+      const maxTime = new Date(0, 0, 0, maxTimeHours, maxTimeMinutes, maxTimeSeconds);
+      const selectedTime = new Date(0, 0, 0, this.selectedHour, this.selectedMinute, this.selectedSecond);
 
       if (selectedTime < minTime) {
         this.selectedHour = minTime.getHours();
         this.selectedMinute = minTime.getMinutes();
+        this.selectedSecond = minTime.getSeconds();
       } else if (selectedTime > maxTime) {
         this.selectedHour = maxTime.getHours();
         this.selectedMinute = maxTime.getMinutes();
+        this.selectedSecond = maxTime.getSeconds();
       }
     },
     syncAnalogClock() {
@@ -204,6 +251,14 @@ export default {
     },
     decrementMinute() {
       this.selectedMinute = (this.selectedMinute || 0) - 1;
+      this.syncAnalogClock();
+    },
+    incrementSecond() {
+      this.selectedSecond = (this.selectedSecond || 0) + 1;
+      this.syncAnalogClock();
+    },
+    decrementSecond() {
+      this.selectedSecond = (this.selectedSecond || 0) - 1;
       this.syncAnalogClock();
     },
     getHourMarkStyle(hour: number): string {
@@ -246,6 +301,10 @@ export default {
 }
 
 .time-input {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: flex-end;
   padding: 5px;
   border: 1px solid var(--accent);
   border-radius: 4px;
@@ -253,6 +312,18 @@ export default {
   color: white;
   font-size: 20px;
   text-align: right;
+  width: 100%;
+}
+
+.time-input input {
+  flex-grow: 1;
+  padding: 5px;
+  border: none;
+  background: var(--bg-dark);
+  color: white;
+  font-size: 20px;
+  text-align: right;
+  appearance: none;
 }
 
 .clock-button {
@@ -291,16 +362,22 @@ export default {
   transform-origin: center top;
 }
 
+.clock-hand.hour {
+  height: 35%;
+  width: 5px;
+  background: var(--accent);
+}
+
 .clock-hand.minute {
   height: 50%;
-  width: 2px;
+  width: 3px;
   background: var(--accent2);
 }
 
-.clock-hand.hour {
-  height: 35%;
-  width: 4px;
-  background: var(--accent);
+.clock-hand.second {
+  height: 50%;
+  width: 1px;
+  background: var(--accent-hover);
 }
 
 .hour-mark {
@@ -347,12 +424,14 @@ export default {
   background: var(--bg-dark);
   color: white;
   flex-grow: 1;
-  -webkit-appearance: none; /* Remove native arrows for inputs */
-  -moz-appearance: textfield; /* Remove native arrows for Firefox */
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .hour-field,
-.minute-field {
+.minute-field,
+.second-field {
   display: flex;
   align-items: center;
   flex-direction: row;
@@ -360,7 +439,7 @@ export default {
 
 .time-field input::-webkit-inner-spin-button,
 .time-field input::-webkit-outer-spin-button {
-  -webkit-appearance: none; /* Remove arrows for Chrome */
+  -webkit-appearance: none;
   margin: 0;
 }
 
@@ -411,5 +490,6 @@ export default {
   color: white;
   -webkit-appearance: none;
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 </style>

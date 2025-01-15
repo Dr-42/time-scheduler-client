@@ -192,7 +192,6 @@ export default {
 			}
 		},
 		openSplitBlockModal(block: any) {
-			console.log(block);
 			this.currentActionBlock = TimeBlock.fromObject(block);
 			this.currentModal = "splitBlock";
 		},

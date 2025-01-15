@@ -2,9 +2,9 @@
   <div class="modal-backdrop" @click.self="closeModal">
     <div class="modal">
       <h2>Split Block</h2>
-      <div> Splittiing Block: 
-        {{ timeblock.title }} of type {{ blockTypes[timeblock.blockTypeId].name}}
-        Starting at {{ startTime }} and ending at {{ endTime }}
+      <div class="modal-header">
+        <div>Splitting {{ timeblock.title }} of type {{ blockTypes[timeblock.blockTypeId].name}}</div>
+        <div>Starting at {{ startTime }} and ending at {{ endTime }}</div>
       </div>
       <form @submit.prevent="submit">
         <div class="form-group">
@@ -16,7 +16,7 @@
           />
         </div>
         <div class="form-group">
-          <label for="before-block-title">Before block name:</label>
+          <label for="before-block-title">Before block</label>
           <input
             type="text"
             id="before-block-name"
@@ -24,9 +24,6 @@
             required
             placeholder="Enter before block name"
           />
-        </div>
-        <div class="form-group">
-          <label for="before-block-type">Before Block Type</label>
           <custom-dropdown
             :options="blockTypes"
             v-model="beforeBlockType"
@@ -34,7 +31,7 @@
           />
         </div>
         <div class="form-group">
-          <label for="after-block-title">After block name:</label>
+          <label for="after-block-title">After block</label>
           <input
             type="text"
             id="after-block-name"
@@ -42,9 +39,6 @@
             required
             placeholder="Enter after block name"
           />
-        </div>
-        <div class="form-group">
-          <label for="after-block-type">After Block Type</label>
           <custom-dropdown
             :options="blockTypes"
             v-model="afterBlockType"
@@ -98,7 +92,8 @@ export default defineComponent({
       const startTime = new Date(this.timeblock.startTime);
       const startHour = startTime.getHours();
       const startMinute = startTime.getMinutes();
-      const timeString = startHour.toString().padStart(2, "0") + ":" + startMinute.toString().padStart(2, "0");
+      const startSecond = startTime.getSeconds();
+      const timeString = startHour.toString().padStart(2, "0") + ":" + startMinute.toString().padStart(2, "0") + ":" + startSecond.toString().padStart(2, "0");
       this.splitTime = timeString;
       return timeString;
     },
@@ -106,7 +101,8 @@ export default defineComponent({
       const endTime = new Date(this.timeblock.endTime);
       const endHour = endTime.getHours();
       const endMinute = endTime.getMinutes();
-      const timeString = endHour.toString().padStart(2, "0") + ":" + endMinute.toString().padStart(2, "0");
+      const endSecond = endTime.getSeconds();
+      const timeString = endHour.toString().padStart(2, "0") + ":" + endMinute.toString().padStart(2, "0") + ":" + endSecond.toString().padStart(2, "0");
       return timeString;
     },
   },
@@ -166,6 +162,17 @@ export default defineComponent({
   margin: 2.5%;
   max-width: 400px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: var(--bg-dark);
+  border-radius: 8px;
 }
 
 .form-group {
