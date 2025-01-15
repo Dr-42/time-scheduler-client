@@ -20,16 +20,8 @@
           <div
             v-for="hour in 12"
             :key="'hour-' + hour"
-            :class="['hour-mark', { 'active': isActiveHour(hour) }]"
+            class=hour-mark
             :style="getHourMarkStyle(hour)"
-            @click="selectHour(hour)"
-          ></div>
-          <div
-            v-for="minute in 60"
-            :key="'minute-' + minute"
-            :class="['minute-mark', { 'active': isActiveMinute(minute) }]"
-            :style="getMinuteMarkStyle(minute)"
-            @click="selectMinute(minute)"
           ></div>
           <div class="clock-hand hour" :style="hourHandStyle"></div>
           <div class="clock-hand minute" :style="minuteHandStyle"></div>
@@ -141,12 +133,6 @@ export default {
       this.selectedMinute = minute;
       this.syncDigitalClock();
     },
-    isActiveHour(hour: number): boolean {
-      return this.selectedHour === hour;
-    },
-    isActiveMinute(minute: number): boolean {
-      return this.selectedMinute === minute;
-    },
     clampTime() {
       if (this.selectedMinute < 0) {
         this.selectedMinute = 59;
@@ -194,12 +180,8 @@ export default {
       this.syncAnalogClock();
     },
     getHourMarkStyle(hour: number): string {
-      const angle = hour * 30;
-      return `transform: rotate(${angle}deg) translate(0, -50%)`;
-    },
-    getMinuteMarkStyle(minute: number): string {
-      const angle = minute * 6;
-      return `transform: rotate(${angle}deg) translate(0, -50%)`;
+      const degrees = hour * 30; // Each hour is 30 degrees
+      return  `transform: rotate(${degrees}deg) translateX(-50%) translateY(-50%)`;
     },
   },
 };
@@ -257,7 +239,7 @@ export default {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform-origin: center top; /* Origin fixed for rotation */
+  transform-origin: center top;
 }
 
 .clock-hand.minute {
@@ -267,24 +249,19 @@ export default {
 }
 
 .clock-hand.hour {
-  height: 40%;
+  height: 35%;
   width: 4px;
   background: var(--accent);
 }
 
-.hour-mark,
-.minute-mark {
+.hour-mark {
   position: absolute;
-  width: 6px;
-  height: 6px;
-  background: var(--accent);
-  border-radius: 50%;
-  transform-origin: center;
-}
-
-.hour-mark.active,
-.minute-mark.active {
-  background: var(--accent2);
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(transparent 90%, var(--accent2));
+  transform-origin: center top;
 }
 
 .digital-clock {
