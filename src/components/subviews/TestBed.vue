@@ -1,7 +1,7 @@
 <template>
   <time-picker
-    min-time="07:16"
-    max-time="13:42"
+    min-time="00:00"
+    max-time="11:59"
     v-model="selectedTime"
   />
 </template>

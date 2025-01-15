@@ -31,7 +31,7 @@
             :style="getMinuteMarkStyle(minute)"
             @click="selectMinute(minute)"
           ></div>
-          <div class="clock-hand" :style="hourHandStyle"></div>
+          <div class="clock-hand hour" :style="hourHandStyle"></div>
           <div class="clock-hand minute" :style="minuteHandStyle"></div>
         </div>
       </div>
@@ -115,12 +115,12 @@ export default {
       },
     },
     hourHandStyle(): string {
-      const degrees = (this.selectedHour || 0) * 30;
-      return `transform: rotate(${degrees}deg) translateY(-50%)`;
+      const degrees = (this.selectedHour || 0) * 30 - 180;
+      return `transform: rotate(${degrees}deg)`;
     },
     minuteHandStyle(): string {
-      const degrees = (this.selectedMinute || 0) * 6;
-      return  `transform: rotate(${degrees}deg) translateY(-50%)`;
+      const degrees = (this.selectedMinute || 0) * 6 - 180;
+      return  `transform: rotate(${degrees}deg)`;
     },
   },
   methods: {
@@ -255,17 +255,21 @@ export default {
 
 .clock-hand {
   position: absolute;
-  width: 2px;
-  height: 40%;
-  background: var(--accent);
   top: 50%;
   left: 50%;
-  transform-origin: center bottom; /* Origin fixed for rotation */
+  transform-origin: center top; /* Origin fixed for rotation */
 }
 
 .clock-hand.minute {
   height: 50%;
+  width: 2px;
   background: var(--accent2);
+}
+
+.clock-hand.hour {
+  height: 40%;
+  width: 4px;
+  background: var(--accent);
 }
 
 .hour-mark,
