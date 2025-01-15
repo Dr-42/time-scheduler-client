@@ -13,7 +13,15 @@
       </div>
     </div>
 
-    <div v-if="showClock" class="clock-popup">
+    <div 
+      v-if="showClock" 
+      class="clock-popup"
+      :style="{
+        maxHeight: maxDropdownHeight + 'px',
+        overflowY: 'auto',
+        transform: openAbove ? 'translateY(-100%)' : 'translateY(0)',
+      }"
+    >
       <!-- Analog Clock -->
       <div class="analog-clock">
         <div class="clock-face">
@@ -116,6 +124,8 @@ export default {
       selectedMinute: 0,
       selectedSecond: 0,
       showClock: false,
+      openAbove: false,
+      maxDropdownHeight: 300,
     };
   },
   computed: {
@@ -176,12 +186,15 @@ export default {
   },
   methods: {
     toggleClock() {
+      this.calculateClockPosition();
       this.showClock = !this.showClock;
     },
     openTimePicker() {
+      this.calculateClockPosition();
       this.showClock = true;
     },
     closeClock() {
+      this.calculateClockPosition();
       this.showClock = false;
     },
     selectHour(hour: number) {
@@ -277,6 +290,17 @@ export default {
         !(this.$refs.timePicker as HTMLElement).contains(event.target as Node)
       ) {
         this.closeClock();
+      }
+    },
+    calculateClockPosition() {
+      const clockPopup = this.$refs.timePicker as HTMLElement;
+      if (clockPopup) {
+        const rect = clockPopup.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+
+        // Check if there's enough space below, otherwise open above
+        this.openAbove = spaceBelow < this.maxDropdownHeight && spaceAbove > spaceBelow;
       }
     },
   },

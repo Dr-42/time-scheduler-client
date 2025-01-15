@@ -10,7 +10,11 @@
     <div
       class="dropdown-menu"
       v-if="isOpen"
-      :style="{ maxHeight: maxDropdownHeight + 'px', overflowY: 'auto' }"
+      :style="{
+        maxHeight: maxDropdownHeight + 'px',
+        overflowY: 'auto',
+        transform: openAbove ? 'translateY(-100%)' : 'translateY(0)',
+      }"
     >
       <div
         v-for="option in processedOptions"
@@ -45,8 +49,6 @@ export default defineComponent({
       required: true,
     },
     modelValue: {
-      //type: Number,
-      // Accept number, null and undefined
       type: Number as PropType<DropdownValue>,
       default: null,
     },
@@ -58,8 +60,9 @@ export default defineComponent({
   data() {
     return {
       isOpen: false,
-      processedOptions: [] as Option[], // To store options with computed `hexColor`
-      maxDropdownHeight: 200, // Set max height for dropdown menu
+      openAbove: false, // Determines dropdown opening direction
+      processedOptions: [] as Option[],
+      maxDropdownHeight: 200,
     };
   },
   computed: {
@@ -77,6 +80,9 @@ export default defineComponent({
   },
   methods: {
     toggleDropdown() {
+      if (!this.isOpen) {
+        this.calculateDropdownPosition();
+      }
       this.isOpen = !this.isOpen;
       if (this.isOpen) {
         document.addEventListener("click", this.handleOutsideClick);
@@ -102,6 +108,17 @@ export default defineComponent({
       const dropdown = this.$refs.dropdown as HTMLElement;
       if (dropdown && !dropdown.contains(event.target as Node)) {
         this.closeDropdown();
+      }
+    },
+    calculateDropdownPosition() {
+      const dropdown = this.$refs.dropdown as HTMLElement;
+      if (dropdown) {
+        const rect = dropdown.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+
+        // Check if there's enough space below, otherwise open above
+        this.openAbove = spaceBelow < this.maxDropdownHeight && spaceAbove > spaceBelow;
       }
     },
   },
@@ -160,6 +177,12 @@ export default defineComponent({
   border-radius: 4px;
   margin-top: 5px;
   z-index: 10;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.dropdown-menu[style*="translateY(-100%)"] {
+  margin-top: 0; /* Prevent gap above when dropdown opens upwards */
 }
 
 .dropdown-item {
@@ -172,10 +195,5 @@ export default defineComponent({
 .dropdown-item:hover {
   background-color: var(--accent2);
   color: white;
-}
-
-/* Add scroll behavior for the dropdown menu */
-.dropdown-menu {
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 </style>

@@ -305,7 +305,7 @@ export default {
 				await invoke("post_adjust_block", { data : sendData });
 				this.currentActionBlock = null;
 				this.currentModal = null;
-				//window.location.reload();
+				window.location.reload();
 			} catch (e) {
 				console.error(e);
 				this.error = true;
