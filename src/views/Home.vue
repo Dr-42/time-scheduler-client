@@ -94,6 +94,14 @@ type MetaData = {
 	username: string;
 }
 
+type SplitBlockModalData = {
+  splitTime: string;
+  beforeTitle: string;
+  beforeBlockType: number;
+  afterTitle: string;
+  afterBlockType: number;
+};
+
 export default {
 	components: {
 		TimeCards,
@@ -195,11 +203,21 @@ export default {
 			this.currentActionBlock = TimeBlock.fromObject(block);
 			this.currentModal = "splitBlock";
 		},
-		async handleSplitBlock(data: Object) {
+		async handleSplitBlock(data: SplitBlockModalData) {
 			try {
-				console.log("Splitting block", data);
-				//await invoke("post_split_block", { data : data.toJson() });
+				const sendData = {
+					start_time: this.currentActionBlock!.startTime,
+					end_time: this.currentActionBlock!.endTime,
+					split_time: data.splitTime,
+					before_title: data.beforeTitle,
+					before_block_type_id: data.beforeBlockType,
+					after_title: data.afterTitle,
+					after_block_type_id: data.afterBlockType,
+				};
+				await invoke("post_split_block", { data : sendData });
+				this.currentActionBlock = null;
 				this.currentModal = null;
+				window.location.reload();
 			} catch (e) {
 				console.error(e);
 				this.error = true;

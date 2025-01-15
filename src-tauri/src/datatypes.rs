@@ -80,3 +80,25 @@ pub struct PaletteData {
     pub idx: u8,
     pub palette: Palette,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct SplitTimeBlockQuery {
+    pub start_time: DateTime<Local>,
+    pub end_time: DateTime<Local>,
+    pub split_time: DateTime<Local>,
+    pub before_title: String,
+    pub after_title: String,
+    pub before_block_type_id: u8,
+    pub after_block_type_id: u8,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct SplitTimeBlockQueryJs {
+    pub start_time: DateTime<Local>,
+    pub end_time: DateTime<Local>,
+    pub split_time: String,
+    pub before_title: String,
+    pub after_title: String,
+    pub before_block_type_id: u8,
+    pub after_block_type_id: u8,
+}

@@ -12,7 +12,7 @@
           <time-picker
             :min-time="startTime"
             :max-time="endTime"
-            v-model="splitTime"
+            v-model:selected-time="splitTime"
           />
         </div>
         <div class="form-group">
@@ -61,8 +61,16 @@ import CustomDropdown from "../inputs/CustomDropdown.vue";
 import TimePicker from "../inputs/TimePicker.vue";
 import { BlockType, TimeBlock } from "../../types";
 
+type SplitBlockModalData = {
+  splitTime: string;
+  beforeTitle: string;
+  beforeBlockType: number;
+  afterTitle: string;
+  afterBlockType: number;
+};
+
 export default defineComponent({
-  name: "NextBlockModal",
+  name: "SplitBlockModal",
   components: { CustomDropdown, TimePicker },
   emits: ["close", "done"],
   props: {
@@ -77,7 +85,7 @@ export default defineComponent({
   },
   data() {
     return {
-      splitTime: "00:00",
+      splitTime: "00:00:00",
       beforeTitle: this.timeblock.title,
       beforeBlockType: this.timeblock.blockTypeId,
       afterTitle: this.timeblock.title,
@@ -86,7 +94,7 @@ export default defineComponent({
   },
   computed: {
     isFormValid(): boolean {
-      return true;
+      return (this.splitTime !== this.startTime && this.splitTime !== this.endTime) && this.beforeTitle.trim().length > 0 && this.afterTitle.trim().length > 0;
     },
     startTime(): string {
       const startTime = new Date(this.timeblock.startTime);
@@ -117,7 +125,7 @@ export default defineComponent({
         beforeBlockType: this.beforeBlockType,
         afterTitle: this.afterTitle,
         afterBlockType: this.afterBlockType
-      })
+      } as SplitBlockModalData);
     },
     adjustModalForKeyboard(event: FocusEvent) {
       const target = event.target as HTMLElement;

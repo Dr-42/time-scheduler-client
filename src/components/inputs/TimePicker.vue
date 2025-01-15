@@ -109,6 +109,7 @@ export default {
       default: "00:00:00",
     },
   },
+  emits: ["update:selectedTime"],
   data() {
     return {
       selectedHour: 0,
@@ -230,6 +231,7 @@ export default {
         this.selectedMinute = maxTime.getMinutes();
         this.selectedSecond = maxTime.getSeconds();
       }
+      this.$emit("update:selectedTime", `${this.selectedHour}:${this.selectedMinute}:${this.selectedSecond}`);
     },
     syncAnalogClock() {
       this.clampTime();

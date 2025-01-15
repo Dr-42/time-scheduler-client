@@ -1,4 +1,4 @@
-use chrono::{DateTime, Datelike, Local, NaiveDate, NaiveDateTime};
+use chrono::{DateTime, Datelike, Local, NaiveDate, NaiveDateTime, NaiveTime};
 use reqwest::{header::AUTHORIZATION, Client};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -6,8 +6,8 @@ use sha256::digest;
 use tauri::Manager;
 
 use crate::datatypes::{
-    Analysis, BlockType, CurrentBlock, HomeData, NewBlockType, Palette, PaletteData, SunHours,
-    TimeBlock,
+    Analysis, BlockType, CurrentBlock, HomeData, NewBlockType, Palette, PaletteData,
+    SplitTimeBlockQuery, SplitTimeBlockQueryJs, SunHours, TimeBlock,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -212,6 +212,66 @@ pub async fn post_next_block(
     let client = Client::new();
     let response = client
         .post(format!("http://{}/timeblock/next", meta.server_ip))
+        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
+        .json(&data)
+        .send()
+        .await
+        .map_err(|e| Error::ServerError(e.to_string()))?;
+
+    if !response.status().is_success() {
+        let e = response
+            .text()
+            .await
+            .map_err(|e| Error::ClientError(e.to_string()))?;
+        return Err(Error::ServerError(e));
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn post_split_block(
+    app_handle: tauri::AppHandle,
+    data: SplitTimeBlockQueryJs,
+) -> Result<(), Error> {
+    let meta = get_meta(app_handle).await?;
+    let client = Client::new();
+    let splits = data.split_time.split(":").collect::<Vec<&str>>();
+    println!("{:?}", &data);
+    let split_time = data
+        .start_time
+        .with_time(
+            NaiveTime::from_hms_opt(
+                splits[0].parse().map_err(|_| {
+                    Error::ClientError("Failed to parse split time hour".to_string())
+                })?,
+                splits[1].parse().map_err(|_| {
+                    Error::ClientError("Failed to parse split time minute".to_string())
+                })?,
+                splits[2].parse().map_err(|_| {
+                    Error::ClientError("Failed to parse split time second".to_string())
+                })?,
+            )
+            .ok_or(Error::ClientError(
+                "Failed to create split time".to_string(),
+            ))?,
+        )
+        .single()
+        .ok_or(Error::ClientError(
+            "Failed to find unique split time".to_string(),
+        ))?;
+    let data = SplitTimeBlockQuery {
+        start_time: data.start_time,
+        end_time: data.end_time,
+        split_time,
+        before_title: data.before_title,
+        after_title: data.after_title,
+        before_block_type_id: data.before_block_type_id,
+        after_block_type_id: data.after_block_type_id,
+    };
+    println!("{:?}", data);
+    let response = client
+        .post(format!("http://{}/timeblock/split", meta.server_ip))
         .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
         .json(&data)
         .send()
