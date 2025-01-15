@@ -30,30 +30,38 @@
 
       <!-- Digital Clock -->
       <div class="digital-clock">
-        <div class="time-field">
-          <input
-            type="number"
-            class="time-input-hour"
-            v-model="hourInput"
-            @blur="syncAnalogClock"
-            @input="clampTime"
-            :placeholder="'HH'"
-          />
-          <span class="separator">:</span>
-          <input
-            type="number"
-            class="time-input-minute"
-            v-model="minuteInput"
-            @blur="syncAnalogClock"
-            @input="clampTime"
-            :placeholder="'MM'"
-          />
-        </div>
-        <div class="arrows">
-          <button @click="incrementHour">▲</button>
-          <button @click="decrementHour">▼</button>
-          <button @click="incrementMinute">▲</button>
-          <button @click="decrementMinute">▼</button>
+        <div class="time-field-wrapper">
+          <div class="time-field">
+            <div class="hour-field">
+              <input
+                type="number"
+                class="time-input-hour"
+                v-model="hourInput"
+                @blur="syncAnalogClock"
+                @input="clampTime"
+                :placeholder="this.minTime.split(':')[0]"
+              />
+              <div class="arrows">
+                <button @click="incrementHour">▲</button>
+                <button @click="decrementHour">▼</button>
+              </div>
+            </div>
+            <span class="separator">:</span>
+            <div class="minute-field">
+              <input
+                type="number"
+                class="time-input-minute"
+                v-model="minuteInput"
+                @blur="syncAnalogClock"
+                @input="clampTime"
+                :placeholder="this.minTime.split(':')[1]"
+              />
+              <div class="arrows">
+                <button @click="incrementMinute">▲</button>
+                <button @click="decrementMinute">▼</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -92,7 +100,13 @@ export default {
     },
     hourInput: {
       get(): string {
-        return this.selectedHour?.toString() || "";
+        if (this.selectedHour === null) {
+          return "";
+        } else if (this.selectedHour < 10) {
+          return `0${this.selectedHour}`;
+        } else {
+          return this.selectedHour.toString();
+        }
       },
       set(value: string) {
         this.selectedHour = parseInt(value) || 0;
@@ -100,7 +114,13 @@ export default {
     },
     minuteInput: {
       get(): string {
-        return this.selectedMinute?.toString() || "";
+        if (this.selectedMinute === null) {
+          return "";
+        } else if (this.selectedMinute < 10) {
+          return `0${this.selectedMinute}`;
+        } else {
+          return this.selectedMinute.toString();
+        }
       },
       set(value: string) {
         this.selectedMinute = parseInt(value) || 0;
@@ -183,6 +203,20 @@ export default {
       const degrees = hour * 30; // Each hour is 30 degrees
       return  `transform: rotate(${degrees}deg) translateX(-50%) translateY(-50%)`;
     },
+    handleClickOutside(event: MouseEvent) {
+      if (
+        this.$refs.timePicker &&
+        !(this.$refs.timePicker as HTMLElement).contains(event.target as Node)
+      ) {
+        this.closeClock();
+      }
+    },
+  },
+  mounted() {
+    document.addEventListener("click", this.handleClickOutside);
+  },
+  beforeDestroy() {
+    document.removeEventListener("click", this.handleClickOutside);
   },
 };
 </script>
@@ -196,6 +230,7 @@ export default {
 .time-input-wrapper {
   display: flex;
   align-items: center;
+  padding: 5px;
 }
 
 .time-input {
@@ -204,6 +239,8 @@ export default {
   border-radius: 4px;
   background: var(--bg-dark);
   color: white;
+  font-size: 20px;
+  text-align: right;
 }
 
 .clock-button {
@@ -269,16 +306,17 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
+  color: white;
+  background-color: var(--bg);
 }
 
 .time-field {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px; /* Increase spacing between inputs */
 }
 
 .time-field input {
-  width: 40px;
   padding: 5px;
   font-size: 14px;
   text-align: center;
@@ -286,30 +324,70 @@ export default {
   border-radius: 4px;
   background: var(--bg-dark);
   color: white;
+  flex-grow: 1;
+  -webkit-appearance: none; /* Remove native arrows for inputs */
+  -moz-appearance: textfield; /* Remove native arrows for Firefox */
 }
 
-.separator {
-  font-size: 18px;
-  color: white;
+.hour-field,
+.minute-field {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+
+.time-field input::-webkit-inner-spin-button,
+.time-field input::-webkit-outer-spin-button {
+  -webkit-appearance: none; /* Remove arrows for Chrome */
+  margin: 0;
 }
 
 .arrows {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  flex-direction: column; /* Arrange the buttons horizontally */
+  gap: 0; /* Remove gap between the arrows */
+  margin-left: 5px; /* Add a small margin to separate from the input */
+  flex-grow: 0;
+  height: 100%;
 }
 
 .arrows button {
-  width: 25px;
-  height: 25px;
   border: none;
-  border-radius: 4px;
+  border-left: 1px solid var(--accent); /* Add a separator to make it visually connected */
   background: var(--accent);
   color: white;
+  font-size: 7px;
   cursor: pointer;
+}
+
+.arrows button:first-child {
+  border-radius: 0 4px 0 0; /* Top right radius */
+}
+
+.arrows button:last-child {
+  border-radius: 0 0 4px 0; /* Bottom right radius */
 }
 
 .arrows button:hover {
   background: var(--accent-hover);
+}
+
+.time-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.time-field input {
+  width: 50px;
+  padding: 5px;
+  font-size: 14px;
+  text-align: center;
+  border: 1px solid var(--accent);
+  border-radius: 4px 0 0 4px; /* Round only the left side */
+  background: var(--bg-dark);
+  color: white;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
 }
 </style>
