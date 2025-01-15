@@ -18,6 +18,11 @@
             <analysis-icon class="aside-icon" /> Analysis
           </router-link>
         </li>
+        <li @click="closeMenu">
+          <router-link to="/test">
+            <test-tube-icon class="aside-icon" /> Test
+          </router-link>
+        </li>
       </ul>
     </div>
     <ul class="footer-links">
@@ -49,6 +54,8 @@ import AnalysisIcon from 'vue-material-design-icons/ChartLine.vue';
 import InfoIcon from 'vue-material-design-icons/Information.vue';
 import LicenseIcon from 'vue-material-design-icons/Certificate.vue';
 
+import TestTubeIcon from 'vue-material-design-icons/TestTube.vue';
+
 import InfoModal from '../modals/InfoModal.vue';
 
 type ModalContent = {
@@ -66,6 +73,8 @@ export default {
     AnalysisIcon,
     InfoIcon,
     LicenseIcon,
+
+    TestTubeIcon
   },
   props: {
     isOpen: {
