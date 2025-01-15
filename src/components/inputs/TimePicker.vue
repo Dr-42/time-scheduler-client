@@ -23,6 +23,12 @@
             class=hour-mark
             :style="getHourMarkStyle(hour)"
           ></div>
+          <div
+            v-for="minute in 60"
+            :key="'hour-' + minute"
+            class=minute-mark
+            :style="getMinuteMarkStyle(minute)"
+          ></div>
           <div class="clock-hand hour" :style="hourHandStyle"></div>
           <div class="clock-hand minute" :style="minuteHandStyle"></div>
         </div>
@@ -90,22 +96,20 @@ export default {
   },
   data() {
     return {
-      selectedHour: null as number | null,
-      selectedMinute: null as number | null,
+      selectedHour: 0,
+      selectedMinute: 0,
       showClock: false,
     };
   },
   computed: {
     formattedTime(): string {
-      const hour = this.selectedHour?.toString().padStart(2, "0") || this.minTime.split(":")[0];
-      const minute = this.selectedMinute?.toString().padStart(2, "0") || this.minTime.split(":")[1];
+      const hour = this.selectedHour.toString().padStart(2, "0") || this.minTime.split(":")[0];
+      const minute = this.selectedMinute.toString().padStart(2, "0") || this.minTime.split(":")[1];
       return `${hour}:${minute}`;
     },
     hourInput: {
       get(): string {
-        if (this.selectedHour === null) {
-          return "";
-        } else if (this.selectedHour < 10) {
+        if (this.selectedHour < 10) {
           return `0${this.selectedHour}`;
         } else {
           return this.selectedHour.toString();
@@ -168,9 +172,9 @@ export default {
       let minTimeMinutes = parseInt(this.minTime.split(":")[1]);
       let maxTimeHours = parseInt(this.maxTime.split(":")[0]);
       let maxTimeMinutes = parseInt(this.maxTime.split(":")[1]);
-      const minTime = new Date(null, null, null, minTimeHours, minTimeMinutes, 0);
-      const maxTime = new Date(null, null, null, maxTimeHours, maxTimeMinutes, 0);
-      const selectedTime = new Date(null, null, null, this.selectedHour, this.selectedMinute, 0);
+      const minTime = new Date(0, 0, 0, minTimeHours, minTimeMinutes, 0);
+      const maxTime = new Date(0, 0, 0, maxTimeHours, maxTimeMinutes, 0);
+      const selectedTime = new Date(0, 0, 0, this.selectedHour, this.selectedMinute, 0);
 
       if (selectedTime < minTime) {
         this.selectedHour = minTime.getHours();
@@ -206,6 +210,10 @@ export default {
       const degrees = hour * 30; // Each hour is 30 degrees
       return  `transform: rotate(${degrees}deg) translateX(-50%) translateY(-50%)`;
     },
+    getMinuteMarkStyle(minute: number): string {
+      const degrees = minute * 6; // Each minute is 6 degrees
+      return  `transform: rotate(${degrees}deg) translateX(-50%) translateY(-50%)`;
+    },
     handleClickOutside(event: MouseEvent) {
       if (
         this.$refs.timePicker &&
@@ -216,6 +224,7 @@ export default {
     },
   },
   mounted() {
+    this.syncAnalogClock();
     document.addEventListener("click", this.handleClickOutside);
   },
   beforeDestroy() {
@@ -257,7 +266,7 @@ export default {
 .clock-popup {
   position: absolute;
   top: 100%;
-  left: 0;
+  right: 0;
   background: var(--bg-dark);
   border: 1px solid var(--accent);
   padding: 10px;
@@ -301,6 +310,16 @@ export default {
   width: 2px;
   height: 100%;
   background: linear-gradient(transparent 90%, var(--accent2));
+  transform-origin: center top;
+}
+
+.minute-mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(transparent 95%, var(--accent-hover));
   transform-origin: center top;
 }
 
