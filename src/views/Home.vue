@@ -25,6 +25,7 @@
 				<time-cards 
 					:cardData="cards"
 					:blockTypes="blockTypes"
+					@split-block="openSplitBlockModal"
 				/>
 			</div>
 		</div>
@@ -60,6 +61,13 @@
 			@close="currentModal = null"
 			@done="handleAddBlockType"
 		/>
+		<split-block-modal
+			v-if="currentModal === 'splitBlock'"
+			:blockTypes="blockTypes"
+			:timeblock="currentActionBlock!"
+			@close="currentModal = null"
+			@done="handleSplitBlock"
+		/>
 	</div>
 </template>
 
@@ -68,11 +76,12 @@ import TimeCards from '../components/subviews/TimeCards.vue';
 import SemiClock from '../components/subviews/SemiClock.vue';
 import Status from '../components/subviews/Status.vue';
 import ErrorDisplay from '../components/subviews/ErrorDisplay.vue';
+import LoadingSpinner from '../components/subviews/LoadingSpinner.vue';
 
 import NextBlockModal from '../components/modals/NextBlockModal.vue';
 import ChangeBlockModal from '../components/modals/ChangeBlockModal.vue';
 import AddBlocktypeModal from '../components/modals/AddBlocktypeModal.vue';
-import LoadingSpinner from '../components/subviews/LoadingSpinner.vue';
+import SplitBlockModal from '../components/modals/SplitBlockModal.vue';
 
 import ChevronRightBoxIcon from "vue-material-design-icons/ChevronRightBox.vue";
 import SwapHorizontalCircleIcon from "vue-material-design-icons/SwapHorizontalCircle.vue";
@@ -96,6 +105,7 @@ export default {
 		NextBlockModal,
 		ChangeBlockModal,
 		AddBlocktypeModal,
+		SplitBlockModal,
 
 		ChevronRightBoxIcon,
 		SwapHorizontalCircleIcon,
@@ -138,8 +148,9 @@ export default {
 			currentModal: null as string | null,
 			blockTypes: [] as BlockType[],
 			error: false,
-			errorText: "",
+			errorText: {},
 			loading: true,
+			currentActionBlock: null as TimeBlock | null
 		};
 	},
 	methods: {
@@ -180,6 +191,22 @@ export default {
 				this.errorText = e as string;
 			}
 		},
+		openSplitBlockModal(block: any) {
+			console.log(block);
+			this.currentActionBlock = TimeBlock.fromObject(block);
+			this.currentModal = "splitBlock";
+		},
+		async handleSplitBlock(data: Object) {
+			try {
+				console.log("Splitting block", data);
+				//await invoke("post_split_block", { data : data.toJson() });
+				this.currentModal = null;
+			} catch (e) {
+				console.error(e);
+				this.error = true;
+				this.errorText = e as string;
+			}
+		}
 	},
 	async mounted() {
 		try {

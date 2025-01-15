@@ -8,8 +8,8 @@
         placeholder="Select a time"
         class="time-input"
       />
-      <button @click="toggleClock" class="clock-button">
-        <span>&#128339;</span> <!-- Clock Icon -->
+      <button type="button" @click="toggleClock" class="clock-button">
+        <clock-edit-icon />
       </button>
     </div>
 
@@ -39,11 +39,11 @@
                 v-model="hourInput"
                 @blur="syncAnalogClock"
                 @input="clampTime"
-                :placeholder="this.minTime.split(':')[0]"
+                :placeholder="minTime.split(':')[0]"
               />
               <div class="arrows">
-                <button @click="incrementHour">▲</button>
-                <button @click="decrementHour">▼</button>
+                <button type="button" @click="incrementHour">▲</button>
+                <button type="button" @click="decrementHour">▼</button>
               </div>
             </div>
             <span class="separator">:</span>
@@ -54,11 +54,11 @@
                 v-model="minuteInput"
                 @blur="syncAnalogClock"
                 @input="clampTime"
-                :placeholder="this.minTime.split(':')[1]"
+                :placeholder="minTime.split(':')[1]"
               />
               <div class="arrows">
-                <button @click="incrementMinute">▲</button>
-                <button @click="decrementMinute">▼</button>
+                <button type="button" @click="incrementMinute">▲</button>
+                <button type="button" @click="decrementMinute">▼</button>
               </div>
             </div>
           </div>
@@ -69,8 +69,11 @@
 </template>
 
 <script lang="ts">
+import ClockEditIcon from "vue-material-design-icons/ClockEdit.vue"
+
 export default {
   name: "TimePicker",
+  components: { ClockEditIcon },
   props: {
     minTime: {
       type: String,

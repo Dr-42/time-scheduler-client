@@ -85,6 +85,15 @@ export class TimeBlock {
     );
   }
 
+  static fromObject(obj: any): TimeBlock {
+    return new TimeBlock(
+      obj.startTime,
+      obj.endTime,
+      obj.blockTypeId,
+      obj.title,
+    );
+  }
+
   static fromJsonArray(json: any): TimeBlock[] {
     if (!json) {
       return [];
