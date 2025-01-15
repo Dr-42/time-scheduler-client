@@ -281,6 +281,9 @@ export default {
     },
   },
   mounted() {
+    this.selectedHour = parseInt(this.selectedTime.split(":")[0]);
+    this.selectedMinute = parseInt(this.selectedTime.split(":")[1]);
+    this.selectedSecond = parseInt(this.selectedTime.split(":")[2]);
     this.syncAnalogClock();
     document.addEventListener("click", this.handleClickOutside);
   },

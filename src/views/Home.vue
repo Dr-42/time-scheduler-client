@@ -26,6 +26,7 @@
 					:cardData="cards"
 					:blockTypes="blockTypes"
 					@split-block="openSplitBlockModal"
+					@adjust-block="openAdjustBlockModal"
 				/>
 			</div>
 		</div>
@@ -68,6 +69,15 @@
 			@close="currentModal = null"
 			@done="handleSplitBlock"
 		/>
+		<adjust-block-modal
+			v-if="currentModal === 'adjustBlock'"
+			:blockTypes="blockTypes"
+			:timeblock="currentActionBlock!"
+			:start-time-min="preActionBlockStart"
+			:end-time-max="postActionBlockEnd"
+			@close="currentModal = null"
+			@done="handleAdjustBlock"
+		/>
 	</div>
 </template>
 
@@ -82,6 +92,7 @@ import NextBlockModal from '../components/modals/NextBlockModal.vue';
 import ChangeBlockModal from '../components/modals/ChangeBlockModal.vue';
 import AddBlocktypeModal from '../components/modals/AddBlocktypeModal.vue';
 import SplitBlockModal from '../components/modals/SplitBlockModal.vue';
+import AdjustBlockModal from '../components/modals/AdjustBlockModal.vue';
 
 import ChevronRightBoxIcon from "vue-material-design-icons/ChevronRightBox.vue";
 import SwapHorizontalCircleIcon from "vue-material-design-icons/SwapHorizontalCircle.vue";
@@ -102,6 +113,13 @@ type SplitBlockModalData = {
   afterBlockType: number;
 };
 
+type AdjustBlockModalData = {
+  title: string;
+  blockType: number;
+  newStartTime: string;
+  newEndTime: string;
+};
+
 export default {
 	components: {
 		TimeCards,
@@ -113,7 +131,9 @@ export default {
 		NextBlockModal,
 		ChangeBlockModal,
 		AddBlocktypeModal,
+
 		SplitBlockModal,
+		AdjustBlockModal,
 
 		ChevronRightBoxIcon,
 		SwapHorizontalCircleIcon,
@@ -147,6 +167,36 @@ export default {
 				return this.cards[0].endTime;
 			}
 		},
+		preActionBlockStart() {
+			if (this.preActionBlock) {
+				const start = new Date(this.preActionBlock.startTime);
+				const startHour = start.getHours();
+				const startMinute = start.getMinutes();
+				const startSecond = start.getSeconds();
+				const timeString = startHour.toString().padStart(2, "0") + ":" + startMinute.toString().padStart(2, "0") + ":" + startSecond.toString().padStart(2, "0");
+				return timeString;
+			} else {
+				return "00:00:00";
+			}
+		},
+		postActionBlockEnd() {
+			if (this.postActionBlock) {
+				const end = new Date(this.postActionBlock.endTime);
+				const endHour = end.getHours();
+				const endMinute = end.getMinutes();
+				const endSecond = end.getSeconds();
+				const timeString = endHour.toString().padStart(2, "0") + ":" + endMinute.toString().padStart(2, "0") + ":" + endSecond.toString().padStart(2, "0");
+				return timeString;
+			} else {
+				const now = new Date();
+				console.log(now);
+				const endHour = now.getHours();
+				const endMinute = now.getMinutes();
+				const endSecond = now.getSeconds();
+				const timeString = endHour.toString().padStart(2, "0") + ":" + endMinute.toString().padStart(2, "0") + ":" + endSecond.toString().padStart(2, "0");
+				return timeString;
+			}
+		}
 	},
 	data() {
 		return {
@@ -158,7 +208,9 @@ export default {
 			error: false,
 			errorText: {},
 			loading: true,
-			currentActionBlock: null as TimeBlock | null
+			currentActionBlock: null as TimeBlock | null,
+			preActionBlock: null as TimeBlock | null,
+			postActionBlock: null as TimeBlock | null,
 		};
 	},
 	methods: {
@@ -223,7 +275,43 @@ export default {
 				this.error = true;
 				this.errorText = e as string;
 			}
-		}
+		},
+		openAdjustBlockModal(blocks: any) {
+			this.currentActionBlock = TimeBlock.fromObject(blocks.card);
+			// this.preActionBlock = TimeBlock.fromObject(blocks.pre);
+			// this.postActionBlock = TimeBlock.fromObject(blocks.post);
+			if (blocks.pre) {
+				this.preActionBlock = TimeBlock.fromObject(blocks.pre);
+			} else {
+				this.preActionBlock = null;
+			}
+			if (blocks.post) {
+				this.postActionBlock = TimeBlock.fromObject(blocks.post);
+			} else {
+				this.postActionBlock = null;
+			}
+			this.currentModal = "adjustBlock";
+		},
+		async handleAdjustBlock(data: AdjustBlockModalData) {
+			try {
+				const sendData = {
+					start_time: this.currentActionBlock!.startTime,
+					end_time: this.currentActionBlock!.endTime,
+					new_start_time: data.newStartTime,
+					new_end_time: data.newEndTime,
+					title: data.title,
+					block_type_id: data.blockType,
+				};
+				await invoke("post_adjust_block", { data : sendData });
+				this.currentActionBlock = null;
+				this.currentModal = null;
+				//window.location.reload();
+			} catch (e) {
+				console.error(e);
+				this.error = true;
+				this.errorText = e as string;
+			}
+		},
 	},
 	async mounted() {
 		try {

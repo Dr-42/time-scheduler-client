@@ -6,8 +6,9 @@ use sha256::digest;
 use tauri::Manager;
 
 use crate::datatypes::{
-    Analysis, BlockType, CurrentBlock, HomeData, NewBlockType, Palette, PaletteData,
-    SplitTimeBlockQuery, SplitTimeBlockQueryJs, SunHours, TimeBlock,
+    AdjustTimeBlockQuery, AdjustTimeBlockQueryJs, Analysis, BlockType, CurrentBlock, HomeData,
+    NewBlockType, Palette, PaletteData, SplitTimeBlockQuery, SplitTimeBlockQueryJs, SunHours,
+    TimeBlock,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -286,6 +287,89 @@ pub async fn post_split_block(
         return Err(Error::ServerError(e));
     }
 
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn post_adjust_block(
+    app_handle: tauri::AppHandle,
+    data: AdjustTimeBlockQueryJs,
+) -> Result<(), Error> {
+    let meta = get_meta(app_handle).await?;
+    let client = Client::new();
+
+    let new_start_splits = data.new_start_time.split(":").collect::<Vec<&str>>();
+    let new_start_time = data
+        .start_time
+        .with_time(
+            NaiveTime::from_hms_opt(
+                new_start_splits[0].parse().map_err(|_| {
+                    Error::ClientError("Failed to parse new start time hour".to_string())
+                })?,
+                new_start_splits[1].parse().map_err(|_| {
+                    Error::ClientError("Failed to parse new start time minute".to_string())
+                })?,
+                new_start_splits[2].parse().map_err(|_| {
+                    Error::ClientError("Failed to parse new start time second".to_string())
+                })?,
+            )
+            .ok_or(Error::ClientError(
+                "Failed to create new start time".to_string(),
+            ))?,
+        )
+        .single()
+        .ok_or(Error::ClientError(
+            "Failed to find unique new start time".to_string(),
+        ))?;
+
+    let new_end_splits = data.new_end_time.split(":").collect::<Vec<&str>>();
+    let new_end_time = data
+        .end_time
+        .with_time(
+            NaiveTime::from_hms_opt(
+                new_end_splits[0].parse().map_err(|_| {
+                    Error::ClientError("Failed to parse new end time hour".to_string())
+                })?,
+                new_end_splits[1].parse().map_err(|_| {
+                    Error::ClientError("Failed to parse new end time minute".to_string())
+                })?,
+                new_end_splits[2].parse().map_err(|_| {
+                    Error::ClientError("Failed to parse new end time second".to_string())
+                })?,
+            )
+            .ok_or(Error::ClientError(
+                "Failed to create new end time".to_string(),
+            ))?,
+        )
+        .single()
+        .ok_or(Error::ClientError(
+            "Failed to find unique new end time".to_string(),
+        ))?;
+
+    let data = AdjustTimeBlockQuery {
+        start_time: data.start_time,
+        end_time: data.end_time,
+        new_start_time,
+        new_end_time,
+        title: data.title,
+        block_type_id: data.block_type_id,
+    };
+
+    let response = client
+        .post(format!("http://{}/timeblock/adjust", meta.server_ip))
+        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
+        .json(&data)
+        .send()
+        .await
+        .map_err(|e| Error::ServerError(e.to_string()))?;
+
+    if !response.status().is_success() {
+        let e = response
+            .text()
+            .await
+            .map_err(|e| Error::ClientError(e.to_string()))?;
+        return Err(Error::ServerError(e));
+    }
     Ok(())
 }
 

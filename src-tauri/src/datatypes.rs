@@ -102,3 +102,23 @@ pub struct SplitTimeBlockQueryJs {
     pub before_block_type_id: u8,
     pub after_block_type_id: u8,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct AdjustTimeBlockQuery {
+    pub start_time: DateTime<Local>,
+    pub end_time: DateTime<Local>,
+    pub new_start_time: DateTime<Local>,
+    pub new_end_time: DateTime<Local>,
+    pub title: String,
+    pub block_type_id: u8,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct AdjustTimeBlockQueryJs {
+    pub start_time: DateTime<Local>,
+    pub end_time: DateTime<Local>,
+    pub new_start_time: String,
+    pub new_end_time: String,
+    pub title: String,
+    pub block_type_id: u8,
+}

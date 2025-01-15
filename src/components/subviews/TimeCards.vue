@@ -20,7 +20,7 @@
     >
       <ul>
         <li @click="splitBlock(selectedCard)">Split block</li>
-        <li @click="adjustBlock(selectedCard)">Adjust block</li>
+        <li @click="adjustBlock(selectedCard, preCard, postCard)">Adjust block</li>
       </ul>
     </div>
   </div>
@@ -52,6 +52,8 @@ export default {
       showContextMenu: false,
       contextMenuPosition: { x: 0, y: 0 },
       selectedCard: null as TimeBlock | null,
+      preCard: null as TimeBlock | null,
+      postCard: null as TimeBlock | null
     };
   },
   methods: {
@@ -67,6 +69,10 @@ export default {
       this.showContextMenu = true;
       this.contextMenuPosition = { x: event.clientX, y: event.clientY };
       this.selectedCard = card;
+      let preCard = this.cardData[this.cardData.indexOf(card) + 1];
+      let postCard = this.cardData[this.cardData.indexOf(card) - 1];
+      this.preCard = preCard;
+      this.postCard = postCard;
     },
     closeContextMenu() {
       this.showContextMenu = false;
@@ -76,9 +82,13 @@ export default {
       this.$emit("splitBlock", card);
       this.closeContextMenu();
     },
-    adjustBlock(card: any) {
+    adjustBlock(card: any, preCard: any, postCard: any) {
       console.log("Adjusting block:", card);
-      this.$emit("adjustBlock", card);
+      this.$emit("adjustBlock", {
+        card: card,
+        pre: preCard,
+        post: postCard
+      });
       this.closeContextMenu();
     }
   },
