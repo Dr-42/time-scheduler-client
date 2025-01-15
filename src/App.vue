@@ -58,7 +58,7 @@ export default {
       asideOpen: false,
       currentModal: null as string | null,
       error: false,
-      errorText: "",
+      errorText: {},
       activePaletteIdx: 0,
     };
   },

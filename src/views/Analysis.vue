@@ -81,7 +81,7 @@ export default {
       analysis: null as null | Analysis,
       analysisFetched: false,
       error: false,
-      errorText: "",
+      errorText: {},
     };
   },
   computed: {
