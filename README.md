@@ -37,4 +37,6 @@ pnpm tauri build
 pnpm tauri android build --apk
 ```
 
+Android apps need code signing to install on devices. How to that can be found [here](https://v2.tauri.app/distribute/sign/android/).
+
 If you are having code signing issues, refer to this [tauri doc](https://v2.tauri.app/distribute/sign/android/).
