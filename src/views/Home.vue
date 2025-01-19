@@ -407,6 +407,7 @@ export default {
 	.time-cards {
 		overflow-y: scroll;
 		height: calc(55vh - 25px);
+		width: 100%;
 	}
 
 	#loading {
