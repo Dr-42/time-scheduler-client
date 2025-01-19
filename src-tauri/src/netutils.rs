@@ -78,7 +78,7 @@ where
             std::fs::write(meta_path, meta_json).map_err(|e| Error::Client(e.to_string()))?;
 
             let response = client
-                .get(format!("http://{}/{}", meta.server_ip, url_path))
+                .get(format!("http://{}{}", meta.server_ip, url_path))
                 .header(AUTHORIZATION, format!("Bearer {}", meta.access_token))
                 .send()
                 .await
@@ -156,7 +156,7 @@ where
             std::fs::write(meta_path, meta_json).map_err(|e| Error::Client(e.to_string()))?;
 
             let response = client
-                .post(format!("http://{}/{}", meta.server_ip, url_path))
+                .post(format!("http://{}{}", meta.server_ip, url_path))
                 .header(AUTHORIZATION, format!("Bearer {}", meta.access_token))
                 .json(data)
                 .send()
