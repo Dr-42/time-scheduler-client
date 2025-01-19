@@ -115,26 +115,8 @@ export default {
         const startTime = new Date(block.startTime);
         const endTime = new Date(block.endTime);
 
-        const startHours = startTime.getHours() + startTime.getMinutes() / 60;
-        const endHours = endTime.getHours() + endTime.getMinutes() / 60;
-
-        const startAngle = (startHours / 24.0) * 180;
-        const endAngle = (endHours / 24.0) * 180;
-
-        const startPoint = this.polarToCartesian(cx, cy, radius, startAngle);
-        const endPoint = this.polarToCartesian(cx, cy, radius, endAngle);
-
-        const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-        const path = `
-M ${startPoint.x} ${startPoint.y}
-A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
-`;
-
-        return {
-          id,
-          path,
-          color: `rgb(${blockType.color.r}, ${blockType.color.g}, ${blockType.color.b})`,
-        };
+        const color = blockType.color.toString();
+        return this.getBlockArc(startTime, endTime, color, radius, cx, cy);
       });
     },
     currentRenderedBlock() {
@@ -150,31 +132,14 @@ A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
         this.timeBlocks.length > 0 ? new Date(this.timeBlocks[0].endTime): midnight;
       const endTime = new Date();
 
-      const startHours = startTime.getHours() + startTime.getMinutes() / 60;
-      const endHours = endTime.getHours() + endTime.getMinutes() / 60;
-
-      const startAngle = (startHours / 24.0) * 180;
-      const endAngle = (endHours / 24.0) * 180;
-
-      const startPoint = this.polarToCartesian(cx, cy, radius, startAngle);
-      const endPoint = this.polarToCartesian(cx, cy, radius, endAngle);
-
-      const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-      const path = `
-M ${startPoint.x} ${startPoint.y}
-A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
-`;
-
       const blockType = this.blockTypes.find(
         (type) => type.id === this.currentBlock!.blockTypeId
       );
-
-      return {
-        path,
-        color: blockType
-          ? `rgb(${blockType.color.r}, ${blockType.color.g}, ${blockType.color.b})`
-          : "rgb(255, 255, 255)",
-      };
+      if (!blockType) {
+        return null;
+      }
+      const color = blockType.color.toString();
+      return this.getBlockArc(startTime, endTime, color, radius, cx, cy);
     },
   },
   methods: {
@@ -207,6 +172,26 @@ A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
       } catch (e) {
         console.error(e);
       }
+    },
+    getBlockArc(startTime: Date, endTime: Date, color: string, radius: number, cx: number, cy: number) {
+      const startHours = startTime.getHours() + startTime.getMinutes() / 60;
+      const endHours = endTime.getHours() + endTime.getMinutes() / 60;
+
+      const startAngle = (startHours / 24.0) * 180;
+      const endAngle = (endHours / 24.0) * 180;
+
+      const startPoint = this.polarToCartesian(cx, cy, radius, startAngle);
+      const endPoint = this.polarToCartesian(cx, cy, radius, endAngle);
+
+      const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+      const path = `
+M ${startPoint.x} ${startPoint.y}
+A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
+`;
+      return {
+        path,
+        color,
+      };
     }
   },
   async mounted() {
