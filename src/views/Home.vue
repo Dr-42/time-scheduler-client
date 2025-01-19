@@ -388,8 +388,8 @@ export default {
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		width: 100%;
-		height: 100%;
+		width: 100vw;
+		height: calc(100vh - 50px);
 	}
 
 	.header {
@@ -398,10 +398,12 @@ export default {
 
 	.status {
 		height: 13vh;
+		width: 100vw;
 	}
 	
 	.semi-clock {
 		height: 18vh;
+		width: 100vw;
 	}
 
 	.time-cards {
