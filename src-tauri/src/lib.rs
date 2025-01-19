@@ -2,6 +2,7 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
 
 mod datatypes;
+mod netutils;
 mod tauface;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

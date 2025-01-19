@@ -1,118 +1,116 @@
+use std::path::Path;
+
 use chrono::{DateTime, Datelike, Local, NaiveDate, NaiveDateTime, NaiveTime};
-use reqwest::{header::AUTHORIZATION, Client};
+use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sha256::digest;
 use tauri::Manager;
 
-use crate::datatypes::{
-    AdjustTimeBlockQuery, AdjustTimeBlockQueryJs, Analysis, BlockType, CurrentBlock, HomeData,
-    NewBlockType, Palette, PaletteData, SplitTimeBlockQuery, SplitTimeBlockQueryJs, SunHours,
-    TimeBlock,
+use crate::{
+    datatypes::{
+        AdjustTimeBlockQuery, AdjustTimeBlockQueryJs, Analysis, BlockType, CurrentBlock, HomeData,
+        NewBlockType, Palette, PaletteData, SplitTimeBlockQuery, SplitTimeBlockQueryJs, SunHours,
+        TimeBlock,
+    },
+    netutils::{make_get_request, make_post_request},
 };
 
 #[derive(Serialize, Deserialize)]
 pub struct Meta {
     pub username: String,
-    pub pass_hash: String,
     pub server_ip: String,
+    pub access_token: String,
+    pub refresh_token: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Error {
-    ClientError(String),
-    ServerError(String),
+    Client(String),
+    Server(String),
+    LoginExpired,
+}
+
+#[derive(Serialize, Debug)]
+pub struct LoginRequest {
+    pub key: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct LoginResponse {
+    pub access_token: String,
+    pub refresh_token: String,
 }
 
 #[tauri::command]
 pub async fn save_meta(
-    username: Option<&str>,
-    password: Option<&str>,
-    server_ip: Option<&str>,
+    username: &str,
+    password: &str,
+    server_ip: &str,
     app_handle: tauri::AppHandle,
 ) -> Result<(), Error> {
-    let cache_dir = app_handle
+    let data_dir = app_handle
         .path()
         .app_local_data_dir()
-        .map_err(|e| Error::ClientError(e.to_string()))?;
-    if !cache_dir.exists() {
-        std::fs::create_dir_all(&cache_dir).map_err(|e| Error::ClientError(e.to_string()))?;
+        .map_err(|e| Error::Client(e.to_string()))?;
+    if !data_dir.exists() {
+        std::fs::create_dir_all(&data_dir).map_err(|e| Error::Client(e.to_string()))?;
     }
-    let meta_path = cache_dir.join("meta.json");
+    let meta_path = data_dir.join("meta.json");
 
-    let loaded_meta = match std::fs::read_to_string(&meta_path) {
-        Ok(meta) => {
-            let meta: Meta = serde_json::from_str(&meta)
-                .map_err(|e| Error::ClientError(format!("Invalid meta file: {}", e)))?;
-            meta
-        }
-        Err(_) => Meta {
-            username: "".to_string(),
-            pass_hash: "".to_string(),
-            server_ip: "".to_string(),
-        },
-    };
+    let hashed_pass = digest(password);
 
-    let hashed_pass = if let Some(password) = password {
-        digest(password)
-    } else {
-        loaded_meta.pass_hash.clone()
-    };
+    let login_req = LoginRequest { key: hashed_pass };
+    let client = Client::new();
+    let response = client
+        .post(format!("http://{}/auth/login", server_ip))
+        .json(&login_req)
+        .send()
+        .await
+        .map_err(|e| Error::Server(e.to_string()))?
+        .json::<LoginResponse>()
+        .await
+        .map_err(|e| Error::Client(e.to_string()))?;
+    println!("{:?}", response);
 
     let meta = Meta {
-        username: username.unwrap_or(&loaded_meta.username).to_string(),
-        pass_hash: hashed_pass,
-        server_ip: server_ip.unwrap_or(&loaded_meta.server_ip).to_string(),
+        username: username.to_string(),
+        server_ip: server_ip.to_string(),
+        access_token: response.access_token,
+        refresh_token: response.refresh_token,
     };
 
-    let meta_json = serde_json::to_string(&meta).map_err(|e| Error::ClientError(e.to_string()))?;
-    std::fs::write(meta_path, meta_json).map_err(|e| Error::ClientError(e.to_string()))?;
+    let meta_json = serde_json::to_string(&meta).map_err(|e| Error::Client(e.to_string()))?;
+    std::fs::write(meta_path, meta_json).map_err(|e| Error::Client(e.to_string()))?;
     Ok(())
 }
 
 #[tauri::command]
 pub async fn get_meta(app_handle: tauri::AppHandle) -> Result<Meta, Error> {
-    let cache_dir = app_handle
+    let data_dir = app_handle
         .path()
         .app_local_data_dir()
-        .map_err(|e| Error::ClientError(e.to_string()))?;
-    let meta_path = cache_dir.join("meta.json");
+        .map_err(|e| Error::Client(e.to_string()))?;
+    get_meta_internal(&data_dir).await
+}
+
+pub async fn get_meta_internal(data_dir: &Path) -> Result<Meta, Error> {
+    let meta_path = data_dir.join("meta.json");
     let meta_json =
-        std::fs::read_to_string(&meta_path).map_err(|e| Error::ClientError(e.to_string()))?;
-    let meta: Meta =
-        serde_json::from_str(&meta_json).map_err(|e| Error::ClientError(e.to_string()))?;
+        std::fs::read_to_string(&meta_path).map_err(|e| Error::Client(e.to_string()))?;
+    let meta: Meta = serde_json::from_str(&meta_json).map_err(|e| Error::Client(e.to_string()))?;
     Ok(meta)
 }
 
 #[tauri::command]
 pub async fn get_home_data(app_handle: tauri::AppHandle) -> Result<HomeData, Error> {
-    let meta = get_meta(app_handle).await?;
-
-    let client = Client::new();
-    // Recieve a json from the server
-    let response = client
-        .get(format!("http://{}/state", meta.server_ip))
-        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
-        .send()
-        .await
-        .map_err(|e| Error::ServerError(e.to_string()))?;
-
-    if !response.status().is_success() {
-        let e = response
-            .text()
-            .await
-            .map_err(|e| Error::ClientError(e.to_string()))?;
-        return Err(Error::ServerError(e));
-    }
-
-    let mut response = response
-        .json::<HomeData>()
-        .await
-        .map_err(|e| Error::ClientError(e.to_string()))?;
-
-    response.daydata.reverse();
-
-    Ok(response)
+    let data_dir = app_handle
+        .path()
+        .app_local_data_dir()
+        .map_err(|e| Error::Client(e.to_string()))?;
+    let mut home_data: HomeData = make_get_request("/state", &data_dir, None).await?;
+    home_data.daydata.reverse();
+    Ok(home_data)
 }
 
 #[derive(Serialize, Deserialize)]
@@ -126,56 +124,22 @@ pub async fn get_day_history(
     date: DateTime<Local>,
     app_handle: tauri::AppHandle,
 ) -> Result<HistoryData, Error> {
-    let meta = get_meta(app_handle).await?;
-    let client = Client::new();
-    let time_blocks_response = client
-        .get(format!("http://{}/timeblock/get", meta.server_ip))
-        .query(&[("date", date.to_rfc3339())])
-        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
-        .send()
-        .await
-        .map_err(|e| Error::ServerError(e.to_string()))?;
-
-    if !time_blocks_response.status().is_success() {
-        let e = time_blocks_response
-            .text()
-            .await
-            .map_err(|e| Error::ClientError(e.to_string()))?;
-        return Err(Error::ServerError(e));
-    }
-
-    let mut time_blocks = time_blocks_response
-        .json::<Vec<TimeBlock>>()
-        .await
-        .map_err(|e| Error::ClientError(e.to_string()))?;
-
+    let data_dir = app_handle
+        .path()
+        .app_local_data_dir()
+        .map_err(|e| Error::Client(e.to_string()))?;
+    let mut time_blocks: Vec<TimeBlock> = make_get_request(
+        "/timeblock/get",
+        &data_dir,
+        Some(&[("date", &date.to_rfc3339())]),
+    )
+    .await?;
     time_blocks.reverse();
-
-    let blocktypes_response = client
-        .get(format!("http://{}/blocktype/get", meta.server_ip))
-        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
-        .send()
-        .await
-        .map_err(|e| Error::ServerError(e.to_string()))?;
-
-    if !blocktypes_response.status().is_success() {
-        let e = blocktypes_response
-            .text()
-            .await
-            .map_err(|e| Error::ClientError(e.to_string()))?;
-        return Err(Error::ServerError(e));
-    }
-
-    let blocktypes = blocktypes_response
-        .json::<Vec<BlockType>>()
-        .await
-        .map_err(|e| Error::ClientError(e.to_string()))?;
-
+    let blocktypes = make_get_request("/blocktype/get", &data_dir, None).await?;
     let res = HistoryData {
         daydata: time_blocks,
         blocktypes,
     };
-
     Ok(res)
 }
 
@@ -185,23 +149,20 @@ pub async fn get_analysis(
     end_date: DateTime<Local>,
     app_handle: tauri::AppHandle,
 ) -> Result<Analysis, Error> {
-    let meta = get_meta(app_handle).await?;
-    let client = Client::new();
-    let response = client
-        .get(format!("http://{}/analysis", meta.server_ip))
-        .query(&[
-            ("start", start_date.to_rfc3339()),
-            ("end", end_date.to_rfc3339()),
-        ])
-        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
-        .send()
-        .await
-        .map_err(|e| Error::ServerError(e.to_string()))?
-        .json::<Analysis>()
-        .await
-        .map_err(|e| Error::ClientError(e.to_string()))?;
-
-    Ok(response)
+    let data_dir = app_handle
+        .path()
+        .app_local_data_dir()
+        .map_err(|e| Error::Client(e.to_string()))?;
+    let analysis = make_get_request(
+        "/analysis",
+        &data_dir,
+        Some(&[
+            ("start", &start_date.to_rfc3339()),
+            ("end", &end_date.to_rfc3339()),
+        ]),
+    )
+    .await?;
+    Ok(analysis)
 }
 
 #[tauri::command]
@@ -209,25 +170,11 @@ pub async fn post_next_block(
     data: CurrentBlock,
     app_handle: tauri::AppHandle,
 ) -> Result<(), Error> {
-    let meta = get_meta(app_handle).await?;
-    let client = Client::new();
-    let response = client
-        .post(format!("http://{}/timeblock/next", meta.server_ip))
-        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
-        .json(&data)
-        .send()
-        .await
-        .map_err(|e| Error::ServerError(e.to_string()))?;
-
-    if !response.status().is_success() {
-        let e = response
-            .text()
-            .await
-            .map_err(|e| Error::ClientError(e.to_string()))?;
-        return Err(Error::ServerError(e));
-    }
-
-    Ok(())
+    let data_dir = app_handle
+        .path()
+        .app_local_data_dir()
+        .map_err(|e| Error::Client(e.to_string()))?;
+    make_post_request("/timeblock/next", &data_dir, &data).await
 }
 
 #[tauri::command]
@@ -235,30 +182,30 @@ pub async fn post_split_block(
     app_handle: tauri::AppHandle,
     data: SplitTimeBlockQueryJs,
 ) -> Result<(), Error> {
-    let meta = get_meta(app_handle).await?;
-    let client = Client::new();
+    let data_dir = app_handle
+        .path()
+        .app_local_data_dir()
+        .map_err(|e| Error::Client(e.to_string()))?;
     let splits = data.split_time.split(":").collect::<Vec<&str>>();
     println!("{:?}", &data);
     let split_time = data
         .start_time
         .with_time(
             NaiveTime::from_hms_opt(
-                splits[0].parse().map_err(|_| {
-                    Error::ClientError("Failed to parse split time hour".to_string())
-                })?,
-                splits[1].parse().map_err(|_| {
-                    Error::ClientError("Failed to parse split time minute".to_string())
-                })?,
-                splits[2].parse().map_err(|_| {
-                    Error::ClientError("Failed to parse split time second".to_string())
-                })?,
+                splits[0]
+                    .parse()
+                    .map_err(|_| Error::Client("Failed to parse split time hour".to_string()))?,
+                splits[1]
+                    .parse()
+                    .map_err(|_| Error::Client("Failed to parse split time minute".to_string()))?,
+                splits[2]
+                    .parse()
+                    .map_err(|_| Error::Client("Failed to parse split time second".to_string()))?,
             )
-            .ok_or(Error::ClientError(
-                "Failed to create split time".to_string(),
-            ))?,
+            .ok_or(Error::Client("Failed to create split time".to_string()))?,
         )
         .single()
-        .ok_or(Error::ClientError(
+        .ok_or(Error::Client(
             "Failed to find unique split time".to_string(),
         ))?;
     let data = SplitTimeBlockQuery {
@@ -270,24 +217,7 @@ pub async fn post_split_block(
         before_block_type_id: data.before_block_type_id,
         after_block_type_id: data.after_block_type_id,
     };
-    println!("{:?}", data);
-    let response = client
-        .post(format!("http://{}/timeblock/split", meta.server_ip))
-        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
-        .json(&data)
-        .send()
-        .await
-        .map_err(|e| Error::ServerError(e.to_string()))?;
-
-    if !response.status().is_success() {
-        let e = response
-            .text()
-            .await
-            .map_err(|e| Error::ClientError(e.to_string()))?;
-        return Err(Error::ServerError(e));
-    }
-
-    Ok(())
+    make_post_request("/timeblock/split", &data_dir, &data).await
 }
 
 #[tauri::command]
@@ -295,30 +225,29 @@ pub async fn post_adjust_block(
     app_handle: tauri::AppHandle,
     data: AdjustTimeBlockQueryJs,
 ) -> Result<(), Error> {
-    let meta = get_meta(app_handle).await?;
-    let client = Client::new();
-
+    let data_dir = app_handle
+        .path()
+        .app_local_data_dir()
+        .map_err(|e| Error::Client(e.to_string()))?;
     let new_start_splits = data.new_start_time.split(":").collect::<Vec<&str>>();
     let new_start_time = data
         .start_time
         .with_time(
             NaiveTime::from_hms_opt(
                 new_start_splits[0].parse().map_err(|_| {
-                    Error::ClientError("Failed to parse new start time hour".to_string())
+                    Error::Client("Failed to parse new start time hour".to_string())
                 })?,
                 new_start_splits[1].parse().map_err(|_| {
-                    Error::ClientError("Failed to parse new start time minute".to_string())
+                    Error::Client("Failed to parse new start time minute".to_string())
                 })?,
                 new_start_splits[2].parse().map_err(|_| {
-                    Error::ClientError("Failed to parse new start time second".to_string())
+                    Error::Client("Failed to parse new start time second".to_string())
                 })?,
             )
-            .ok_or(Error::ClientError(
-                "Failed to create new start time".to_string(),
-            ))?,
+            .ok_or(Error::Client("Failed to create new start time".to_string()))?,
         )
         .single()
-        .ok_or(Error::ClientError(
+        .ok_or(Error::Client(
             "Failed to find unique new start time".to_string(),
         ))?;
 
@@ -327,22 +256,20 @@ pub async fn post_adjust_block(
         .end_time
         .with_time(
             NaiveTime::from_hms_opt(
-                new_end_splits[0].parse().map_err(|_| {
-                    Error::ClientError("Failed to parse new end time hour".to_string())
-                })?,
+                new_end_splits[0]
+                    .parse()
+                    .map_err(|_| Error::Client("Failed to parse new end time hour".to_string()))?,
                 new_end_splits[1].parse().map_err(|_| {
-                    Error::ClientError("Failed to parse new end time minute".to_string())
+                    Error::Client("Failed to parse new end time minute".to_string())
                 })?,
                 new_end_splits[2].parse().map_err(|_| {
-                    Error::ClientError("Failed to parse new end time second".to_string())
+                    Error::Client("Failed to parse new end time second".to_string())
                 })?,
             )
-            .ok_or(Error::ClientError(
-                "Failed to create new end time".to_string(),
-            ))?,
+            .ok_or(Error::Client("Failed to create new end time".to_string()))?,
         )
         .single()
-        .ok_or(Error::ClientError(
+        .ok_or(Error::Client(
             "Failed to find unique new end time".to_string(),
         ))?;
 
@@ -355,22 +282,7 @@ pub async fn post_adjust_block(
         block_type_id: data.block_type_id,
     };
 
-    let response = client
-        .post(format!("http://{}/timeblock/adjust", meta.server_ip))
-        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
-        .json(&data)
-        .send()
-        .await
-        .map_err(|e| Error::ServerError(e.to_string()))?;
-
-    if !response.status().is_success() {
-        let e = response
-            .text()
-            .await
-            .map_err(|e| Error::ClientError(e.to_string()))?;
-        return Err(Error::ServerError(e));
-    }
-    Ok(())
+    make_post_request("/timeblock/adjust", &data_dir, &data).await
 }
 
 #[tauri::command]
@@ -378,25 +290,11 @@ pub async fn post_change_current(
     data: CurrentBlock,
     app_handle: tauri::AppHandle,
 ) -> Result<(), Error> {
-    let meta = get_meta(app_handle).await?;
-    let client = Client::new();
-    let response = client
-        .post(format!("http://{}/currentblock/change", meta.server_ip))
-        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
-        .json(&data)
-        .send()
-        .await
-        .map_err(|e| Error::ServerError(e.to_string()))?;
-
-    if !response.status().is_success() {
-        let e = response
-            .text()
-            .await
-            .map_err(|e| Error::ClientError(e.to_string()))?;
-        return Err(Error::ServerError(e));
-    }
-
-    Ok(())
+    let data_dir = app_handle
+        .path()
+        .app_local_data_dir()
+        .map_err(|e| Error::Client(e.to_string()))?;
+    make_post_request("/currentblock/change", &data_dir, &data).await
 }
 
 #[tauri::command]
@@ -404,25 +302,11 @@ pub async fn post_new_block_type(
     data: NewBlockType,
     app_handle: tauri::AppHandle,
 ) -> Result<(), Error> {
-    let meta = get_meta(app_handle).await?;
-    let client = Client::new();
-    let response = client
-        .post(format!("http://{}/blocktype/new", meta.server_ip))
-        .header(AUTHORIZATION, format!("Bearer {}", meta.pass_hash))
-        .json(&data)
-        .send()
-        .await
-        .map_err(|e| Error::ServerError(e.to_string()))?;
-
-    if !response.status().is_success() {
-        let e = response
-            .text()
-            .await
-            .map_err(|e| Error::ClientError(e.to_string()))?;
-        return Err(Error::ServerError(e));
-    }
-
-    Ok(())
+    let data_dir = app_handle
+        .path()
+        .app_local_data_dir()
+        .map_err(|e| Error::Client(e.to_string()))?;
+    make_post_request("/blocktype/new", &data_dir, &data).await
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -445,14 +329,14 @@ pub async fn find(ip: &str) -> Result<Locator, Error> {
         .get(&uri)
         .send()
         .await
-        .map_err(|e| Error::ClientError(e.to_string()))?;
+        .map_err(|e| Error::Client(e.to_string()))?;
 
     let local_data = local_data_response
         .text()
         .await
-        .map_err(|e| Error::ClientError(e.to_string()))?;
+        .map_err(|e| Error::Client(e.to_string()))?;
     let local_body: Value =
-        serde_json::from_str(&local_data).map_err(|e| Error::ClientError(e.to_string()))?;
+        serde_json::from_str(&local_data).map_err(|e| Error::Client(e.to_string()))?;
     let result = Locator {
         ip: local_body["query"].to_string(),
         latitude: local_body["lat"].to_string(),
@@ -488,17 +372,17 @@ struct SunApiResults {
 pub async fn get_sun_hours() -> Result<SunHours, Error> {
     let public_ip = public_ip::addr()
         .await
-        .ok_or(Error::ClientError("No public ip".to_string()))?;
+        .ok_or(Error::Client("No public ip".to_string()))?;
     let locinfo = find(&public_ip.to_string()).await?;
 
     let lat = locinfo
         .latitude
         .parse::<f64>()
-        .map_err(|_| Error::ClientError("Invalid latitude".to_string()))?;
+        .map_err(|_| Error::Client("Invalid latitude".to_string()))?;
     let long = locinfo
         .longitude
         .parse::<f64>()
-        .map_err(|_| Error::ClientError("Invalid longitude".to_string()))?;
+        .map_err(|_| Error::Client("Invalid longitude".to_string()))?;
 
     let url = format!(
         "https://api.sunrisesunset.io/json?lat={}&lng={}&formatted=0&timezone=Asia/Kolkata",
@@ -508,39 +392,33 @@ pub async fn get_sun_hours() -> Result<SunHours, Error> {
     // Make the HTTP request
     let response = reqwest::get(&url)
         .await
-        .map_err(|e| Error::ClientError(e.to_string()))?
+        .map_err(|e| Error::Client(e.to_string()))?
         .json::<SunApiResponse>()
         .await
-        .map_err(|e| Error::ClientError(e.to_string()))?;
+        .map_err(|e| Error::Client(e.to_string()))?;
 
     // Check API response status
     if response.status != "OK" {
-        return Err(Error::ClientError(
-            "Failed to retrieve sun hours".to_string(),
-        ));
+        return Err(Error::Client("Failed to retrieve sun hours".to_string()));
     }
 
     let today = Local::now().date_naive();
     let date = NaiveDate::from_ymd_opt(today.year(), today.month(), today.day())
-        .ok_or(Error::ClientError("Invalid date".to_string()))?;
+        .ok_or(Error::Client("Invalid date".to_string()))?;
 
     let final_sunrise_str = format!("{} {}", date, response.results.sunrise);
     let final_sunset_str = format!("{} {}", date, response.results.sunset);
 
     let sunrise_local = NaiveDateTime::parse_from_str(&final_sunrise_str, "%Y-%m-%d %I:%M:%S %p")
-        .map_err(|e| Error::ClientError(e.to_string()))?
+        .map_err(|e| Error::Client(e.to_string()))?
         .and_local_timezone(Local)
         .single()
-        .ok_or(Error::ClientError(
-            "Failed to parse sunrise time".to_string(),
-        ))?;
+        .ok_or(Error::Client("Failed to parse sunrise time".to_string()))?;
     let sunset_local = NaiveDateTime::parse_from_str(&final_sunset_str, "%Y-%m-%d %I:%M:%S %p")
-        .map_err(|e| Error::ClientError(e.to_string()))?
+        .map_err(|e| Error::Client(e.to_string()))?
         .and_local_timezone(Local)
         .single()
-        .ok_or(Error::ClientError(
-            "Failed to parse sunset time".to_string(),
-        ))?;
+        .ok_or(Error::Client("Failed to parse sunset time".to_string()))?;
 
     Ok(SunHours {
         sunrise: sunrise_local,
@@ -553,14 +431,13 @@ pub async fn save_palette(palette: PaletteData, app_handle: tauri::AppHandle) ->
     let cache_dir = app_handle
         .path()
         .app_local_data_dir()
-        .map_err(|e| Error::ClientError(e.to_string()))?;
+        .map_err(|e| Error::Client(e.to_string()))?;
     if !cache_dir.exists() {
-        std::fs::create_dir_all(&cache_dir).map_err(|e| Error::ClientError(e.to_string()))?;
+        std::fs::create_dir_all(&cache_dir).map_err(|e| Error::Client(e.to_string()))?;
     }
     let palette_path = cache_dir.join("palette.json");
-    let palette_json =
-        serde_json::to_string(&palette).map_err(|e| Error::ClientError(e.to_string()))?;
-    std::fs::write(&palette_path, palette_json).map_err(|e| Error::ClientError(e.to_string()))?;
+    let palette_json = serde_json::to_string(&palette).map_err(|e| Error::Client(e.to_string()))?;
+    std::fs::write(&palette_path, palette_json).map_err(|e| Error::Client(e.to_string()))?;
     Ok(())
 }
 
@@ -569,7 +446,7 @@ pub async fn get_palette(app_handle: tauri::AppHandle) -> Result<PaletteData, Er
     let cache_dir = app_handle
         .path()
         .app_local_data_dir()
-        .map_err(|e| Error::ClientError(e.to_string()))?;
+        .map_err(|e| Error::Client(e.to_string()))?;
     let palette_path = cache_dir.join("palette.json");
     if !palette_path.exists() {
         let palette = Palette {
@@ -586,8 +463,8 @@ pub async fn get_palette(app_handle: tauri::AppHandle) -> Result<PaletteData, Er
         save_palette(palette_data, app_handle).await?;
     }
     let palette_json =
-        std::fs::read_to_string(&palette_path).map_err(|e| Error::ClientError(e.to_string()))?;
+        std::fs::read_to_string(&palette_path).map_err(|e| Error::Client(e.to_string()))?;
     let palette_data: PaletteData =
-        serde_json::from_str(&palette_json).map_err(|e| Error::ClientError(e.to_string()))?;
+        serde_json::from_str(&palette_json).map_err(|e| Error::Client(e.to_string()))?;
     Ok(palette_data)
 }
