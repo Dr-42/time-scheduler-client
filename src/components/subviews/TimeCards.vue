@@ -106,31 +106,34 @@ export default {
 .time-cards {
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: flex-start;
+  align-items: center;
   padding: 2px;
   background: var(--bg);
   margin: 0;
-  width: 100%;
   font-family: Arial, sans-serif;
   color: #e2e2e2;
   height: 100%;
+  width: 90vw;
   overflow-y: auto;
 }
 
 @media (orientation: portrait) {
   .time-cards {
     border-top: 1px solid #ccc;
+    width: 100vw;
+    overflow-y: scroll;
+    overflow-x: hidden;
   }
 }
 
 @media (orientation: landscape) {
   .time-cards {
     border-left: 1px solid #ccc;
+    width: 55vw;
+    overflow-y: scroll;
+    overflow-x: hidden;
   }
-}
-
-.card-wrapper {
-  width: 100%;
 }
 
 .context-menu {

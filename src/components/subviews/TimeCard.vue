@@ -78,11 +78,27 @@ export default {
   flex-direction: row;
   justify-content: space-between;
   margin: 2.5px 0 2.5px 0;
-  width: 100%;
   align-items: center;
   background-color: v-bind(col);
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (orientation: portrait) {
+  .time-card {
+    width: 95vw;
+  }
+}
+
+@media (orientation: landscape) {
+  .time-card {
+    width: 50vw;
+  }
+}
+@media (orientation: portrait) {
+  .time-card {
+    width: 95vw;
+  }
 }
 
 .left {

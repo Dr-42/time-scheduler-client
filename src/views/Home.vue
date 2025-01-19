@@ -409,7 +409,9 @@ export default {
 	.time-cards {
 		overflow-y: scroll;
 		height: calc(55vh - 25px);
-		width: 100%;
+		width: 98vw;
+    overflow-y: scroll;
+    overflow-x: hidden;
 	}
 
 	#loading {
@@ -443,7 +445,8 @@ export default {
 	.time-cards {
 		width: 55vw;
 		height: calc(100vh - 50px);
-		overflow-y: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
 	}
 	.status {
 		height: calc(40vh - (25px + 20px + 20px));
