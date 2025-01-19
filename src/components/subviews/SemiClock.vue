@@ -17,7 +17,6 @@
         <!-- Task Band -->
         <path
           v-for="block in renderedBlocks"
-          :key="block.id"
           :d="block.path"
           :stroke="block.color"
           stroke-width="8"
@@ -101,13 +100,12 @@ export default {
       const cx = 100; // Center X
       const cy = 100;
 
-      return this.timeBlocks.map((block, id) => {
+      return this.timeBlocks.map((block) => {
         const blockType = this.blockTypes.find(
           (type) => type.id === block.blockTypeId
         );
         if (!blockType) {
           return {
-            id,
             path: "",
             color: "rgb(255, 255, 255)",
           };
@@ -222,7 +220,6 @@ A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endPoint.x} ${endPoint.y}
 }
 
 .clock-container {
-  width: 80%;
   position: relative;
   display: flex;
   justify-content: space-around;
