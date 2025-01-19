@@ -1,6 +1,6 @@
 [package]
 name = "time-scheduler-client"
-version = "0.1.13"
+version = "0.1.14"
 description = "A Time management app"
 authors = ["Dr42"]
 edition = "2021"

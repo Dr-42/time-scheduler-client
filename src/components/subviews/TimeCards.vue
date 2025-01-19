@@ -108,13 +108,29 @@ export default {
   flex-direction: column;
   justify-content: start;
   padding: 2px;
-  border-top: 1px solid #ccc;
   background: var(--bg);
-  margin: 0 auto;
+  margin: 0;
+  width: 100%;
   font-family: Arial, sans-serif;
   color: #e2e2e2;
   height: 100%;
   overflow-y: auto;
+}
+
+@media (orientation: portrait) {
+  .time-cards {
+    border-top: 1px solid #ccc;
+  }
+}
+
+@media (orientation: landscape) {
+  .time-cards {
+    border-left: 1px solid #ccc;
+  }
+}
+
+.card-wrapper {
+  width: 100%;
 }
 
 .context-menu {

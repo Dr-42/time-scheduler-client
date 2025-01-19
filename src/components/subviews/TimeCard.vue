@@ -78,6 +78,7 @@ export default {
   flex-direction: row;
   justify-content: space-between;
   margin: 2.5px 0 2.5px 0;
+  width: 100%;
   align-items: center;
   background-color: v-bind(col);
   border-radius: 5px;

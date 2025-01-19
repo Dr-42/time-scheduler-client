@@ -10,12 +10,14 @@
 		<div id="content" v-else>
 			<div class="header">
 				<status 
+					class="status"
 					:username="username" 
 					:currentStart="currentStart" 
 					:currentName="currentName" 
 					:currentColor="currentColor"
 				/>
 				<semi-clock
+					class="semi-clock"
 					:timeBlocks="cards"
 					:blockTypes="blockTypes"
 					:currentBlock="currentData"
@@ -345,7 +347,6 @@ export default {
 	height: calc(100vh - 50px);
 	padding: 0;
 }
-
 .floating-buttons {
 	position: fixed;
 	bottom: 20px;
@@ -380,25 +381,85 @@ export default {
 	height: 24px;
 }
 
-.time-cards {
-	overflow-y: scroll;
-	height: calc(55vh - 25px);
+/* Vertical orientation */
+@media (orientation: portrait) {
+	#content {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+	}
+
+	.header {
+		height: calc(45vh - 25px);
+	}
+
+	.status {
+		height: 13vh;
+	}
+	
+	.semi-clock {
+		height: 18vh;
+	}
+
+	.time-cards {
+		overflow-y: scroll;
+		height: calc(55vh - 25px);
+	}
+
+	#loading {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: calc(100vh - (50px + 10vh));
+		background-color: var(--bg);
+		z-index: 3;
+	}
 }
 
-.header {
-	height: calc(45vh - 25px);
+/* Horizontal orientation */
+@media (orientation: landscape) {
+	#content {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+	}
+	.header {
+		width: 45vw;
+		height: 100%;
+	}
+	.time-cards {
+		width: 55vw;
+		height: calc(100vh - 50px);
+		overflow-y: scroll;
+	}
+	.status {
+		height: calc(40vh - (25px + 20px + 20px));
+	}
+	.semi-clock {
+		height: calc(60vh - (25px + 4px + 4px));
+	}
+	#loading {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: calc(100vh - (50px + 10vh));
+		background-color: var(--bg);
+		z-index: 3;
+	}
 }
 
-#loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: calc(100vh - (50px + 10vh));
-  background-color: var(--bg);
-  z-index: 3;
-}
 </style>
