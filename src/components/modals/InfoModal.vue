@@ -51,7 +51,6 @@ export default {
   padding: 20px;
   margin: 2.5%;
   width: 80%;
-  max-height: 80vh;
   overflow-y: scroll;
   max-width: 500px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
