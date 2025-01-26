@@ -2,7 +2,7 @@ use tauri::Manager;
 
 use crate::{
     datatypes::{Palette, PaletteData},
-    tauface::Error,
+    error::Error,
 };
 
 #[tauri::command]

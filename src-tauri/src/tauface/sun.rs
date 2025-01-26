@@ -5,7 +5,7 @@ use serde_json::Value;
 
 use crate::datatypes::SunHours;
 
-use super::Error;
+use crate::error::Error;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Locator {

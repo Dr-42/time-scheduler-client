@@ -10,7 +10,7 @@ use crate::{
     netutils::{make_get_request, make_post_request},
 };
 
-use super::Error;
+use crate::error::Error;
 
 #[tauri::command]
 pub async fn get_home_data(app_handle: tauri::AppHandle) -> Result<HomeData, Error> {

@@ -2,6 +2,7 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
 
 mod datatypes;
+mod error;
 mod netutils;
 mod tauface;
 

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use sha256::digest;
 use tauri::Manager;
 
-use super::Error;
+use crate::error::Error;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Meta {
