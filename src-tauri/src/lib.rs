@@ -10,19 +10,19 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
-            tauface::save_meta,
-            tauface::get_meta,
-            tauface::get_home_data,
-            tauface::get_day_history,
-            tauface::get_analysis,
-            tauface::post_next_block,
-            tauface::post_split_block,
-            tauface::post_adjust_block,
-            tauface::post_change_current,
-            tauface::post_new_block_type,
-            tauface::get_sun_hours,
-            tauface::get_palette,
-            tauface::save_palette
+            tauface::meta::save_meta,
+            tauface::meta::get_meta,
+            tauface::remote_iface::get_home_data,
+            tauface::remote_iface::get_day_history,
+            tauface::remote_iface::get_analysis,
+            tauface::remote_iface::post_next_block,
+            tauface::remote_iface::post_split_block,
+            tauface::remote_iface::post_adjust_block,
+            tauface::remote_iface::post_change_current,
+            tauface::remote_iface::post_new_block_type,
+            tauface::sun::get_sun_hours,
+            tauface::pallete::get_palette,
+            tauface::pallete::save_palette
         ])
         .run(tauri::generate_context!())?;
     Ok(())

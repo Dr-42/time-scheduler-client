@@ -2,7 +2,10 @@ use std::path::Path;
 
 use reqwest::{header::AUTHORIZATION, Client, StatusCode};
 
-use crate::tauface::{get_meta_internal, Error, LoginResponse, Meta};
+use crate::tauface::{
+    meta::{get_meta_internal, LoginResponse, Meta},
+    Error,
+};
 
 pub async fn make_get_request<T>(
     url_path: &str,
