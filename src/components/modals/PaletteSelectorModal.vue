@@ -197,7 +197,6 @@ export default defineComponent({
   padding: 20px;
   border-radius: 8px;
   width: 90%;
-  overflow-y: scroll;
   margin: 2.5%;
   max-width: 400px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
