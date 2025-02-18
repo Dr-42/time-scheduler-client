@@ -227,6 +227,11 @@ export default {
   padding: 20px;
   color: #e2e2e2;
   font-family: Arial, sans-serif;
+  /* Center */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 h2 {
