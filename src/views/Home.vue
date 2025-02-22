@@ -191,7 +191,6 @@ export default {
 				return timeString;
 			} else {
 				const now = new Date();
-				console.log(now);
 				const endHour = now.getHours();
 				const endMinute = now.getMinutes();
 				const endSecond = now.getSeconds();
@@ -242,7 +241,6 @@ export default {
 			}
 		},
 		async handleAddBlockType(data: NewBlockType) {
-			console.log(data);
 			try {
 				await invoke("post_new_block_type", { data : data.toJson() });
 				this.currentModal = null;

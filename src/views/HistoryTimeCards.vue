@@ -119,7 +119,6 @@ export default {
         return timeString;
       } else {
         const now = new Date();
-        console.log(now);
         const endHour = now.getHours();
         const endMinute = now.getMinutes();
         const endSecond = now.getSeconds();

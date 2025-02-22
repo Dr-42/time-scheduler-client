@@ -162,7 +162,6 @@ export default defineComponent({
         const data = Palette.fromObject(this.selectedPalette);
         const idx = this.palettes.findIndex(palette => palette.name === this.selectedPalette.name);
         const res = new PaletteData(idx, data);
-        console.log(res);
         this.$emit("paletteApplied", res);
         this.closeModal();
       }

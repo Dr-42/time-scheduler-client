@@ -103,8 +103,6 @@ export default {
       }
     },
     async applyPalette(paletteData: PaletteData) {
-      console.log('Saving palette');
-      console.log(paletteData);
       await invoke('save_palette', { palette: paletteData.toJson() });
       const root = document.documentElement.style;
       root.setProperty("--accent", paletteData.palette.accent);

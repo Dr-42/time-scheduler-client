@@ -83,7 +83,6 @@ export default {
       this.closeContextMenu();
     },
     adjustBlock(card: any, preCard: any, postCard: any) {
-      console.log("Adjusting block:", card);
       this.$emit("adjustBlock", {
         card: card,
         pre: preCard,
