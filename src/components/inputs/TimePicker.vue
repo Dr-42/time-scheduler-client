@@ -41,8 +41,8 @@
                 :placeholder="minTime.split(':')[0]"
               />
               <div class="arrows">
-                <button type="button" @click="incrementHour">▲</button>
-                <button type="button" @click="decrementHour">▼</button>
+                <button type="button" @click="incrementHour" @touchstart.prevent="incrementHour">▲</button>
+                <button type="button" @click="decrementHour" @touchstart.prevent="decrementHour">▼</button>
               </div>
             </div>
             <span class="separator">:</span>
@@ -56,8 +56,8 @@
                 :placeholder="minTime.split(':')[1]"
               />
               <div class="arrows">
-                <button type="button" @click="incrementMinute">▲</button>
-                <button type="button" @click="decrementMinute">▼</button>
+                <button type="button" @click="incrementMinute" @touchstart.prevent="incrementMinute">▲</button>
+                <button type="button" @click="decrementMinute" @touchstart.prevent="decrementMinute">▼</button>
               </div>
             </div>
             <div class="second-field">
@@ -70,8 +70,8 @@
                 :placeholder="minTime.split(':')[1]"
               />
               <div class="arrows">
-                <button type="button" @click="incrementSecond">▲</button>
-                <button type="button" @click="decrementSecond">▼</button>
+                <button type="button" @click="incrementSecond" @touchstart.prevent="incrementSecond">▲</button>
+                <button type="button" @click="decrementSecond" @touchstart.prevent="decrementSecond">▼</button>
               </div>
             </div>
           </div>
