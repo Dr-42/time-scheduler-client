@@ -48,7 +48,8 @@ export default {
       this.timer = this.formatDuration(start, now);
     },
     formatDuration(startTime: Date, endTime: Date): string {
-      const duration = endTime.getTime() - startTime.getTime();
+      var duration = endTime.getTime() - startTime.getTime();
+      if (duration < 0) duration = 0;
       const hours = Math.floor(duration / (1000 * 60 * 60));
       const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((duration % (1000 * 60)) / 1000);
