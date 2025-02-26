@@ -74,6 +74,17 @@ export default {
       root.setProperty("--bg-dark", palette.palette.bgDark);
       root.setProperty("--accent-hover", palette.palette.accentHover);
       root.setProperty("--disabled-color", palette.palette.disabledColor);
+
+      // Overrided the android back button
+      window.androidBackCallback = () => {
+        // If on home page
+        if (this.$route.path === '/') {
+          return true;
+        }
+        // Navigate to Home
+        this.$router.push('/');
+        return false;
+      }
     } catch (e) {
       console.error(e);
       this.error = true;
