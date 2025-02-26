@@ -44,6 +44,12 @@ type SettingsData = {
   serverIp: string;
 }
 
+declare global {
+  interface Window {
+    androidBackCallback?: () => boolean;
+  }
+}
+
 export default {
   name: 'App',
   components: {
