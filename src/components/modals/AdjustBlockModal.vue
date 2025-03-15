@@ -1,7 +1,7 @@
 <template>
   <div class="modal-backdrop" @click.self="closeModal">
     <div class="modal">
-      <h2>Split Block</h2>
+      <h2>Adjust Block</h2>
       <div class="modal-header">
         <div>Adjusting {{ timeblock.title }} of type {{ blockTypes[timeblock.blockTypeId].name}}</div>
         <div>Starting at {{ startTime }} and ending at {{ endTime }}</div>
