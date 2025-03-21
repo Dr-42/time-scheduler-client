@@ -1,7 +1,7 @@
 {
   "name": "time-scheduler-client",
   "private": true,
-  "version": "0.1.19",
+  "version": "0.1.20",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -29,7 +29,10 @@
     "vite": "^5.3.1",
     "vue-tsc": "^2.2.0"
   },
-  "pnpm" : {
-    "onlyBuiltDependencies": ["electron", "esbuild"]
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "esbuild"
+    ]
   }
 }

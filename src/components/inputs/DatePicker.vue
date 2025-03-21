@@ -24,7 +24,7 @@
         <div
           v-for="(date, index) in daysInMonth"
           :key="index"
-          :class="['day', { 'disabled': isDisabled(date), 'selected': isSelected(date) }]"
+          :class="['day', { 'disabled': isDisabled(date), 'selected': isSelected(date), 'notdisplayed': isNotDisplayed(date) }]"
           @click="selectDate(date)"
         >
           {{ date.getDate() }}
@@ -82,9 +82,16 @@ export default {
       if (!this.selectedDate) return "";
       return this.formatDate(this.selectedDate, this.format);
     },
+    getMonthViewStartDate(): Date {
+      const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
+      const fdDay = firstDayOfMonth.getDay();
+      const fdDate = firstDayOfMonth.getDate();
+      return new Date(firstDayOfMonth.setDate(fdDate - fdDay));
+    },
     daysInMonth(): Date[] {
       const days: Date[] = [];
-      const firstDay = new Date(this.currentYear, this.currentMonth, 1);
+      //const firstDay = new Date(this.currentYear, this.currentMonth, 1);
+      const firstDay = this.getMonthViewStartDate;
       const lastDay = new Date(this.currentYear, this.currentMonth + 1, 0);
       for (let d = new Date(firstDay); d <= lastDay; d.setDate(d.getDate() + 1)) {
         days.push(new Date(d));
@@ -117,7 +124,12 @@ export default {
     },
     isDisabled(date: Date): boolean {
       if (this.minDate && date < this.minDate) return true;
+      if (date.getMonth() !== this.currentMonth) return true;
       if (this.maxDate && date > this.maxDate) return true;
+      return false;
+    },
+    isNotDisplayed(date: Date): boolean {
+      if (date.getMonth() !== this.currentMonth) return true;
       return false;
     },
     isSelected(date: Date): boolean {
@@ -261,5 +273,12 @@ export default {
 .day.selected {
   background: var(--accent);
   color: white;
+}
+
+.day.notdisplayed {
+  background: var(--bg-dark);
+  color: transparent;
+  border: none;
+  cursor: default;
 }
 </style>
